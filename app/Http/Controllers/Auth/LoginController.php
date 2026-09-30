@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -35,15 +36,17 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Untuk mobile: hapus token yang dipakai saat ini
-        if ($request->user()->currentAccessToken()) {
-            $request->user()->currentAccessToken()->delete();
-        }
+        $token = $request->user()->currentAccessToken();
 
-        // Untuk web: hancurkan session
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if ($token instanceof PersonalAccessToken) {
+            // Mobile: hapus token yang sedang dipakai
+            $token->delete();
+        } else {
+            // Web: hancurkan session
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json(['message' => 'Berhasil logout.']);
     }
