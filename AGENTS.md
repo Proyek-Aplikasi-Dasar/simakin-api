@@ -45,3 +45,178 @@ php artisan boost:install
 
 Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
 </laravel-boost-guidelines>
+
+# SIMAKIN API - Panduan Proyek
+
+Sistem Informasi Manajemen Aktivitas & Kegiatan Industri (PKL) SMK Negeri 1 Magelang.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 13 (PHP 8.3+) |
+| Database | MySQL 8.0+ |
+| Auth | Laravel Sanctum (session web + token mobile) |
+| Frontend Web | Vue.js 3 (repo terpisah) |
+| Frontend Mobile | Flutter (repo terpisah) |
+| File Storage | Local disk |
+| Queue | Database driver |
+| Environment | Laragon (development) |
+| Deployment | Hosting terpisah (API & Web beda domain) |
+
+## Dokumentasi Proyek
+
+| Dokumen | Lokasi |
+|---|---|
+| PRD | `.agents/PRD.md` |
+| Arsitektur | `.agents/tech-specs/2026/001-architecture.md` |
+| Skema Database | `.agents/tech-specs/2026/002-database-schema.md` |
+| API Endpoints | `.agents/tech-specs/2026/003-api-endpoints.md` |
+| Panduan Postman | `.agents/tech-specs/2026/004-postman-collection-guide.md` |
+| Roadmap Backend | `.agents/tasks/backend-roadmap.md` |
+| API Docs (auth) | `docs/API-Docs-fondasi.md` |
+| To-Do PAD 1 | `docs/to-do-backend-pad-1.txt` |
+| ERD | `docs/database-erd.xml` + `docs/database-erd.png` |
+| MVP | `docs/MVP.txt` |
+| Mockups | `docs/mockups/` |
+
+## Development Commands
+
+```sh
+# Setup
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+
+# Development
+php artisan serve          # http://localhost:8000
+php artisan queue:work     # untuk email notification
+
+# Testing
+php artisan test
+php artisan test --filter=LoginTest
+
+# Code Quality
+./vendor/bin/pint          # auto-format PSR-12
+
+# Database
+php artisan migrate:status
+php artisan migrate:fresh --seed   # HATI-HATI: hapus semua data
+php artisan db:seed --class=RoleSeeder
+
+# Routes & Debug
+php artisan route:list --path=api
+php artisan config:clear
+php artisan cache:clear
+```
+
+## Default Seeded Users
+
+| Role | Email | Password | Platform |
+|---|---|---|---|
+| admin | admin@example.com | admin123 | Web |
+| guru | guru@example.com | guru123 | Web |
+| siswa | siswa@example.com | siswa123 | Mobile |
+
+## Coding Conventions
+
+### Naming
+
+- **Models:** Singular PascalCase (`Siswa`, `LokasiPkl`, `JurnalHarian`)
+- **Controllers:** `SiswaController`, `AbsensiController` (resource untuk CRUD simple)
+- **Tables:** Singular lowercase (`siswa`, `lokasi_pkl`)
+- **Columns:** snake_case (`user_id`, `created_at`)
+- **Routes:** kebab-case (`/api/lokasi-pkl`, `/api/waktu-absen`)
+- **Pivot:** Alphabetical (`perusahaan_jurusan`)
+
+### Patterns (belum disepakati tim, ikuti use case)
+
+- **Resource Controller** untuk simple CRUD (Jurusan, Kompetensi, Sikap, Waktu Absen)
+- **Custom Controller** untuk complex logic (Absensi checkin, Jurnal review, Penilaian)
+- **Direct Eloquent** di Controller untuk PAD 1 (Repository pattern opsional PAD 2)
+
+### API Response Format
+
+```php
+// Success (single)
+return new SiswaResource($siswa);         // { "data": {...} }
+
+// Success (collection)
+return SiswaResource::collection($siswa); // { "data": [...], "meta": {...} }
+
+// Success + message
+return response()->json([
+    'message' => 'Berhasil disimpan.',
+    'data' => new SiswaResource($siswa),
+], 201);
+
+// Error custom
+return response()->json([
+    'message' => 'Presensi hari ini sudah dilakukan.',
+    'code' => 'ABSENSI_DUPLICATE',
+], 422);
+```
+
+### Validation
+
+Selalu pakai Form Request:
+```sh
+php artisan make:request StoreSiswaRequest
+```
+
+### Authorization
+
+- **Middleware role:** `Route::middleware(['auth:sanctum', 'role:admin'])`
+- **Policy** untuk ownership (siswa edit jurnal miliknya sendiri)
+- Role IDs: 1=admin, 2=guru, 3=siswa
+
+### File Upload
+
+- Path: `storage/app/public/uploads/{type}/{YYYY-MM-DD}/`
+- Naming: `{user_id}_{timestamp}_{random}.{ext}`
+- Validasi: MIME type + max 5MB (foto), 10MB (Excel)
+- Selalu `Storage::url($path)` untuk return URL publik
+
+### Testing
+
+- **Feature tests** untuk semua API endpoint
+- **Unit tests** untuk business logic kompleks
+- Database: SQLite in-memory (sudah dikonfigurasi di `phpunit.xml`)
+- Naming: `test_admin_can_create_siswa()`, `test_duplicate_absensi_rejected()`
+
+## Authentication Notes
+
+- **Web (admin/guru):** Session + CSRF cookie. `GET /sanctum/csrf-cookie` dulu, lalu login tanpa `X-Client`.
+- **Mobile (siswa):** Bearer token. Login dengan header `X-Client: mobile`, simpan token, kirim `Authorization: Bearer {token}`.
+- Siswa **tidak bisa login via web** (dicek di LoginController).
+
+## Error Codes Kustom
+
+| Code | HTTP | Kapan |
+|---|---|---|
+| `ABSENSI_DUPLICATE` | 422 | Sudah presensi hari ini |
+| `ABSENSI_REQUIRED` | 422 | Belum presensi, mau bikin jurnal |
+| `JURNAL_NOT_EDITABLE` | 422 | Jurnal sudah di-approve guru |
+| `PERIODE_CLOSED` | 422 | Periode penilaian tidak aktif |
+| `PENGAJUAN_DUPLICATE` | 422 | Sudah ada pengajuan pending |
+| `PERUSAHAAN_KUOTA_PENUH` | 422 | Kuota perusahaan habis |
+| `SISWA_ALREADY_PLACED` | 422 | Siswa sudah punya PKL aktif |
+| `GELOMBANG_NOT_ACTIVE` | 422 | Pendaftaran gelombang tertutup |
+
+## Git Workflow
+
+- Branch: `main` (stable), `develop` (staging), `feature/*`, `bugfix/*`
+- Commit: `[BE] feat: deskripsi` / `[BE] fix: deskripsi` / `[BE] docs: deskripsi`
+- PR ke `develop` untuk review, merge ke `main` untuk stable
+
+## Key Constraints
+
+- **Deadline PAD 1:** 12 Desember 2026
+- **Scope PAD 1:** Sesuai `docs/to-do-backend-pad-1.txt` (tanpa chat)
+- **Siswa:** 700+ per angkatan, 1 siswa = 1 gelombang
+- **Presensi:** Hanya check-in (tanpa jam keluar), rekam GPS tanpa validasi radius
+- **Registrasi siswa:** Admin only (bukan self-register)
+- **Excel:** Bulk upload (siswa, guru, perusahaan, kompetensi) + export rekap
+- **Notifikasi:** Database + email (queue), tanpa push notification di PAD 1
+- **Watermark foto penilaian:** Dilakukan di mobile app (Flutter), backend simpan metadata GPS
