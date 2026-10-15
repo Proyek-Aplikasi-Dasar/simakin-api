@@ -1,0 +1,90 @@
+Product Brief
+Company Profile SMKN 1 Magelang
+
+Users
+Who are your target users?
+Target Pengguna:
+1. Siswa SMK yang menjalani PKL (+700 siswa/angkatan)
+2. Admin sekolah (pengelola data & rekap PKL)
+3. Guru pembimbing PKL
+4. Pembimbing industri di lokasi PKL (akses melalui akun siswa)
+
+Apa masalah utama yang dialami pengguna?
+Sistem PKL sebelumnya (aplikasi + website) kehabisan kapasitas sehingga presensi dan pengisian jurnal harian siswa terganggu, sementara developer lama sulit dihubungi untuk perbaikan sehingga memaksa sekolah kembali ke proses manual.
+
+Market Gap (Kebutuhan pasar yang belum terpenuhi saat ini)
+- Are you reaching an underserved part of the market? If so, describe:
+  Sistem ini bersifat internal untuk SMK Negeri 1 Magelang, bukan produk pasar terbuka.
+- What is your major differentiator? Describe:
+  Dibanding sistem sebelumnya yang sudah tidak stabil dan terpecah ke berbagai kanal darurat (Google Form, buku manual, chat pribadi ke guru), sistem baru ini menyatukan seluruh proses PKL (presensi, jurnal, penilaian, monitoring, hingga rekap) dalam satu platform terintegrasi.
+  Pembeda utamanya bukan sekadar "diperbaiki", tapi menjawab langsung keluhan nyata pengguna yang tidak pernah terselesaikan di sistem lama: status pengiriman yang jelas (tidak lagi bikin bingung apakah presensi berhasil), kemampuan edit/batal jika salah input, notifikasi otomatis (dulu siswa harus pasang alarm sendiri), verifikasi nilai bulanan yang lebih ketat (mengatasi kecurangan yang terbukti terjadi), serta kapasitas server yang direncanakan sejak awal berdasarkan estimasi pengguna aktif (bukan ditambal setelah down seperti sebelumnya).
+- Are you offering a product at a lower price point or different pricing model? If so, describe:
+  N/A (bukan produk komersial)
+
+Top Pain Point
+What is the top pain point your users are experiencing?
+
+Gain vs Pain Analysis:
+
+[Gain - Solusi yang diharapkan]
+- Presensi otomatis berbasis lokasi (koordinat) dan swafoto.
+- Perbaiki orientasi kamera saat swafoto (jangan mirror) - permintaan siswa tinggi.
+- Indikator status jelas saat submit presensi/jurnal: berhasil / gagal / coba lagi - permintaan siswa tinggi.
+- Fitur batal/edit jika salah pilih status kehadiran atau salah ambil foto.
+- Mekanisme retry otomatis & anti-double-submit saat jaringan lemah - permintaan siswa tinggi.
+- Deteksi lokasi menampilkan status jelas (mencari/berhasil/gagal) + fallback jika GPS lambat - permintaan sedang siswa.
+- Jurnal harian terintegrasi dengan daftar kompetensi kurikulum.
+- Setelah presensi "hadir" tersimpan, otomatis diarahkan ke form jurnal (satu alur tanpa jeda) - permintaan sedang siswa.
+- Perbesar/hilangkan batas karakter pada jurnal harian - permintaan siswa.
+- Tambah/perluas pilihan kategori kompetensi agar sesuai variasi pekerjaan riil.
+- Input data massal (bulk upload) untuk admin: data siswa, industri, guru.
+- Admin dapat melakukan ACC lokasi PKL secara lebih cepat/massal (bulk-approve).
+- Penilaian bulanan dari industri lewat akun siswa, dengan periode terkontrol (tgl 1-10).
+- Perkuat verifikasi nilai bulanan dari industri (swafoto pembimbing saja belum cukup mencegah kecurangan, perlu mekanisme tambahan seperti watermark GPS+waktu, notifikasi ke guru saat nilai diinput) - permintaan kritis dari guru.
+- Monitoring guru real-time (presensi, jurnal, koordinat).
+- Rekap otomatis hasil PKL dalam format Excel.
+- Dashboard guru menampilkan ringkasan status siswa bimbingan (sudah/belum absen, sudah/belum lapor) sekali pandang - permintaan sedang guru.
+- Notifikasi/pengingat presensi & jurnal harian.
+- Fitur chat guru-siswa.
+- Riwayat jurnal & laporan otomatis terurut kronologis (per tanggal).
+- Pengaturan/reminder khusus untuk hari libur mandiri industri (berbeda dari hari kerja normal) - permintaan sedang siswa.
+- Arsitektur & kapasitas server direncanakan sejak tahap desain berdasarkan estimasi pengguna aktif bersamaan - bukan reaktif setelah bermasalah (permintaan kritis dari guru & siswa).
+
+[Pain - Masalah atau kesulitan yang dialami users]
+- Sistem lama kehabisan kapasitas sehingga presensi & jurnal harian terganggu.
+- Siswa mengeluh hasil swafoto presensi mirror/terbalik.
+- Status pengiriman presensi/jurnal tidak jelas, rawan submit ganda.
+- Tidak bisa membatalkan/mengedit jika salah pilih status kehadiran atau salah ambil foto.
+- Presensi sering gagal terkirim saat jaringan lemah, tanpa mekanisme coba-lagi.
+- Lokasi sering gagal terdeteksi meski GPS & izin sudah aktif, pesan error tanpa penjelasan.
+- Setelah presensi "hadir", siswa harus navigasi manual ke menu jurnal - alur terputus, rawan lupa isi jurnal.
+- Batas karakter jurnal terlalu sedikit, memaksa siswa menyingkat cerita kegiatan sehingga kurang informatif.
+- Siswa merasa pilihan kategori kompetensi tidak cukup mewakili variasi pekerjaan nyata di lapangan.
+- Input data awal (±700 siswa & data industri) oleh admin masih satu per satu.
+- ACC lokasi PKL oleh admin dilakukan satu per satu, cukup memakan waktu.
+- Guru melaporkan ada siswa yang curang mengisi nilai sendiri pada mekanisme penilaian bulanan saat ini.
+- Guru menyebut fitur rekap otomatis (kehadiran & jurnal) "belum bisa" dilakukan pada sistem saat ini.
+- Guru harus klik berulang kali & berpindah halaman untuk memantau siswa bimbingan, sulit tahu siapa yang belum absen/lapor.
+- Belum ada presensi/jurnal reminder otomatis (siswa harus pasang alarm sendiri).
+- Belum ada fitur chat/notifikasi guru ke siswa.
+- Riwayat jurnal/laporan tidak tersusun berdasarkan tanggal, sulit dicari siswa maupun guru.
+- Siswa tetap wajib presensi walau industri libur (bukan tanggal merah), sering lupa & dianggap "bolos".
+- Sistem lama kolaps saat pengguna mengakses bersamaan (jam masuk/pulang); foto presensi cepat memenuhi kapasitas server/database (akar masalah utama sistem lama ditinggalkan).
+
+Value Proposition Statement
+Kami membantu SMK Negeri 1 Magelang mengelola program PKL bagi ratusan siswa dengan mudah, dengan menyediakan sistem informasi terintegrasi untuk presensi, jurnal harian, penilaian, dan monitoring PKL secara real-time dan terpusat.
+
+Scope of MVP
+1. Manajemen data master (siswa, industri, guru) + bulk upload
+2. Pengajuan & ACC lokasi PKL
+3. Presensi harian (swafoto + koordinat)
+4. Jurnal harian + pemilihan kompetensi
+5. Penilaian bulanan (industri via akun siswa)
+6. Monitoring guru + input nilai monitoring
+7. Laporan akhir & nilai akhir
+8. Rekap otomatis format Excel
+9. Role & akses admin/guru/siswa
+
+Next Steps
+- Requirement gathering -> fiksasi requirement -> desain sistem -> development testing -> feedback dari sekolah -> revisi. Total pengerjaan diperkirakan 2 semester (PAD1 + PAD2).
+- Server testing sementara dari tim pembimbing dan server deployment akhir disiapkan tim pengembang.
