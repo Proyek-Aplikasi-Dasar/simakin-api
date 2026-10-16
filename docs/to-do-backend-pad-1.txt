@@ -1,0 +1,45 @@
+BREAKDOWN TO DO BACK-END (Proyek Aplikasi Dasar 1)
+
+1. DOKUMENTASI & ARSITEKTUR
+- DFD & Activity Diagram: Turunkan logika Activity Diagram (P2-7) dan ERD (P2-10) ke dalam skema Data Flow Diagram (P2-11) untuk mendefinisikan alur data API.
+
+2. FONDASI & SETUP PROJECT (P2-12)
+- Setup struktur folder project, koneksi database, serta dependensi utama.
+- Inisialisasi basis data berdasar konfigurasi ERD yang telah disetujui.
+
+3. AUTENTIKASI & AKSES (P2-19)
+- Login Multi-platform: Buat endpoint autentikasi (JWT/Token) untuk Web dan Android (P2-20).
+- Registrasi & Reset Password: Kembangkan API registrasi pengguna baru dan prosedur forgot/reset password via Web (P2-21).
+- Role-Based Access Control (RBAC): Buat middleware proteksi rute API berdasarkan hak akses peran Admin, Guru, dan Siswa (P2-22).
+
+4. MANAJEMEN DATA MASTER (P2-23)
+- Kelola Data Siswa + Bulk Upload Excel (P2-24):
+  * Buat API CRUD data siswa.
+  * Implementasikan parser file Excel (xlsx/csv) untuk fitur bulk upload data siswa.
+  * Tambahkan validasi data unik (NISN/Email) dan penanganan error format Excel.
+- Kelola Data Industri + Bulk Upload Excel (P2-25):
+  * Buat API CRUD data perusahaan/industri kemitraan.
+  * Impor data masal industri melalui file Excel.
+  * Buat logika penataan alokasi kuota penerimaan siswa PKL per industri.
+- Kelola Data Guru + Bulk Upload Excel (P2-26):
+  * Buat API CRUD data guru pembimbing dan koordinator.
+  * Implementasikan pengunggahan masal data guru berbasis Excel.
+  * Atur relasi penugasan guru terhadap siswa/kelompok PKL.
+- Kelola Master Kompetensi (P2-27):
+  * Buat API CRUD data standar kompetensi/keahlian siswa.
+  * Sediakan endpoint opsi pilihan kompetensi untuk dipetakan ke jurusan atau syarat lokasi PKL.
+- Dashboard Admin Versi Dasar (P2-28):
+  * Buat endpoint agregasi statistik data (total siswa, jumlah industri, ringkasan status penempatan PKL).
+  * Optimalkan query database agar pemanggilan data akumulasi dashboard berjalan cepat.
+
+5. PENGAJUAN LOKASI PKL (P2-29)
+- Buat endpoint pendaftaran pengajuan PKL baru oleh siswa.
+- Bangun logika approval/status verifikasi pengajuan tempat PKL dari pihak sekolah/guru.
+
+6. PRESENSI (P2-35 & P2-36)
+- Aturan Presensi (P2-35): Terapkan validasi logika bisnis terkait jam kerja, batasan lokasi, dan kondisi keterlambatan.
+- Presensi Harian (P2-36): Buat endpoint pencatatan presensi (masuk/pulang), unggah bukti presensi/jurnal, serta rekap harian.
+
+7. INTEGRATION TESTING & BUG FIXING (P2-37)
+- Uji integrasi seluruh endpoint dengan Front-End/Android.
+- Tangani bug/error handling sebelum memasuki Target Demo Akhir (P2-38).
