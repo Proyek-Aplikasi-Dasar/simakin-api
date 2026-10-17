@@ -11,7 +11,7 @@
 
 ---
 
-## 1. Authentication (8 endpoints)
+## 1. Authentication (5 endpoints)
 
 ### 1.1 POST /api/login ✅ Done
 
@@ -109,45 +109,7 @@ Response 201:
 - 403: Bukan admin
 - 422: `role_id` bukan admin/guru, email duplikat, atau password tidak memenuhi syarat (min 8 + konfirmasi)
 
-### 1.5 POST /api/forgot-password 📋 Planned
-
-| | |
-|---|---|
-| Auth | Public |
-
-**Request:** `{ "email": "user@example.com" }`
-
-Response 200: `{ "message": "Link reset password telah dikirim ke email." }`
-
-**Note:** Gunakan Laravel Password broker (`Password::sendResetLink`). Kirim via queue.
-
-### 1.6 POST /api/reset-password 📋 Planned
-
-| | |
-|---|---|
-| Auth | Public |
-
-**Request:**
-```json
-{
-  "token": "reset-token",
-  "email": "user@example.com",
-  "password": "newpassword123",
-  "password_confirmation": "newpassword123"
-}
-```
-
-Response 200: `{ "message": "Password berhasil direset." }`
-
-### 1.7 GET /api/password/reset/{token} 📋 Planned
-
-| | |
-|---|---|
-| Auth | Public |
-
-Response: redirect atau JSON data untuk form reset (tergantung frontend).
-
-### 1.8 PUT /api/user/password ✅ Done
+### 1.5 PUT /api/user/password ✅ Done
 
 | | |
 |---|---|
@@ -171,7 +133,7 @@ Response 200: `{ "message": "Kata sandi berhasil diubah." }`
 - 401: Belum login
 - 422: `current_password` salah, konfirmasi tidak cocok, atau password kurang dari 8 karakter
 
-> Untuk lupa kata sandi (tidak bisa login), pengguna menghubungi admin. Admin reset via `PUT /api/users/{id}/password` (bagian 2).
+> **Lupa kata sandi:** tidak ada alur reset via email. Pengguna yang tidak bisa login menghubungi admin; admin mereset kata sandi via `PUT /api/users/{id}/password` (bagian 2.4).
 
 ---
 
@@ -214,6 +176,8 @@ Update user (name, email, role_id).
 | Role | admin |
 
 Reset password user oleh admin. **Request:** `{ "password": "...", "password_confirmation": "..." }`
+
+> **Jalur lupa kata sandi:** ini satu-satunya cara pemulihan ketika pengguna tidak bisa login (tidak ada reset via email). Setelah reset, sebaiknya cabut semua token/sesi milik user tsb.
 
 ### 2.5 DELETE /api/users/{id}
 
@@ -755,7 +719,7 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 
 | Module | Endpoints | Status |
 |---|---|---|
-| 1. Authentication | 7 | 3 ✅, 4 📋 |
+| 1. Authentication | 5 | 5 ✅ |
 | 2. User Management | 5 | 📋 |
 | 3. Jurusan | 6 | 📋 |
 | 4. Kompetensi | 6 | 📋 |
@@ -773,4 +737,4 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 📋 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~120** | **3 done, ~117 planned** |
+| **Total** | **~118** | **5 done, ~113 planned** |

@@ -64,8 +64,9 @@
 **Business Rules:**
 - Siswa hanya bisa login via mobile (`X-Client: mobile`)
 - Admin/guru bisa login via web (session) atau mobile (token)
-- Registrasi: hanya admin yang bisa create user siswa
-- Reset password: via email token
+- Registrasi: admin membuat akun guru/admin via `POST /api/register`; akun siswa dibuat lewat menu data siswa
+- Ubah kata sandi: pengguna ubah sendiri via `PUT /api/user/password`; setelah sukses token/sesi lain dicabut
+- Lupa kata sandi: tidak ada reset via email; admin mereset via `PUT /api/users/{id}/password`
 
 **Status:** ✅ Sudah ada (migration + model + seeder)
 

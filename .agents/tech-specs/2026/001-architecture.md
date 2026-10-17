@@ -39,8 +39,8 @@
        ▼                      ▼               ▼
 ┌────────────┐      ┌──────────────┐   ┌─────────────┐
 │  MySQL 8+  │      │ Local Disk   │   │  Queue      │
-│  (Database)│      │ (File Upload)│   │  (Email     │
-│            │      │              │   │   Notif)    │
+│  (Database)│      │ (File Upload)│   │  (DB Notif) │
+│            │      │              │   │             │
 └────────────┘      └──────────────┘   └─────────────┘
 ```
 
@@ -149,7 +149,9 @@
 1. GET /sanctum/csrf-cookie        → Server set XSRF-TOKEN cookie
 2. POST /api/login                 → Server set session cookie, return user
 3. GET /api/user                   → Server read session, return user (no Authorization header)
-4. POST /api/logout                → Server destroy session
+4. POST /api/register              → Admin buat akun guru/admin baru (session)
+5. PUT /api/user/password          → Ubah kata sandi (sesi lama lain dicabut)
+6. POST /api/logout                → Server destroy session
 ```
 
 - Frontend: Axios dengan `withCredentials: true`
@@ -160,12 +162,14 @@
 ```
 1. POST /api/login                 → Header X-Client: mobile → return user + token
 2. GET /api/user                   → Header Authorization: Bearer {token}, X-Client: mobile
-3. POST /api/logout                → Header Authorization: Bearer {token} → delete token
+3. PUT /api/user/password          → Ubah kata sandi (token lain dicabut)
+4. POST /api/logout                → Header Authorization: Bearer {token} → delete token
 ```
 
 - Token disimpan di secure storage (Flutter: `flutter_secure_storage`)
 - Token expiration: default Sanctum (sesuai config)
 - Multiple devices: `createToken()` per device, `deleteToken()` saat logout
+- Lupa kata sandi: hubungi admin (tidak ada alur reset via email)
 
 ### 3.2 Distinguishing Clients
 
@@ -332,7 +336,8 @@ Retry policy:
 | Type | Medium | Trigger |
 |---|---|---|
 | Database notification | `notifications` table | Jurnal di-review, pengajuan disetujui, penilaian diinput |
-| Email notification | SMTP via queue | Reset password |
+
+> PAD 1 hanya memakai **database notification** (tanpa email). Reset kata sandi tidak melalui email — pengguna yang lupa sandi menghubungi admin.
 
 ### 7.2 Out of Scope PAD 1 (PAD 2)
 
@@ -349,7 +354,6 @@ Retry policy:
 | Penilaian bulanan diinput | Guru pembimbing | Database |
 | Verifikasi penilaian | Siswa | Database |
 | Presensi dikoreksi admin | Siswa | Database |
-| Reset password | User | Email (queue) |
 
 ## 8. Performance & Scalability
 
@@ -404,20 +408,20 @@ $stats = Cache::remember('dashboard.stats', 600, function () {
 
 ### 8.3 Queue
 
-Email notifications dikirim via queue:
+Queue dipakai untuk proses berat (mis. bulk upload Excel, pengiriman notifikasi database massal). PAD 1 tidak mengirim email, sehingga `MAIL_*` tidak wajib dikonfigurasi:
+
 ```php
-// Notification class
-class PasswordResetNotification extends Notification
+// Contoh notifikasi database
+class JurnalDireview extends Notification
 {
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database'];
     }
 }
 
 // Kirim via queue
-Notification::route('mail', $email)
-    ->notify(new PasswordResetNotification($token));
+$user->notify((new JurnalDireview($jurnal))->onQueue('notifications'));
 ```
 
 Queue driver: `database` (development), `redis` (production recommended).
@@ -477,15 +481,14 @@ DB_DATABASE=simakin_production
 
 # 3. Session & Sanctum
 SANCTUM_STATEFUL_DOMAINS=simakin.smkn1magelang.sch.id
+SESSION_DRIVER=database
 SESSION_DOMAIN=simakin.smkn1magelang.sch.id
 
 # 4. Frontend URL
 FRONTEND_URL=https://simakin.smkn1magelang.sch.id
 
-# 5. Mail
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.example.com
-# ... credentials
+# 5. Mail (opsional untuk PAD 1 — tidak ada notifikasi email)
+MAIL_MAILER=log
 
 # 6. Cache & Queue (Redis recommended for production)
 CACHE_STORE=redis

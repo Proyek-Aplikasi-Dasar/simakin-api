@@ -65,8 +65,7 @@ SIMAKIN API
 │   ├── GET Get User
 │   ├── POST Logout
 │   ├── POST Register
-│   ├── POST Forgot Password
-│   └── POST Reset Password
+│   └── PUT Change Password
 ├── 02. User Management
 │   ├── GET List Users
 │   ├── GET Get User Detail
