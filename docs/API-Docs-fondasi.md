@@ -294,7 +294,68 @@ Origin: http://localhost:5173
 
 ---
 
-## C. Tes Kasus Gagal
+## C. Registrasi (Web)
+
+> Hanya admin yang dapat mendaftarkan pengguna baru. Akun siswa dibuat melalui menu data siswa.
+
+### 1. Registrasi pengguna baru
+
+```
+POST {{base_url}}/register
+```
+
+**Headers:**
+
+```
+Accept: application/json
+Origin: http://localhost:5173
+```
+
+**Authorization:** Session/Bearer admin yang sudah login.
+
+**Body (raw, JSON):**
+
+```json
+{
+  "name": "Guru Baru",
+  "email": "guru.baru@example.com",
+  "password": "password123",
+  "password_confirmation": "password123",
+  "role_id": 2
+}
+```
+
+> `role_id` hanya boleh `1` (admin) atau `2` (guru). Password minimal 8 karakter.
+
+**Output:** `201 Created`
+
+```json
+{
+  "message": "Pengguna berhasil didaftarkan.",
+  "data": {
+    "id": 5,
+    "name": "Guru Baru",
+    "email": "guru.baru@example.com",
+    "email_verified_at": null,
+    "role_id": 2,
+    "role": { "id": 2, "nama": "guru" },
+    "created_at": "2026-10-16T02:00:00.000000Z",
+    "updated_at": "2026-10-16T02:00:00.000000Z"
+  }
+}
+```
+
+**Kemungkinan error:**
+
+| Status | Kondisi |
+|---|---|
+| `401` | Belum login |
+| `403` | Bukan admin |
+| `422` | Email duplikat, `role_id` bukan admin/guru, atau password tidak valid |
+
+---
+
+## D. Tes Kasus Gagal
 
 ### 1. Login dengan password yang salah
 
