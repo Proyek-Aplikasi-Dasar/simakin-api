@@ -91,7 +91,7 @@ php artisan migrate --seed
 
 # Development
 php artisan serve          # http://localhost:8000
-php artisan queue:work     # untuk email notification
+php artisan queue:work     # untuk notifikasi database & proses berat (PAD 1 tanpa email)
 
 # Testing
 php artisan test
@@ -218,5 +218,6 @@ php artisan make:request StoreSiswaRequest
 - **Presensi:** Hanya check-in (tanpa jam keluar), rekam GPS tanpa validasi radius
 - **Registrasi siswa:** Admin only (bukan self-register)
 - **Excel:** Bulk upload (siswa, guru, perusahaan, kompetensi) + export rekap
-- **Notifikasi:** Database + email (queue), tanpa push notification di PAD 1
+- **Notifikasi:** Database saja via queue (tanpa email & push notification di PAD 1)
+- **Lupa sandi:** Hubungi admin; admin reset kata sandi user (tanpa reset via email)
 - **Watermark foto penilaian:** Dilakukan di mobile app (Flutter), backend simpan metadata GPS

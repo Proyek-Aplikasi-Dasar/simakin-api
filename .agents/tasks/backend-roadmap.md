@@ -27,44 +27,46 @@
 
 ## Sprint 0: Auth Lengkap + Fondasi (9-13 Okt)
 
-**Goal:** Autentikasi lengkap (login, logout, register, reset password), dokumentasi siap, siap mulai coding fitur.
+**Goal:** Autentikasi lengkap (login, logout, register, ubah kata sandi), dokumentasi siap, siap mulai coding fitur.
 
 ### Task 0.1: Perbaikan Environment
-- [ ] Update `.env.example` ke MySQL (uncomment + lengkapi DB config)
-- [ ] Tambah `ADMIN_URL` (jika perlu terpisah dari `FRONTEND_URL`)
-- [ ] Tambah `MAIL_*` config untuk reset password
-- [ ] Verifikasi `phpunit.xml` pakai SQLite in-memory untuk testing
-- [ ] Jalankan `php artisan migrate --seed` dengan MySQL untuk verifikasi
+- [x] Update `.env.example` ke MySQL (uncomment + lengkapi DB config)
+- [x] Tambah `ADMIN_URL` (jika perlu terpisah dari `FRONTEND_URL`)
+- [x] Set `SESSION_DRIVER=database` (agar sesi web bisa dicabut saat ubah kata sandi)
+- [x] Verifikasi `phpunit.xml` pakai SQLite in-memory untuk testing
+- [x] Jalankan `php artisan migrate --seed` dengan MySQL untuk verifikasi
 
 **Estimasi:** 0.5 hari
 
 ### Task 0.2: Registrasi (Register)
-- [ ] `POST /api/register` - Create user (guru/admin) oleh admin
-- [ ] Form Request: `RegisterRequest` (validasi email unique, role_id exists)
-- [ ] Auto-create profil tergantung role (guru → tabel `guru`)
-- [ ] Seeder update jika perlu
-- [ ] Feature test: admin can register guru, siswa cannot register
+- [x] `POST /api/register` - Create user (guru/admin) oleh admin
+- [x] Form Request: `RegisterRequest` (validasi email unique, role_id exists)
+- [x] Auto-create profil tergantung role (guru → tabel `guru`)
+- [x] Seeder update jika perlu
+- [x] Feature test: admin can register guru, siswa cannot register
 
 **Estimasi:** 0.5 hari
 
-### Task 0.3: Forgot / Reset Password
-- [ ] `POST /api/forgot-password` - Kirim email reset token (via queue)
-- [ ] `POST /api/reset-password` - Reset password dengan token
-- [ ] Config mail (SMTP Mailtrap untuk dev)
-- [ ] Notification class: `ResetPasswordNotification`
-- [ ] Feature test: request reset, reset with token, invalid token
+### Task 0.3: Ubah Kata Sandi & Cabut Sesi
+- [x] `PUT /api/user/password` - Ubah kata sandi sendiri (web & mobile)
+- [x] Form Request: `UpdatePasswordRequest` (`current_password`, confirmed, min 8)
+- [x] Cabut semua token mobile lain + sesi web lain setelah sukses
+- [x] Feature test: ubah sandi, sandi lama salah, konfirmasi beda, password lemah, revoke token
+- [ ] (Sprint 2) Admin reset kata sandi user `PUT /api/users/{id}/password` sebagai jalur lupa sandi
+
+**Catatan:** Tidak ada reset via email di PAD 1.
 
 **Estimasi:** 1 hari
 
 ### Task 0.4: Middleware Role Guard (Refactor)
-- [ ] Review & test middleware `role:admin,guru,siswa`
-- [ ] Pastikan dipakai di routes yang sudah ada
-- [ ] Test: siswa cannot access admin routes
+- [x] Review & test middleware `role:admin,guru,siswa`
+- [x] Pastikan dipakai di routes yang sudah ada
+- [x] Test: siswa cannot access admin routes
 
 **Estimasi:** 0.5 hari
 
 ### Task 0.5: API Docs Update
-- [ ] Update `docs/API-Docs-fondasi.md` dengan register + reset password
+- [x] Update `docs/API-Docs-fondasi.md` dengan register + ubah kata sandi
 - [ ] Mulai Postman collection (folder 01. Authentication)
 
 **Estimasi:** 0.5 hari
@@ -190,8 +192,9 @@
 - [ ] `GET /api/users` (list + filter role + search + pagination)
 - [ ] `GET /api/users/{id}`
 - [ ] `PUT /api/users/{id}`
+- [ ] `PUT /api/users/{id}/password` (admin reset kata sandi — **jalur lupa sandi**, cabut sesi user)
 - [ ] `DELETE /api/users/{id}` (soft delete)
-- [ ] Test: CRUD user + authorization
+- [ ] Test: CRUD user + reset password + authorization
 
 **Estimasi:** 1 hari
 
@@ -439,10 +442,12 @@
 
 **Estimasi:** 1.5 hari
 
-### Task 7.2: Email Notification (Password Reset)
-- [ ] Queue config verifikasi (`QUEUE_CONNECTION=database`)
-- [ ] `ResetPasswordNotification` via mail
-- [ ] Test: email terkirim ke log/Mailtrap
+### Task 7.2: Queue & Notifikasi Database
+- [ ] Verifikasi queue config (`QUEUE_CONNECTION=database`)
+- [ ] Pastikan notifikasi database dikirim via queue (`onQueue('notifications')`)
+- [ ] Test: notifikasi masuk tabel `notifications`
+
+**Catatan:** PAD 1 tidak mengirim email (tidak ada `ResetPasswordNotification`).
 
 **Estimasi:** 0.5 hari
 

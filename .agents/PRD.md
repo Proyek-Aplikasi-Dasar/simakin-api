@@ -58,7 +58,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 5. **Penilaian Bulanan** - Input nilai kompetensi + sikap, verifikasi (anti-kecurangan)
 6. **Monitoring Guru** - Dashboard ringkasan siswa bimbingan, review jurnal
 7. **Role & Akses** - RBAC admin/guru/siswa
-8. **Autentikasi Lengkap** - Login multi-platform, registrasi, reset password
+8. **Autentikasi Lengkap** - Login multi-platform, registrasi (admin), ubah kata sandi
 9. **Rekap Excel** (basic) - Export data presensi/jurnal/penilaian
 
 ### Scope PAD 2 (Lanjutan Semester Depan)
@@ -93,7 +93,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | 11 | Kecurangan penilaian bulanan | Watermark GPS+waktu, notifikasi ke guru saat nilai diinput |
 | 12 | Rekap otomatis belum ada | Rekap Excel endpoint |
 | 13 | Monitoring guru susah, harus pindah halaman | Dashboard guru: sekali pandang status siswa |
-| 14 | Belum ada reminder presensi/jurnal | Notifikasi database + email |
+| 14 | Belum ada reminder presensi/jurnal | Notifikasi database |
 | 15 | Riwayat jurnal tidak urut kronologis | Endpoint riwayat terurut per tanggal |
 
 ## 7. User Roles & Permissions Matrix
@@ -132,7 +132,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 
 ### PAD 1 (12 Desember 2026)
 
-- [ ] Autentikasi lengkap: login, logout, register, reset password (web + mobile)
+- [ ] Autentikasi lengkap: login, logout, register (admin), ubah kata sandi (web + mobile)
 - [ ] RBAC berjalan: admin/guru/siswa dengan akses berbeda
 - [ ] CRUD data master: siswa, guru, perusahaan, jurusan, kompetensi, gelombang, sikap + bulk upload Excel
 - [ ] Pengajuan PKL: siswa apply → admin/guru approve/reject → penempatan
@@ -164,5 +164,5 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | Hosting | Terpisah: API Laravel & Web Vue beda domain/subdomain |
 | Chat | Tidak masuk scope PAD 1 |
 | GPS validation | Rekam lat/long tanpa validasi radius |
-| Email | SMTP untuk reset password + notifikasi (via queue) |
+| Email | Tidak dipakai di PAD 1 (notifikasi database saja); lupa sandi via admin |
 | Excel | Bulk upload (siswa, guru, perusahaan) + export rekap |
