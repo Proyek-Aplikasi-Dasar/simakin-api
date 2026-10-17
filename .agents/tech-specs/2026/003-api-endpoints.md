@@ -11,7 +11,7 @@
 
 ---
 
-## 1. Authentication (7 endpoints)
+## 1. Authentication (8 endpoints)
 
 ### 1.1 POST /api/login ✅ Done
 
@@ -146,6 +146,32 @@ Response 200: `{ "message": "Password berhasil direset." }`
 | Auth | Public |
 
 Response: redirect atau JSON data untuk form reset (tergantung frontend).
+
+### 1.8 PUT /api/user/password ✅ Done
+
+| | |
+|---|---|
+| Auth | Required |
+| Role | any |
+
+Ubah kata sandi sendiri (web & mobile). Setelah sukses, semua token mobile lain dan sesi web lain dicabut (kecuali sesi saat ini).
+
+**Request:**
+```json
+{
+  "current_password": "lama12345",
+  "password": "baru12345",
+  "password_confirmation": "baru12345"
+}
+```
+
+Response 200: `{ "message": "Kata sandi berhasil diubah." }`
+
+**Error:**
+- 401: Belum login
+- 422: `current_password` salah, konfirmasi tidak cocok, atau password kurang dari 8 karakter
+
+> Untuk lupa kata sandi (tidak bisa login), pengguna menghubungi admin. Admin reset via `PUT /api/users/{id}/password` (bagian 2).
 
 ---
 
