@@ -355,7 +355,53 @@ Origin: http://localhost:5173
 
 ---
 
-## D. Tes Kasus Gagal
+## D. Ubah Kata Sandi
+
+> Berlaku untuk web (admin/guru) dan mobile (siswa). Setelah berhasil, semua token mobile lain dan sesi web lain dicabut (kecuali sesi saat ini).
+
+### 1. Ubah kata sandi
+
+```
+PUT {{base_url}}/user/password
+```
+
+**Headers:**
+
+```
+Accept: application/json
+Authorization: Bearer {token}   (mobile)
+```
+
+**Body (raw, JSON):**
+
+```json
+{
+  "current_password": "lama12345",
+  "password": "baru12345",
+  "password_confirmation": "baru12345"
+}
+```
+
+> Password baru minimal 8 karakter dan berbeda dari kata sandi saat ini.
+
+**Output:** `200 OK`
+
+```json
+{
+  "message": "Kata sandi berhasil diubah."
+}
+```
+
+**Kemungkinan error:**
+
+| Status | Kondisi |
+|---|---|
+| `401` | Belum login |
+| `422` | Kata sandi saat ini salah, konfirmasi tidak cocok, atau kurang dari 8 karakter |
+
+---
+
+## E. Tes Kasus Gagal
 
 ### 1. Login dengan password yang salah
 
