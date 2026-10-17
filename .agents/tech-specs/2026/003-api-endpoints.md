@@ -73,7 +73,7 @@ Response 200:
 }
 ```
 
-### 1.4 POST /api/register 📋 Planned
+### 1.4 POST /api/register ✅ Done
 
 | | |
 |---|---|
@@ -93,7 +93,21 @@ Create user baru (guru/admin). Siswa: gunakan endpoint guru/siswa CRUD.
 }
 ```
 
-Response 201: user data + message.
+Response 201:
+```json
+{
+  "message": "Pengguna berhasil didaftarkan.",
+  "data": {
+    "id": 5, "name": "Guru Baru", "email": "guru.baru@example.com",
+    "role_id": 2, "role": { "id": 2, "nama": "guru" }
+  }
+}
+```
+
+**Error:**
+- 401: Belum login
+- 403: Bukan admin
+- 422: `role_id` bukan admin/guru, email duplikat, atau password tidak memenuhi syarat (min 8 + konfirmasi)
 
 ### 1.5 POST /api/forgot-password 📋 Planned
 
