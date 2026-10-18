@@ -33,7 +33,7 @@ class Jurusan extends Model
      */
     public function kompetensi(): HasMany
     {
-        return $this->hasMany(Kompetensi::class, 'jurusan_id');
+        return $this->hasMany(Kompetensi::class, 'jurusan_id')->orderBy('nama');
     }
 
     /**
