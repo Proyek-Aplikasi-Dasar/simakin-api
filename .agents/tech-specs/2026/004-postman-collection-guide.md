@@ -34,7 +34,8 @@ Tambahkan variables berikut:
 | Variable | Initial Value | Current Value | Keterangan |
 |---|---|---|---|
 | `base_url` | `http://localhost:8000/api` | `http://localhost:8000/api` | API base URL |
-| `web_url` | `http://localhost:8000` | `http://localhost:8000` | Web base (untuk CSRF) |
+| `web_url` | `http://localhost:8000` | `http://localhost:8000` | API host (untuk `GET /sanctum/csrf-cookie`) |
+| `frontend_url` | `http://localhost:5173` | `http://localhost:5173` | Asal SPA — **harus cocok** `SANCTUM_STATEFUL_DOMAINS`; dipakai sebagai header `Origin` saat login web |
 | `token` | | | Akan diisi otomatis setelah login |
 | `admin_email` | `admin@example.com` | `admin@example.com` | Akun admin demo |
 | `admin_password` | `admin123` | `admin123` | Password admin |
@@ -60,12 +61,15 @@ Buat collection baru bernama **`SIMAKIN API`** dengan struktur folder:
 ```
 SIMAKIN API
 ├── 01. Authentication
+│   ├── GET Fetch CSRF Cookie
 │   ├── POST Login (Web)
+│   ├── GET Fetch CSRF Cookie (Refresh)
 │   ├── POST Login (Mobile)
 │   ├── GET Get User
-│   ├── POST Logout
 │   ├── POST Register
-│   └── PUT Change Password
+│   ├── PUT Change Password
+│   ├── PUT Change Password (Kembalikan)
+│   └── POST Logout
 ├── 02. User Management
 │   ├── GET List Users
 │   ├── GET Get User Detail
@@ -188,9 +192,19 @@ SIMAKIN API
 │   ├── GET Export Jurnal
 │   └── GET Export Nilai
 └── 99. Test Scenarios
-    ├── Scenario: Admin Full Flow
-    ├── Scenario: Siswa PKL Flow
-    └── Scenario: Error Cases
+    ├── [Auth] POST Login (Mobile) - Refresh Token
+    ├── [Auth] POST Login - Password Salah
+    ├── [Auth] POST Login - Field Kosong
+    ├── [Auth] GET Get User - Tanpa Token
+    ├── [Auth] POST Register - Bukan Admin
+    ├── [Auth] POST Register - Role Siswa
+    ├── [Auth] POST Register - Email Duplikat
+    ├── [Auth] PUT Change Password - Current Salah
+    ├── [Auth] PUT Change Password - Konfirmasi Beda
+    ├── [Auth] POST Logout - Cleanup
+    ├── [Auth] GET Get User - Setelah Logout
+    ├── [Flow] Admin Full Flow
+    └── [Flow] Siswa PKL Flow
 ```
 
 ---
@@ -206,6 +220,10 @@ SIMAKIN API
   - ✅ `PUT Approve Pengajuan`
   - ❌ `create jurusan` (kurang method prefix)
   - ❌ `test1` (tidak deskriptif)
+- **Request di `99. Test Scenarios`:** prefix `[Modul]` karena folder ini flat & lintas modul (mis. `[Auth]`, `[User]`, `[Jurusan]`); gunakan `[Flow]` untuk alur lintas modul.
+  - ✅ `[Auth] POST Login - Password Salah`
+  - ✅ `[User] GET List Users - Filter Role`
+  - ✅ `[Flow] Admin Full Flow`
 
 ### 4.2 Authentication Setup
 
@@ -221,8 +239,9 @@ SIMAKIN API
    ```
 
 **Untuk login web (tanpa token, pakai cookie):**
-1. Pastikan environment `web_url` sudah diset
-2. GET `/sanctum/csrf-cookie` dulu (bisa pakai script otomatis, lihat §4.4)
+1. Pastikan environment `web_url` dan `frontend_url` sudah diset
+2. GET `{{web_url}}/sanctum/csrf-cookie` dulu (bisa pakai script otomatis, lihat §4.4)
+3. Kirim header `Origin: {{frontend_url}}` — **wajib** agar Sanctum mengenali request sebagai *stateful* (samakan dengan `SANCTUM_STATEFUL_DOMAINS`)
 
 ### 4.3 Pre-request Scripts
 
@@ -283,8 +302,30 @@ pm.sendRequest({
 Di tab **Headers** request Login Web:
 ```
 Accept: application/json
-Origin: {{web_url}}
+Origin: {{frontend_url}}
 ```
+
+> ⚠️ Gunakan `{{frontend_url}}` (mis. `http://localhost:5173`), **bukan** `{{web_url}}`. Nilai ini harus cocok dengan `SANCTUM_STATEFUL_DOMAINS` di `.env`. Jika tidak cocok, Sanctum tidak mengaktifkan session untuk request tsb sehingga login web gagal (cookie tidak tersimpan).
+
+**Set header `X-XSRF-TOKEN` otomatis (di request Login Web):**
+
+Tambahkan **Pre-request Script**:
+```javascript
+const xsrf = pm.cookies.get("XSRF-TOKEN");
+
+if (xsrf) {
+    pm.environment.set("xsrf_token", decodeURIComponent(xsrf));
+}
+```
+
+Lalu tambahkan **Headers**:
+```
+X-XSRF-TOKEN: {{xsrf_token}}
+```
+
+> Jalankan request `GET Fetch CSRF Cookie` lebih dulu (atau andalkan Pre-request Script di atas) agar cookie `XSRF-TOKEN` sudah ada di cookie jar Postman.
+
+> ⚠️ **Setelah `POST Login (Web)`, jalankan `GET Fetch CSRF Cookie` sekali lagi** (di koleksi auth ini: request `GET Fetch CSRF Cookie (Refresh)`). Login memanggil `session()->regenerate()` sehingga token CSRF diganti; tanpa fetch ulang, request web berikutnya (Register, dll.) akan **419**.
 
 ### 4.5 Tests Scripts (Assertion)
 
@@ -398,6 +439,8 @@ Di setiap request, tambahkan **Examples** (tab Examples):
 
 ## 5. Test Scenarios (Collection Runner)
 
+> Catatan: baru sebagian skenario (autentikasi) yang dapat dijalankan sekarang. Skenario Admin Full Flow & Siswa PKL Flow bergantung pada endpoint modul lain yang belum dibangun.
+
 ### 5.1 Scenario: Admin Full Flow
 
 Urutan request untuk dijalankan via **Collection Runner**:
@@ -423,13 +466,19 @@ Urutan request untuk dijalankan via **Collection Runner**:
 6. `GET List Jurnal`
 7. `GET Notifications`
 
-### 5.3 Scenario: Error Cases
+### 5.3 Scenario: Error Cases (Autentikasi — tersedia)
 
-1. `POST Login` dengan password salah → assert 422
-2. `GET /api/user` tanpa token → assert 401
-3. `POST Create Jurusan` sebagai siswa → assert 403
-4. `POST Check-in` dua kali → assert 422 `ABSENSI_DUPLICATE`
-5. `POST Create Jurnal` tanpa presensi → assert 422 `ABSENSI_REQUIRED`
+> Hanya endpoint autentikasi yang tersedia saat ini. Skenario modul lain ditambahkan saat endpoint-nya dibangun.
+
+1. `POST Login` password salah → assert 422 (`errors.email`)
+2. `POST Login` field kosong → assert 422 (`errors.email`, `errors.password`)
+3. `GET /api/user` tanpa token → assert 401
+4. `POST Register` sebagai siswa/guru → assert 403
+5. `POST Register` dengan `role_id` siswa (sebagai admin) → assert 422 (`errors.role_id`)
+6. `POST Register` dengan email duplikat → assert 422 (`errors.email`)
+7. `PUT /api/user/password` `current_password` salah → assert 422 (`errors.current_password`)
+8. `PUT /api/user/password` konfirmasi tidak cocok → assert 422 (`errors.password`)
+9. `POST Logout` lalu `GET /api/user` → assert 401
 
 ### 5.4 Menjalankan Collection Runner
 
