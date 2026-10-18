@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Master\StoreJurusanRequest;
 use App\Http\Requests\Master\UpdateJurusanRequest;
 use App\Http\Resources\JurusanResource;
+use App\Http\Resources\KompetensiResource;
 use App\Models\Jurusan;
 use Illuminate\Http\Request;
 
@@ -39,6 +40,11 @@ class JurusanController extends Controller
     public function show(Jurusan $jurusan)
     {
         return new JurusanResource($jurusan);
+    }
+
+    public function kompetensi(Jurusan $jurusan)
+    {
+        return KompetensiResource::collection($jurusan->kompetensi);
     }
 
     public function update(UpdateJurusanRequest $request, Jurusan $jurusan)
