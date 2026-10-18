@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\JurusanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +17,12 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('role:admin');
 
     Route::put('/user/password', [PasswordController::class, 'update']);
+
+    // Read: semua role login
+    Route::apiResource('jurusan', JurusanController::class)->only(['index', 'show']);
+
+    // Write: admin only
+    Route::middleware('role:admin')->group(function () {
+        Route::apiResource('jurusan', JurusanController::class)->only(['store', 'update', 'destroy']);
+    });
 });
