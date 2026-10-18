@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GelombangController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\PerusahaanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,11 +26,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('jurusan/{jurusan}/kompetensi', [JurusanController::class, 'kompetensi']);
     Route::apiResource('kompetensi', KompetensiController::class)->only(['index', 'show']);
     Route::apiResource('gelombang', GelombangController::class)->only(['index', 'show']);
+    Route::apiResource('perusahaan', PerusahaanController::class)->only(['index', 'show']);
 
     // Write: admin only
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('jurusan', JurusanController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('kompetensi', KompetensiController::class)->only(['store', 'update', 'destroy']);
         Route::apiResource('gelombang', GelombangController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('perusahaan', PerusahaanController::class)->only(['store', 'update', 'destroy']);
+        Route::post('perusahaan/{perusahaan}/jurusan', [PerusahaanController::class, 'attachJurusan']);
+        Route::delete('perusahaan/{perusahaan}/jurusan/{jurusan}', [PerusahaanController::class, 'detachJurusan']);
     });
 });
