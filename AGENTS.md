@@ -113,11 +113,11 @@ php artisan cache:clear
 
 ## Default Seeded Users
 
-| Role | Email | Password | Platform |
+| Role | Username | Password | Platform |
 |---|---|---|---|
-| admin | admin@example.com | admin123 | Web |
-| guru | guru@example.com | guru123 | Web |
-| siswa | siswa@example.com | siswa123 | Mobile |
+| admin | admin | admin123 | Web |
+| guru | guru | guru123 | Web |
+| siswa | siswa | siswa123 | Mobile |
 
 ## Coding Conventions
 
@@ -187,6 +187,7 @@ php artisan make:request StoreSiswaRequest
 
 ## Authentication Notes
 
+- **Identitas login: `username` (bukan email).** Aturan username: siswa = NIS, guru = NIP, admin = username kustom. Kolom `email` tetap ada tetapi nullable dan tidak dipakai untuk login.
 - **Web (admin/guru):** Session + CSRF cookie. `GET /sanctum/csrf-cookie` dulu, lalu login tanpa `X-Client`.
 - **Mobile (siswa):** Bearer token. Login dengan header `X-Client: mobile`, simpan token, kirim `Authorization: Bearer {token}`.
 - Siswa **tidak bisa login via web** (dicek di LoginController).

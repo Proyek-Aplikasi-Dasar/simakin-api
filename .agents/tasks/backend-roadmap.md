@@ -40,7 +40,7 @@
 
 ### Task 0.2: Registrasi (Register)
 - [x] `POST /api/register` - Create user (guru/admin) oleh admin
-- [x] Form Request: `RegisterRequest` (validasi email unique, role_id exists)
+- [x] Form Request: `RegisterRequest` (validasi username unique, role_id exists)
 - [x] Auto-create profil tergantung role (guru → tabel `guru`)
 - [x] Seeder update jika perlu
 - [x] Feature test: admin can register guru, siswa cannot register
@@ -168,7 +168,7 @@
 - [ ] Model: `Guru` (relasi: belongsTo User, hasMany LokasiPkl)
 - [ ] Seeder: 5 guru sample
 - [ ] Controller: `GuruController`
-- [ ] Store logic: create `users` (role_id=2) + create `guru` dalam transaction
+- [ ] Store logic: create `users` (role_id=2, **username = NIP**) + create `guru` dalam transaction
 - [ ] Bulk upload: `POST /api/guru/bulk-upload` (Excel)
 - [ ] Endpoint: `GET /api/guru/{id}/siswa-bimbingan`
 - [ ] Test: CRUD guru + bulk upload + auto-create user
@@ -180,10 +180,10 @@
 - [ ] Model: `Siswa` (relasi: belongsTo User, Jurusan, Gelombang)
 - [ ] Seeder: 20 siswa sample
 - [ ] Controller: `SiswaController`
-- [ ] Store logic: create `users` (role_id=3) + create `siswa` dalam transaction
+- [ ] Store logic: create `users` (role_id=3, **username = NIS**) + create `siswa` dalam transaction
 - [ ] Bulk upload: `POST /api/siswa/bulk-upload` (Excel, ~700 rows)
 - [ ] Endpoint: `GET /api/siswa/me` (profil siswa login)
-- [ ] Validation: NIS unique, email unique, gelombang exists
+- [ ] Validation: NIS unique, username unique (= NIS), gelombang exists
 - [ ] Test: CRUD siswa + bulk upload + validation NIS duplikat
 
 **Estimasi:** 2 hari

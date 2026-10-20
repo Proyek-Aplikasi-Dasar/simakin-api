@@ -14,31 +14,33 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate(['email' => 'required|email', 'password' => 'required']);
+        $request->validate(['username' => 'required|string|max:255', 'password' => 'required']);
 
         // with('role'): sertakan data role (id, nama) di respons
-        $user = User::with('role')->where('email', $request->email)->first();
+        $user = User::with('role')->where('username', $request->username)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages(['email' => ['Kredensial tidak valid.']]);
+            throw ValidationException::withMessages(['username' => ['Kredensial tidak valid.']]);
         }
 
         // Kalau request dari mobile (bukan SPA), kembalikan token
         if ($request->header('X-Client') === 'mobile') {
             $token = $user->createToken('android-app')->plainTextToken;
+
             return response()->json(['user' => $user, 'token' => $token]);
         }
 
         // Siswa memakai aplikasi mobile, bukan website
         if ($user->isSiswa()) {
             throw ValidationException::withMessages([
-                'email' => ['Akun siswa hanya dapat login lewat aplikasi mobile.'],
+                'username' => ['Akun siswa hanya dapat login lewat aplikasi mobile.'],
             ]);
         }
 
         // Kalau dari SPA web, gunakan session (Sanctum cookie)
         Auth::login($user);
         $request->session()->regenerate();
+
         return response()->json(['user' => $user]);
     }
 

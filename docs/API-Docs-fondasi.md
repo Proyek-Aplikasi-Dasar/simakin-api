@@ -10,6 +10,8 @@
 
 **role_id:** 1 (admin), 2 (guru), 3 (siswa)
 
+**Identitas login: `username` (bukan email).** Aturan username: siswa = NIS, guru = NIP, admin = username kustom.
+
 **Header untuk semua request:**
 
 ```
@@ -42,7 +44,7 @@ X-Client: mobile
 
 ```json
 {
-  "email": "siswa@example.com",
+  "username": "siswa",
   "password": "siswa123"
 }
 ```
@@ -54,8 +56,7 @@ X-Client: mobile
   "user": {
     "id": 4,
     "name": "Siswa Teladan",
-    "email": "siswa@example.com",
-    "email_verified_at": "2026-09-30T04:02:08.000000Z",
+    "username": "siswa",
     "role_id": 3,
     "created_at": "2026-09-30T04:02:08.000000Z",
     "updated_at": "2026-09-30T04:02:08.000000Z"
@@ -87,8 +88,7 @@ X-Client: mobile
 {
   "id": 4,
   "name": "Siswa Teladan",
-  "email": "siswa@example.com",
-  "email_verified_at": "2026-09-30T04:02:08.000000Z",
+  "username": "siswa",
   "role_id": 3,
   "created_at": "2026-09-30T04:02:08.000000Z",
   "updated_at": "2026-09-30T04:02:08.000000Z"
@@ -193,7 +193,7 @@ X-XSRF-TOKEN: <nilai cookie XSRF-TOKEN yang di-decode>
 
 ```json
 {
-  "email": "guru@example.com",
+  "username": "guru",
   "password": "guru123"
 }
 ```
@@ -205,8 +205,7 @@ X-XSRF-TOKEN: <nilai cookie XSRF-TOKEN yang di-decode>
   "user": {
     "id": 3,
     "name": "Guru Pengajar",
-    "email": "guru@example.com",
-    "email_verified_at": "2026-09-30T04:02:07.000000Z",
+    "username": "guru",
     "role_id": 2,
     "created_at": "2026-09-30T04:02:08.000000Z",
     "updated_at": "2026-09-30T04:02:08.000000Z"
@@ -235,8 +234,7 @@ Origin: http://localhost:5173
 {
   "id": 3,
   "name": "Guru Pengajar",
-  "email": "guru@example.com",
-  "email_verified_at": "2026-09-30T04:02:07.000000Z",
+  "username": "guru",
   "role_id": 2,
   "created_at": "2026-09-30T04:02:08.000000Z",
   "updated_at": "2026-09-30T04:02:08.000000Z"
@@ -318,14 +316,14 @@ Origin: http://localhost:5173
 ```json
 {
   "name": "Guru Baru",
-  "email": "guru.baru@example.com",
+  "username": "guru.baru",
   "password": "password123",
   "password_confirmation": "password123",
   "role_id": 2
 }
 ```
 
-> `role_id` hanya boleh `1` (admin) atau `2` (guru). Password minimal 8 karakter.
+> `username` wajib unik (guru = NIP, admin = username kustom). `role_id` hanya boleh `1` (admin) atau `2` (guru). Password minimal 8 karakter.
 
 **Output:** `201 Created`
 
@@ -335,8 +333,7 @@ Origin: http://localhost:5173
   "data": {
     "id": 5,
     "name": "Guru Baru",
-    "email": "guru.baru@example.com",
-    "email_verified_at": null,
+    "username": "guru.baru",
     "role_id": 2,
     "role": { "id": 2, "nama": "guru" },
     "created_at": "2026-10-16T02:00:00.000000Z",
@@ -351,7 +348,7 @@ Origin: http://localhost:5173
 |---|---|
 | `401` | Belum login |
 | `403` | Bukan admin |
-| `422` | Email duplikat, `role_id` bukan admin/guru, atau password tidak valid |
+| `422` | Username duplikat, `role_id` bukan admin/guru, atau password tidak valid |
 
 ---
 
@@ -420,7 +417,7 @@ X-Client: mobile
 
 ```json
 {
-  "email": "siswa@example.com",
+  "username": "siswa",
   "password": "asikinaja"
 }
 ```
@@ -431,14 +428,14 @@ X-Client: mobile
 {
   "message": "Kredensial tidak valid.",
   "errors": {
-    "email": [
+    "username": [
       "Kredensial tidak valid."
     ]
   }
 }
 ```
 
-### 2. Login dengan email tidak terdaftar
+### 2. Login dengan username tidak terdaftar
 
 ```
 POST {{base_url}}/login   (Mobile)
@@ -455,7 +452,7 @@ X-Client: mobile
 
 ```json
 {
-  "email": "siswateladan@example.com",
+  "username": "siswateladan",
   "password": "siswa123"
 }
 ```
@@ -466,7 +463,7 @@ X-Client: mobile
 {
   "message": "Kredensial tidak valid.",
   "errors": {
-    "email": [
+    "username": [
       "Kredensial tidak valid."
     ]
   }
@@ -496,10 +493,10 @@ X-Client: mobile
 
 ```json
 {
-  "message": "The email field is required. (and 1 more error)",
+  "message": "The username field is required. (and 1 more error)",
   "errors": {
-    "email": [
-      "The email field is required."
+    "username": [
+      "The username field is required."
     ],
     "password": [
       "The password field is required."

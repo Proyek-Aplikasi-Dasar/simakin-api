@@ -37,11 +37,11 @@ Tambahkan variables berikut:
 | `web_url` | `http://localhost:8000` | `http://localhost:8000` | API host (untuk `GET /sanctum/csrf-cookie`) |
 | `frontend_url` | `http://localhost:5173` | `http://localhost:5173` | Asal SPA — **harus cocok** `SANCTUM_STATEFUL_DOMAINS`; dipakai sebagai header `Origin` saat login web |
 | `token` | | | Akan diisi otomatis setelah login |
-| `admin_email` | `admin@example.com` | `admin@example.com` | Akun admin demo |
+| `admin_username` | `admin` | `admin` | Akun admin demo |
 | `admin_password` | `admin123` | `admin123` | Password admin |
-| `guru_email` | `guru@example.com` | `guru@example.com` | Akun guru demo |
+| `guru_username` | `guru` | `guru` | Akun guru demo |
 | `guru_password` | `guru123` | `guru123` | Password guru |
-| `siswa_email` | `siswa@example.com` | `siswa@example.com` | Akun siswa demo |
+| `siswa_username` | `siswa` | `siswa` | Akun siswa demo |
 | `siswa_password` | `siswa123` | `siswa123` | Password siswa |
 | `idempotency_key` | | | Akan diisi otomatis |
 
@@ -198,7 +198,7 @@ SIMAKIN API
     ├── [Auth] GET Get User - Tanpa Token
     ├── [Auth] POST Register - Bukan Admin
     ├── [Auth] POST Register - Role Siswa
-    ├── [Auth] POST Register - Email Duplikat
+    ├── [Auth] POST Register - Username Duplikat
     ├── [Auth] PUT Change Password - Current Salah
     ├── [Auth] PUT Change Password - Konfirmasi Beda
     ├── [Auth] POST Logout - Cleanup
@@ -371,7 +371,7 @@ pm.test("Validasi gagal (422)", function () {
 pm.test("Response memiliki errors", function () {
     const json = pm.response.json();
     pm.expect(json).to.have.property("errors");
-    pm.expect(json.errors).to.have.property("email");
+    pm.expect(json.errors).to.have.property("username");
 });
 ```
 
@@ -470,12 +470,12 @@ Urutan request untuk dijalankan via **Collection Runner**:
 
 > Hanya endpoint autentikasi yang tersedia saat ini. Skenario modul lain ditambahkan saat endpoint-nya dibangun.
 
-1. `POST Login` password salah → assert 422 (`errors.email`)
-2. `POST Login` field kosong → assert 422 (`errors.email`, `errors.password`)
+1. `POST Login` password salah → assert 422 (`errors.username`)
+2. `POST Login` field kosong → assert 422 (`errors.username`, `errors.password`)
 3. `GET /api/user` tanpa token → assert 401
 4. `POST Register` sebagai siswa/guru → assert 403
 5. `POST Register` dengan `role_id` siswa (sebagai admin) → assert 422 (`errors.role_id`)
-6. `POST Register` dengan email duplikat → assert 422 (`errors.email`)
+6. `POST Register` dengan username duplikat → assert 422 (`errors.username`)
 7. `PUT /api/user/password` `current_password` salah → assert 422 (`errors.current_password`)
 8. `PUT /api/user/password` konfirmasi tidak cocok → assert 422 (`errors.password`)
 9. `POST Logout` lalu `GET /api/user` → assert 401
