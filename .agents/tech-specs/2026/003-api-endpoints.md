@@ -22,24 +22,24 @@
 
 **Mobile** (header `X-Client: mobile`):
 ```json
-{ "email": "siswa@example.com", "password": "siswa123" }
+{ "username": "siswa", "password": "siswa123" }
 ```
 Response 200:
 ```json
 {
-  "user": { "id": 4, "name": "...", "email": "...", "role_id": 3, "role": { "id": 3, "nama": "siswa" } },
+  "user": { "id": 4, "name": "...", "username": "...", "role_id": 3, "role": { "id": 3, "nama": "siswa" } },
   "token": "1|abc..."
 }
 ```
 
 **Web** (tanpa `X-Client`, dengan CSRF):
 ```json
-{ "email": "guru@example.com", "password": "guru123" }
+{ "username": "guru", "password": "guru123" }
 ```
 Response 200:
 ```json
 {
-  "user": { "id": 3, "name": "...", "email": "...", "role_id": 2, "role": { "id": 2, "nama": "guru" } }
+  "user": { "id": 3, "name": "...", "username": "...", "role_id": 2, "role": { "id": 2, "nama": "guru" } }
 }
 ```
 
@@ -67,7 +67,7 @@ Response 200: `{ "message": "Berhasil logout." }`
 Response 200:
 ```json
 {
-  "id": 4, "name": "...", "email": "...", "role_id": 3,
+  "id": 4, "name": "...", "username": "...", "role_id": 3,
   "role": { "id": 3, "nama": "siswa" },
   "siswa": { ... }  // relasi tergantung role
 }
@@ -86,7 +86,7 @@ Create user baru (guru/admin). Siswa: gunakan endpoint guru/siswa CRUD.
 ```json
 {
   "name": "Guru Baru",
-  "email": "guru.baru@example.com",
+  "username": "guru.baru",
   "password": "password123",
   "password_confirmation": "password123",
   "role_id": 2
@@ -98,7 +98,7 @@ Response 201:
 {
   "message": "Pengguna berhasil didaftarkan.",
   "data": {
-    "id": 5, "name": "Guru Baru", "email": "guru.baru@example.com",
+    "id": 5, "name": "Guru Baru", "username": "guru.baru",
     "role_id": 2, "role": { "id": 2, "nama": "guru" }
   }
 }
@@ -107,7 +107,7 @@ Response 201:
 **Error:**
 - 401: Belum login
 - 403: Bukan admin
-- 422: `role_id` bukan admin/guru, email duplikat, atau password tidak memenuhi syarat (min 8 + konfirmasi)
+- 422: `role_id` bukan admin/guru, username duplikat, atau password tidak memenuhi syarat (min 8 + konfirmasi)
 
 ### 1.5 PUT /api/user/password ✅ Done
 
@@ -166,7 +166,7 @@ Response 200: user detail.
 | Auth | Required |
 | Role | admin |
 
-Update user (name, email, role_id).
+Update user (name, username, role_id).
 
 ### 2.4 PUT /api/users/{id}/password
 
@@ -326,12 +326,12 @@ Response 200:
 **POST /api/guru** - Body:
 ```json
 {
-  "name": "Nama Guru", "email": "guru@example.com",
+  "name": "Nama Guru", "username": "198701012010011001",
   "password": "password123", "password_confirmation": "password123",
   "nip": "198701012010011001", "mata_pelajaran": "Produktif"
 }
 ```
-**Logic:** Create `users` (role_id=2) → Create `guru` (user_id).
+**Logic:** Create `users` (role_id=2, **username = NIP**) → Create `guru` (user_id).
 
 **GET /api/guru/{id}/siswa-bimbingan** - Query: `status` (active/completed), `tanggal` (filter presensi/jurnal hari ini)
 
@@ -368,13 +368,14 @@ Response: siswa list + status hari ini:
 **POST /api/siswa** - Body:
 ```json
 {
-  "name": "...", "email": "siswa@example.com",
+  "name": "...", "username": "0012345",
   "password": "password123", "password_confirmation": "password123",
   "nis": "0012345", "jurusan_id": 1, "gelombang_id": 1,
   "jenis_kelamin": "L", "kelas": "XII-A",
   "telp": "08xxx", "nama_ortu": "...", "telp_ortu": "08xxx"
 }
 ```
+**Logic:** Create `users` (role_id=3, **username = NIS**) → Create `siswa` (user_id).
 
 **GET /api/siswa/me** - Response: profil lengkap + status PKL + ringkasan hari ini.
 

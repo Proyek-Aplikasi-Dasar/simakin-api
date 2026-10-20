@@ -175,7 +175,7 @@ Bootstrap token admin untuk seluruh folder 03–08.
   ```
 - **Body** (raw → JSON):
   ```json
-  { "email": "{{admin_email}}", "password": "{{admin_password}}" }
+  { "username": "{{admin_username}}", "password": "{{admin_password}}" }
   ```
 - **Tests:**
   ```javascript
@@ -206,7 +206,7 @@ Bootstrap token admin untuk seluruh folder 03–08.
 - **Example:** `Success (200)`:
   ```json
   {
-    "user": { "id": 1, "name": "Administrator", "email": "admin@example.com", "role_id": 1 },
+    "user": { "id": 1, "name": "Administrator", "username": "admin", "role_id": 1 },
     "token": "1|xxxxxxxx"
   }
   ```
@@ -1203,7 +1203,7 @@ Tambahkan request berikut (prefix `[Master]`). **Semua adalah skenario error** �
 | Gejala | Penyebab / Solusi |
 |---|---|
 | Semua request 401 | `{{admin_token}}` kosong → jalankan `1.1 POST Login (Admin)` dulu, atau login ulang (token bisa terhapus bila user login lagi? tidak — token Sanctum persisten sampai logout/revoke) |
-| 403 di semua write | Token dipakai bukan admin → pastikan login pakai `{{admin_email}}` |
+| 403 di semua write | Token dipakai bukan admin → pastikan login pakai `{{admin_username}}` |
 | 404 di Detail/Update/Delete | `{{..._id}}` kosong/stale → jalankan request Create di folder yang sama lebih dulu |
 | `4.6 DELETE Detach` 404 | Jurusan 2 sudah dilepas oleh run sebelumnya / tidak pernah attach → attach (4.5) dulu, atau pakai ID jurusan lain yang terpasang |
 | 422 `jurusan_ids.0` | Ada ID di `jurusan_ids` tidak ada di DB → ganti dengan ID jurusan seeder (`{{jurusan_seed_id}}` dst.) |

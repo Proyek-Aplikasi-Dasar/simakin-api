@@ -4,6 +4,8 @@
 **Periode:** Sprint 0 (revisi)
 **Prasyarat:** `develop` sebagai base; branch kerja `feature/*` / `docs/*`
 
+> **Revisi 2026-10-20:** Identitas login berpindah dari **email** ke **`username`** (siswa = NIS, guru = NIP, admin = kustom; kolom `email` menjadi nullable & tidak dipakai untuk login). Poin yang menyinggung "email unique" pada dokumen ini dimaknai sebagai **username unique**.
+
 ---
 
 ## 1. Latar Belakang & Keputusan
@@ -72,11 +74,11 @@ Pekerjaan Sprint 0 sebelumnya belum ter-commit (ada di working tree `develop`). 
 - Commit: `[BE] feat: test fondasi autentikasi & role guard`
 
 ### Tahap B2 — `feature/auth-register`
-- `RegisterRequest` (email unik; `role_id` hanya admin/guru; password min 8 + confirmed)
+- `RegisterRequest` (username unik; `role_id` hanya admin/guru; password min 8 + confirmed)
 - `RegisterController@register` → `POST /api/register`, response `{ message, data }` 201
 - `UserResource`
 - Route dalam `auth:sanctum` + `role:admin`
-- `RegisterTest` (sukses admin/guru; tolak role siswa; email duplikat; konfirmasi beda; 403 guru/siswa; 401 tamu)
+- `RegisterTest` (sukses admin/guru; tolak role siswa; username duplikat; konfirmasi beda; 403 guru/siswa; 401 tamu)
 - Update `003-api-endpoints.md` (1.4 Done) & `docs/API-Docs-fondasi.md` (bagian Register)
 - Commit: `[BE] feat: endpoint registrasi pengguna oleh admin`
 

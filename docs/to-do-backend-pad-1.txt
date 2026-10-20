@@ -16,7 +16,7 @@ BREAKDOWN TO DO BACK-END (Proyek Aplikasi Dasar 1)
 - Kelola Data Siswa + Bulk Upload Excel (P2-24):
   * Buat API CRUD data siswa.
   * Implementasikan parser file Excel (xlsx/csv) untuk fitur bulk upload data siswa.
-  * Tambahkan validasi data unik (NISN/Email) dan penanganan error format Excel.
+  * Tambahkan validasi data unik (NISN/username unik) dan penanganan error format Excel.
 - Kelola Data Industri + Bulk Upload Excel (P2-25):
   * Buat API CRUD data perusahaan/industri kemitraan.
   * Impor data masal industri melalui file Excel.

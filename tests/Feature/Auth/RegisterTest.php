@@ -34,7 +34,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($this->admin(), 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Guru Baru',
-                'email' => 'guru.baru@example.com',
+                'username' => 'guru.baru',
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'role_id' => $this->roleId('guru'),
@@ -42,10 +42,10 @@ class RegisterTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('message', 'Pengguna berhasil didaftarkan.')
-            ->assertJsonPath('data.email', 'guru.baru@example.com');
+            ->assertJsonPath('data.username', 'guru.baru');
 
         $this->assertDatabaseHas('users', [
-            'email' => 'guru.baru@example.com',
+            'username' => 'guru.baru',
             'role_id' => $this->roleId('guru'),
         ]);
     }
@@ -55,7 +55,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($this->admin(), 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Admin Baru',
-                'email' => 'admin.baru@example.com',
+                'username' => 'admin.baru',
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'role_id' => $this->roleId('admin'),
@@ -69,7 +69,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($this->admin(), 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Siswa Baru',
-                'email' => 'siswa.baru@example.com',
+                'username' => 'siswa.baru',
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'role_id' => $this->roleId('siswa'),
@@ -78,20 +78,33 @@ class RegisterTest extends TestCase
         $response->assertStatus(422)->assertJsonValidationErrors('role_id');
     }
 
-    public function test_registrasi_ditolak_untuk_email_duplikat(): void
+    public function test_registrasi_ditolak_untuk_username_duplikat(): void
     {
         $admin = $this->admin();
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Duplikat',
-                'email' => $admin->email,
+                'username' => $admin->username,
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'role_id' => $this->roleId('guru'),
             ]);
 
-        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $response->assertStatus(422)->assertJsonValidationErrors('username');
+    }
+
+    public function test_registrasi_ditolak_tanpa_username(): void
+    {
+        $response = $this->actingAs($this->admin(), 'sanctum')
+            ->postJson('/api/register', [
+                'name' => 'Tanpa Username',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'role_id' => $this->roleId('guru'),
+            ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('username');
     }
 
     public function test_registrasi_ditolak_untuk_password_tidak_terkonfirmasi(): void
@@ -99,7 +112,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($this->admin(), 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Guru Baru',
-                'email' => 'guru.baru@example.com',
+                'username' => 'guru.baru',
                 'password' => 'password123',
                 'password_confirmation' => 'berbeda123',
                 'role_id' => $this->roleId('guru'),
@@ -115,7 +128,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($guru, 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Guru Lain',
-                'email' => 'guru.lain@example.com',
+                'username' => 'guru.lain',
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'role_id' => $this->roleId('guru'),
@@ -131,7 +144,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($siswa, 'sanctum')
             ->postJson('/api/register', [
                 'name' => 'Guru Lain',
-                'email' => 'guru.lain@example.com',
+                'username' => 'guru.lain',
                 'password' => 'password123',
                 'password_confirmation' => 'password123',
                 'role_id' => $this->roleId('guru'),
@@ -144,7 +157,7 @@ class RegisterTest extends TestCase
     {
         $this->postJson('/api/register', [
             'name' => 'Guru Baru',
-            'email' => 'guru.baru@example.com',
+            'username' => 'guru.baru',
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'role_id' => $this->roleId('guru'),

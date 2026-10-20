@@ -24,7 +24,7 @@ Panduan konsep/umum: `.agents/tech-specs/2026/004-postman-collection-guide.md`.
    SESSION_DRIVER=database
    ```
 3. Postman Desktop terpasang.
-4. User demo (hasil seeder): `admin@example.com/admin123`, `guru@example.com/guru123`, `siswa@example.com/siswa123`.
+4. User demo (hasil seeder): `admin/admin123`, `guru/guru123`, `siswa/siswa123` (login memakai **`username`**, bukan email).
 
 > Nilai `frontend_url` **harus sama** dengan `SANCTUM_STATEFUL_DOMAINS`. Jika berbeda, login web gagal (cookie session tidak tersimpan).
 
@@ -43,11 +43,11 @@ Postman → **Environments** → **Create Environment** → nama `SIMAKIN Local`
 | `user_id` | _(kosong)_ | Diisi otomatis |
 | `role_id` | _(kosong)_ | Diisi otomatis |
 | `xsrf_token` | _(kosong)_ | Diisi otomatis (cookie XSRF-TOKEN) |
-| `admin_email` | `admin@example.com` | Akun admin |
+| `admin_username` | `admin` | Akun admin |
 | `admin_password` | `admin123` | |
-| `guru_email` | `guru@example.com` | Akun guru |
+| `guru_username` | `guru` | Akun guru |
 | `guru_password` | `guru123` | |
-| `siswa_email` | `siswa@example.com` | Akun siswa |
+| `siswa_username` | `siswa` | Akun siswa |
 | `siswa_password` | `siswa123` | |
 
 Simpan (Ctrl+S) lalu pilih environment ini di kanan atas Postman.
@@ -124,7 +124,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   ```
 - **Body** (raw → JSON):
   ```json
-  { "email": "{{admin_email}}", "password": "{{admin_password}}" }
+  { "username": "{{admin_username}}", "password": "{{admin_password}}" }
   ```
 - **Tests:**
   ```javascript
@@ -156,11 +156,11 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   ## Request Body
   | Field | Type | Required |
   |---|---|---|
-  | email | string | Ya |
+  | username | string | Ya |
   | password | string | Ya |
 
   ## Error
-  - 422 `Kredensial tidak valid.` (errors.email)
+  - 422 `Kredensial tidak valid.` (errors.username)
 
   ## Catatan
   Login web tidak mengembalikan token. Request web berikutnya memakai cookie session otomatis.
@@ -170,8 +170,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
     ```json
     {
       "user": {
-        "id": 1, "name": "Administrator", "email": "admin@example.com",
-        "email_verified_at": "2026-09-30T04:02:07.000000Z",
+        "id": 1, "name": "Administrator", "username": "admin",
         "role_id": 1, "created_at": "2026-09-30T04:02:07.000000Z",
         "updated_at": "2026-09-30T04:02:07.000000Z"
       }
@@ -179,7 +178,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
     ```
   - `Validation Error (422)`:
     ```json
-    { "message": "Kredensial tidak valid.", "errors": { "email": ["Kredensial tidak valid."] } }
+    { "message": "Kredensial tidak valid.", "errors": { "username": ["Kredensial tidak valid."] } }
     ```
 
 ---
@@ -210,7 +209,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   ```
 - **Body** (raw → JSON):
   ```json
-  { "email": "{{siswa_email}}", "password": "{{siswa_password}}" }
+  { "username": "{{siswa_username}}", "password": "{{siswa_password}}" }
   ```
 - **Tests:**
   ```javascript
@@ -239,7 +238,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   ## Request Body
   | Field | Type | Required |
   |---|---|---|
-  | email | string | Ya |
+  | username | string | Ya |
   | password | string | Ya |
 
   ## Response
@@ -252,7 +251,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   - `Success (200)`:
     ```json
     {
-      "user": { "id": 4, "name": "Siswa Teladan", "email": "siswa@example.com", "role_id": 3, "role": { "id": 3, "nama": "siswa" } },
+      "user": { "id": 4, "name": "Siswa Teladan", "username": "siswa", "role_id": 3, "role": { "id": 3, "nama": "siswa" } },
       "token": "4|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
     ```
@@ -279,7 +278,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
 
   pm.test("Data user sesuai", function () {
       pm.expect(json).to.have.property("id");
-      pm.expect(json).to.have.property("email");
+      pm.expect(json).to.have.property("username");
   });
   ```
 - **Documentation (tab):**
@@ -294,7 +293,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   - 401 `Unauthenticated.` (token tidak ada/kedaluwarsa)
   ```
 - **Examples:**
-  - `Success (200)`: `{ "id": 4, "name": "Siswa Teladan", "email": "siswa@example.com", "role_id": 3, "role": { "id": 3, "nama": "siswa" } }`
+  - `Success (200)`: `{ "id": 4, "name": "Siswa Teladan", "username": "siswa", "role_id": 3, "role": { "id": 3, "nama": "siswa" } }`
   - `Unauthorized (401)`: `{ "message": "Unauthenticated." }`
 
 ---
@@ -323,11 +322,11 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   Origin: {{frontend_url}}
   X-XSRF-TOKEN: {{xsrf_token}}
   ```
-- **Body** (raw → JSON) — email dinamis agar tidak duplikat saat dijalankan ulang:
+- **Body** (raw → JSON) — username dinamis agar tidak duplikat saat dijalankan ulang:
   ```json
   {
     "name": "Guru Uji {{$timestamp}}",
-    "email": "guru.uji.{{$timestamp}}@example.com",
+    "username": "guru.uji.{{$timestamp}}",
     "password": "password123",
     "password_confirmation": "password123",
     "role_id": 2
@@ -344,7 +343,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   pm.test("Response berisi data user baru", function () {
       pm.expect(json).to.have.property("message");
       pm.expect(json).to.have.property("data");
-      pm.expect(json.data).to.have.property("email");
+      pm.expect(json.data).to.have.property("username");
   });
   ```
 - **Documentation (tab):**
@@ -359,7 +358,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   | Field | Type | Required | Catatan |
   |---|---|---|---|
   | name | string | Ya | |
-  | email | string | Ya | Unik |
+  | username | string | Ya | Unik (guru = NIP, admin = username kustom) |
   | password | string | Ya | Min 8, harus sama dengan password_confirmation |
   | password_confirmation | string | Ya | |
   | role_id | integer | Ya | Hanya 1 (admin) atau 2 (guru) |
@@ -367,14 +366,14 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   ## Error
   - 401 belum login
   - 403 bukan admin
-  - 422 `role_id` bukan admin/guru, email duplikat, atau password tidak valid
+  - 422 `role_id` bukan admin/guru, username duplikat, atau password tidak valid
   ```
 - **Examples:**
   - `Success (201)`:
     ```json
     {
       "message": "Pengguna berhasil didaftarkan.",
-      "data": { "id": 5, "name": "Guru Uji", "email": "guru.uji@example.com", "role_id": 2, "role": { "id": 2, "nama": "guru" } }
+      "data": { "id": 5, "name": "Guru Uji", "username": "guru.uji", "role_id": 2, "role": { "id": 2, "nama": "guru" } }
     }
     ```
   - `Forbidden (403)`: `{ "message": "Tidak diizinkan." }`
@@ -499,12 +498,12 @@ Sama seperti `3.3` (siswa). Fungsinya memperbarui `{{token}}` yang mungkin sudah
 - **Tests:** 200 + simpan `token`.
 
 ### 4.2 `[Auth] POST Login - Password Salah`
-- `POST {{base_url}}/login`, headers `X-Client: mobile`, body `{ "email": "{{siswa_email}}", "password": "salah123" }`
+- `POST {{base_url}}/login`, headers `X-Client: mobile`, body `{ "username": "{{siswa_username}}", "password": "salah123" }`
 - **Tests:**
   ```javascript
   pm.test("Status 422", function () { pm.response.to.have.status(422); });
-  pm.test("Ada errors.email", function () {
-      pm.expect(pm.response.json().errors).to.have.property("email");
+  pm.test("Ada errors.username", function () {
+      pm.expect(pm.response.json().errors).to.have.property("username");
   });
   ```
 
@@ -513,9 +512,9 @@ Sama seperti `3.3` (siswa). Fungsinya memperbarui `{{token}}` yang mungkin sudah
 - **Tests:**
   ```javascript
   pm.test("Status 422", function () { pm.response.to.have.status(422); });
-  pm.test("errors.email & errors.password", function () {
+  pm.test("errors.username & errors.password", function () {
       const e = pm.response.json().errors;
-      pm.expect(e).to.have.property("email");
+      pm.expect(e).to.have.property("username");
       pm.expect(e).to.have.property("password");
   });
   ```
@@ -540,7 +539,7 @@ Sama seperti `3.3` (siswa). Fungsinya memperbarui `{{token}}` yang mungkin sudah
 - Pre-request script sama seperti 3.2.
 - Body:
   ```json
-  { "name": "Uji Siswa", "email": "uji.siswa.{{$timestamp}}@example.com", "password": "password123", "password_confirmation": "password123", "role_id": 3 }
+  { "name": "Uji Siswa", "username": "uji.siswa.{{$timestamp}}", "password": "password123", "password_confirmation": "password123", "role_id": 3 }
   ```
 - **Tests:**
   ```javascript
@@ -550,17 +549,17 @@ Sama seperti `3.3` (siswa). Fungsinya memperbarui `{{token}}` yang mungkin sudah
   });
   ```
 
-### 4.7 `[Auth] POST Register - Email Duplikat`
+### 4.7 `[Auth] POST Register - Username Duplikat`
 - Web admin session (headers seperti 4.6).
-- Body pakai email yang sudah ada:
+- Body pakai username yang sudah ada:
   ```json
-  { "name": "Duplikat", "email": "{{admin_email}}", "password": "password123", "password_confirmation": "password123", "role_id": 2 }
+  { "name": "Duplikat", "username": "{{admin_username}}", "password": "password123", "password_confirmation": "password123", "role_id": 2 }
   ```
 - **Tests:**
   ```javascript
   pm.test("Status 422", function () { pm.response.to.have.status(422); });
-  pm.test("Ada errors.email", function () {
-      pm.expect(pm.response.json().errors).to.have.property("email");
+  pm.test("Ada errors.username", function () {
+      pm.expect(pm.response.json().errors).to.have.property("username");
   });
   ```
 
@@ -628,7 +627,7 @@ Sama seperti `3.3` (siswa). Fungsinya memperbarui `{{token}}` yang mungkin sudah
 | Login web 419 / tidak dapat cookie session | `Origin` ≠ `SANCTUM_STATEFUL_DOMAINS`. Pastikan `Origin: {{frontend_url}}` = nilai `SANCTUM_STATEFUL_DOMAINS`. |
 | Login web sukses tapi `GET /user` web 401 | Cookie tidak tersimpan → cek Postman cookie jar, jalankan `GET Fetch CSRF Cookie` lebih dulu. |
 | 401 di request yang butuh token | Jalankan `POST Login (Mobile)` (atau 4.1) agar `{{token}}` terisi. |
-| Register 422 email duplikat | Body harus memakai email dinamis `{{$timestamp}}`. |
+| Register 422 username duplikat | Body harus memakai username dinamis `{{$timestamp}}`. |
 | Change password sukses lalu request lain 401 | Token lain dicabut. Jalankan `3.7`/re-login, atau letakkan change password di akhir. |
 | Register / 4.6 / 4.7 → 419 padahal sudah login web | Token CSRF basi setelah `POST Login (Web)` (`session()->regenerate()`). Jalankan `GET Fetch CSRF Cookie (Refresh)` (`3.2b`) setelah login. |
 | `{{xsrf_token}}` kosong | Jalankan `GET Fetch CSRF Cookie` lebih dulu, atau cek cookie domain (`localhost`). |

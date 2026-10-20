@@ -164,5 +164,5 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | Hosting | Terpisah: API Laravel & Web Vue beda domain/subdomain |
 | Chat | Tidak masuk scope PAD 1 |
 | GPS validation | Rekam lat/long tanpa validasi radius |
-| Email | Tidak dipakai di PAD 1 (notifikasi database saja); lupa sandi via admin |
+| Login identifier | `username` (unik): siswa = NIS, guru = NIP, admin = kustom. Email tidak dipakai di PAD 1 (notifikasi database saja); lupa sandi via admin |
 | Excel | Bulk upload (siswa, guru, perusahaan) + export rekap |

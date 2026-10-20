@@ -3,7 +3,7 @@
 **Source of truth:** `docs/database-erd.xml` (drawio) + revisi dari tech spec ini.
 
 > **Catatan Revisi dari ERD asli:**
-> 1. Tabel `user` → kolom `username`/`nama` diganti `email`/`name` (sudah diimplementasikan di Laravel)
+> 1. Tabel `user` → kolom `username`/`nama` diganti `email`/`name` (sudah diimplementasikan di Laravel). **Revisi 2026-10:** `username` dikembalikan sebagai identitas login (unique), `email` menjadi nullable dan tidak dipakai untuk login
 > 2. Tabel `absensi_siswa`: tanpa `jam_keluar` dan `foto_keluar` (hanya check-in)
 > 3. Tambahan tabel `pengajuan_pkl` (alur pengajuan PKL siswa)
 > 4. Tambahan tabel `aktivasi_penilaian` (kontrol periode penilaian 1-10)
@@ -50,7 +50,8 @@
 |---|---|---|---|---|---|
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | name | varchar(255) | NO | - | - | Nama lengkap |
-| email | varchar(255) | NO | - | UNIQUE | Email (login identifier) |
+| username | varchar(255) | NO | - | UNIQUE | **Identitas login** (siswa = NIS, guru = NIP, admin = username kustom) |
+| email | varchar(255) | YES | NULL | UNIQUE | Email (opsional, **tidak dipakai** untuk login di PAD 1) |
 | email_verified_at | timestamp | YES | NULL | - | - |
 | password | varchar(255) | NO | - | - | Hashed password |
 | role_id | bigint unsigned | NO | - | FK | → role.id |
@@ -62,6 +63,7 @@
 - `role_id` → `role(id)`
 
 **Business Rules:**
+- Login memakai `username` + password (bukan email); username unik
 - Siswa hanya bisa login via mobile (`X-Client: mobile`)
 - Admin/guru bisa login via web (session) atau mobile (token)
 - Registrasi: admin membuat akun guru/admin via `POST /api/register`; akun siswa dibuat lewat menu data siswa

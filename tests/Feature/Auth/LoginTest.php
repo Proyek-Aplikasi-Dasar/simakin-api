@@ -27,6 +27,55 @@ class LoginTest extends TestCase
     public function test_siswa_dapat_login_via_mobile_dan_mendapat_token(): void
     {
         User::factory()->create([
+            'username' => 'siswa',
+            'password' => 'siswa123',
+            'role_id' => $this->roleId('siswa'),
+        ]);
+
+        $response = $this->withHeaders(['X-Client' => 'mobile'])
+            ->postJson('/api/login', [
+                'username' => 'siswa',
+                'password' => 'siswa123',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonStructure(['user' => ['id', 'name', 'username', 'role_id', 'role'], 'token']);
+
+        $this->assertNotEmpty($response->json('token'));
+    }
+
+    public function test_login_gagal_dengan_password_salah(): void
+    {
+        User::factory()->create([
+            'username' => 'siswa',
+            'password' => 'siswa123',
+            'role_id' => $this->roleId('siswa'),
+        ]);
+
+        $response = $this->withHeaders(['X-Client' => 'mobile'])
+            ->postJson('/api/login', [
+                'username' => 'siswa',
+                'password' => 'salah',
+            ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('username');
+    }
+
+    public function test_login_gagal_dengan_username_tidak_terdaftar(): void
+    {
+        $response = $this->withHeaders(['X-Client' => 'mobile'])
+            ->postJson('/api/login', [
+                'username' => 'tidakada',
+                'password' => 'apapun',
+            ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('username');
+    }
+
+    public function test_login_dengan_field_email_tidak_diterima_lagi(): void
+    {
+        User::factory()->create([
+            'username' => 'siswa',
             'email' => 'siswa@example.com',
             'password' => 'siswa123',
             'role_id' => $this->roleId('siswa'),
@@ -38,38 +87,7 @@ class LoginTest extends TestCase
                 'password' => 'siswa123',
             ]);
 
-        $response->assertOk()
-            ->assertJsonStructure(['user' => ['id', 'name', 'email', 'role_id', 'role'], 'token']);
-
-        $this->assertNotEmpty($response->json('token'));
-    }
-
-    public function test_login_gagal_dengan_password_salah(): void
-    {
-        User::factory()->create([
-            'email' => 'siswa@example.com',
-            'password' => 'siswa123',
-            'role_id' => $this->roleId('siswa'),
-        ]);
-
-        $response = $this->withHeaders(['X-Client' => 'mobile'])
-            ->postJson('/api/login', [
-                'email' => 'siswa@example.com',
-                'password' => 'salah',
-            ]);
-
-        $response->assertStatus(422)->assertJsonValidationErrors('email');
-    }
-
-    public function test_login_gagal_dengan_email_tidak_terdaftar(): void
-    {
-        $response = $this->withHeaders(['X-Client' => 'mobile'])
-            ->postJson('/api/login', [
-                'email' => 'tidakada@example.com',
-                'password' => 'apapun',
-            ]);
-
-        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $response->assertStatus(422)->assertJsonValidationErrors('username');
     }
 
     public function test_login_gagal_dengan_field_kosong(): void
@@ -77,23 +95,23 @@ class LoginTest extends TestCase
         $response = $this->postJson('/api/login', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email', 'password']);
+            ->assertJsonValidationErrors(['username', 'password']);
     }
 
     public function test_siswa_tidak_dapat_login_via_web(): void
     {
         User::factory()->create([
-            'email' => 'siswa@example.com',
+            'username' => 'siswa',
             'password' => 'siswa123',
             'role_id' => $this->roleId('siswa'),
         ]);
 
         $response = $this->postJson('/api/login', [
-            'email' => 'siswa@example.com',
+            'username' => 'siswa',
             'password' => 'siswa123',
         ]);
 
-        $response->assertStatus(422)->assertJsonValidationErrors('email');
+        $response->assertStatus(422)->assertJsonValidationErrors('username');
     }
 
     public function test_user_terautentikasi_dapat_mengakses_endpoint_user(): void
@@ -113,7 +131,7 @@ class LoginTest extends TestCase
     public function test_logout_menghapus_token_mobile(): void
     {
         $user = User::factory()->create([
-            'email' => 'siswa@example.com',
+            'username' => 'siswa',
             'password' => 'siswa123',
             'role_id' => $this->roleId('siswa'),
         ]);

@@ -89,9 +89,9 @@
 **Error (validation):**
 ```json
 {
-  "message": "The email field is required.",
+  "message": "The username field is required.",
   "errors": {
-    "email": ["The email field is required."]
+    "username": ["The username field is required."]
   }
 }
 ```
@@ -143,6 +143,8 @@
 ## 3. Authentication Strategy
 
 ### 3.1 Multi-Platform Auth Flow
+
+> Identitas login: **`username`** (bukan email). Aturan username: siswa = NIS, guru = NIP, admin = username kustom.
 
 **Web (Admin & Guru) - Session-based:**
 ```
@@ -374,7 +376,7 @@ $table->index('created_at');                    // sorting
 // Search fields
 $table->unique('nis');          // siswa
 $table->unique('nip');          // guru (jika NIP unik)
-$table->unique('email');        // users
+$table->unique('username');     // users (identitas login: NIS/NIP)
 ```
 
 **Query Optimization:**

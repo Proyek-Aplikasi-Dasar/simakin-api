@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -16,39 +15,36 @@ class UserSeeder extends Seeder
     {
         // Ambil ID masing-masing role
         $adminRole = Role::where('nama', 'admin')->first();
-        $guruRole  = Role::where('nama', 'guru')->first();
+        $guruRole = Role::where('nama', 'guru')->first();
         $siswaRole = Role::where('nama', 'siswa')->first();
 
         // 1. Akun Admin
         User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['username' => 'admin'],
             [
-                'name'              => 'Administrator',
-                'password'          => 'admin123',
-                'role_id'           => $adminRole?->id,
-                'email_verified_at' => now(),
+                'name' => 'Administrator',
+                'password' => 'admin123',
+                'role_id' => $adminRole?->id,
             ]
         );
 
         // 2. Akun Guru
         User::firstOrCreate(
-            ['email' => 'guru@example.com'],
+            ['username' => 'guru'],
             [
-                'name'              => 'Guru Pengajar',
-                'password'          => 'guru123',
-                'role_id'           => $guruRole?->id,
-                'email_verified_at' => now(),
+                'name' => 'Guru Pengajar',
+                'password' => 'guru123',
+                'role_id' => $guruRole?->id,
             ]
         );
 
         // 3. Akun Siswa
         User::firstOrCreate(
-            ['email' => 'siswa@example.com'],
+            ['username' => 'siswa'],
             [
-                'name'              => 'Siswa Teladan',
-                'password'          => 'siswa123',
-                'role_id'           => $siswaRole?->id,
-                'email_verified_at' => now(),
+                'name' => 'Siswa Teladan',
+                'password' => 'siswa123',
+                'role_id' => $siswaRole?->id,
             ]
         );
     }
