@@ -81,14 +81,17 @@
 | Column | Type | Nullable | Default | Index | Description |
 |---|---|---|---|---|---|
 | id | bigint unsigned | NO | auto | PK | Primary key |
-| nama | varchar(100) | NO | - | - | Nama jurusan (e.g., "Teknik Komputer dan Jaringan") |
-| kode | varchar(20) | YES | NULL | - | Kode jurusan (e.g., "TKJ") |
+| nama | varchar(100) | NO | - | - | Nama jurusan (e.g., "Teknik Otomotif") |
+| kode | varchar(20) | YES | NULL | - | Kode jurusan (e.g., "TKR") |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
 - Admin full CRUD
 - Guru/siswa read-only
+- Data seeder: 10 jurusan resmi SMKN 1 Magelang
+
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint)
 
 ---
 
@@ -111,6 +114,9 @@
 **Business Rules:**
 - Satu siswa hanya bisa ikut **1 gelombang** (unique `siswa_id` di tabel siswa)
 - Pendaftaran hanya terbuka saat `daftar_mulai <= today <= daftar_selesai`
+- Data seeder: 2 gelombang tahun ajaran 2026/2027
+
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint)
 
 ---
 
@@ -131,8 +137,11 @@
 - `jurusan_id` → `jurusan(id)` ON DELETE CASCADE
 
 **Business Rules:**
-- Admin CRUD + bulk upload
+- Admin CRUD + bulk upload (bulk upload menyusul di Sprint 2)
 - Siswa pilih kompetensi saat input jurnal harian
+- Data seeder: 5 kompetensi per jurusan
+
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD)
 
 ---
 
@@ -156,9 +165,12 @@
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
-- Admin CRUD + bulk upload
+- Admin CRUD + bulk upload (bulk upload menyusul di Sprint 2)
 - `kuota` digunakan untuk validasi pengajuan PKL
 - Guru/siswa read-only (filter by jurusan)
+- Data seeder: 12 perusahaan + relasi jurusan (pivot)
+
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD + attach/detach jurusan)
 
 ---
 
@@ -177,6 +189,8 @@
 - `perusahaan_id` → `perusahaan(id)` ON DELETE CASCADE
 - `jurusan_id` → `jurusan(id)` ON DELETE CASCADE
 
+**Status:** ✅ Sudah ada (migration + seeder + endpoint attach/detach)
+
 ---
 
 ## 8. Tabel `sikap`
@@ -191,6 +205,12 @@
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
+**Business Rules:**
+- Admin CRUD, guru/siswa read-only
+- Data seeder: 10 sikap penilaian PKL
+
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint)
+
 ---
 
 ## 9. Tabel `waktu_absen`
@@ -200,15 +220,19 @@
 | Column | Type | Nullable | Default | Index | Description |
 |---|---|---|---|---|---|
 | id | bigint unsigned | NO | auto | PK | Primary key |
-| mulai | time | NO | - | - | Jam masuk (e.g., "08:00:00") |
-| selesai | time | NO | - | - | Jam selesai (e.g., "16:00:00") |
+| mulai | time | NO | - | - | Jam masuk (e.g., "06:00:00") |
+| selesai | time | NO | - | - | Jam selesai (e.g., "22:00:00") |
 | keterangan | varchar(255) | YES | NULL | - | Keterangan (e.g., "Jam kerja normal") |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
 - Digunakan untuk validasi keterlambatan presensi
-- Admin CRUD
+- `selesai` harus lebih besar dari `mulai` (validasi `after:mulai`)
+- Admin CRUD (tanpa endpoint detail)
+- Data seeder: 06:00:00–22:00:00
+
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint)
 
 ---
 
@@ -557,13 +581,13 @@ Menggunakan tabel default Laravel. Tidak perlu migration custom.
 |---|---|---|---|
 | 1 | `role` | ✅ Ada | Laravel setup |
 | 2 | `users` | ✅ Ada | Laravel setup |
-| 3 | `jurusan` | ❌ Belum | ERD |
-| 4 | `gelombang` | ❌ Belum | ERD |
-| 5 | `kompetensi` | ❌ Belum | ERD |
-| 6 | `perusahaan` | ❌ Belum | ERD + tambah telp, email, kuota |
-| 7 | `perusahaan_jurusan` | ❌ Belum | ERD |
-| 8 | `sikap` | ❌ Belum | ERD |
-| 9 | `waktu_absen` | ❌ Belum | ERD + tambah keterangan |
+| 3 | `jurusan` | ✅ Ada | ERD |
+| 4 | `gelombang` | ✅ Ada | ERD |
+| 5 | `kompetensi` | ✅ Ada | ERD |
+| 6 | `perusahaan` | ✅ Ada | ERD + tambah telp, email, kuota |
+| 7 | `perusahaan_jurusan` | ✅ Ada | ERD |
+| 8 | `sikap` | ✅ Ada | ERD |
+| 9 | `waktu_absen` | ✅ Ada | ERD + tambah keterangan |
 | 10 | `guru` | ❌ Belum | ERD + tambah mata_pelajaran |
 | 11 | `siswa` | ❌ Belum | ERD (tanpa alamat) |
 | 12 | `pengajuan_pkl` | ❌ Baru | Tambahan (belum ada di ERD) |
@@ -576,7 +600,7 @@ Menggunakan tabel default Laravel. Tidak perlu migration custom.
 | 19 | `penilaian_sikap` | ❌ Baru | Revisi dari ERD |
 | 20 | `notifications` | ❌ Baru | Laravel default |
 
-**Total: 20 tabel** (2 sudah ada, 18 belum)
+**Total: 20 tabel** (9 sudah ada, 11 belum)
 
 ---
 
@@ -594,13 +618,13 @@ Phase 1 (sudah ada):
   sessions ✅
 
 Phase 2 (data master, tanpa FK ke Phase 2+):
-  1. create_jurusan_table
-  2. create_gelombang_table
-  3. create_sikap_table
-  4. create_waktu_absen_table
-  5. create_perusahaan_table
-  6. create_perusahaan_jurusan_table (FK: perusahaan, jurusan)
-  7. create_kompetensi_table (FK: jurusan)
+  1. create_jurusan_table ✅
+  2. create_gelombang_table ✅
+  3. create_sikap_table ✅
+  4. create_waktu_absen_table ✅
+  5. create_perusahaan_table ✅
+  6. create_perusahaan_jurusan_table (FK: perusahaan, jurusan) ✅
+  7. create_kompetensi_table (FK: jurusan) ✅
 
 Phase 3 (user detail):
   8. create_guru_table (FK: users)

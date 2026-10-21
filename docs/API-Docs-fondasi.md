@@ -527,3 +527,217 @@ Abaikan Authorization. **Body:** `{}`
   "message": "Unauthenticated."
 }
 ```
+
+---
+
+## F. Data Master
+
+32 endpoint data master sudah tersedia. Semua endpoint memerlukan login (`auth:sanctum`):
+
+- **Baca** (`GET`): semua role (admin, guru, siswa)
+- **Tulis** (`POST`, `PUT`, `DELETE`): hanya **admin** (guru/siswa → `403`)
+
+Header mobile:
+
+```
+Accept: application/json
+Authorization: Bearer {{admin_token}}
+```
+
+### 1. Ringkasan Endpoint
+
+| Resource | Method & Endpoint | Akses |
+|---|---|---|
+| Jurusan | GET `/jurusan`, GET `/jurusan/{id}`, GET `/jurusan/{id}/kompetensi` | semua role |
+| | POST `/jurusan`, PUT `/jurusan/{id}`, DELETE `/jurusan/{id}` | admin |
+| Kompetensi | GET `/kompetensi`, GET `/kompetensi/{id}` | semua role |
+| | POST `/kompetensi`, PUT `/kompetensi/{id}`, DELETE `/kompetensi/{id}` | admin |
+| Gelombang | GET `/gelombang`, GET `/gelombang/{id}` | semua role |
+| | POST `/gelombang`, PUT `/gelombang/{id}`, DELETE `/gelombang/{id}` | admin |
+| Perusahaan | GET `/perusahaan`, GET `/perusahaan/{id}` | semua role |
+| | POST `/perusahaan`, PUT `/perusahaan/{id}`, DELETE `/perusahaan/{id}` | admin |
+| | POST `/perusahaan/{id}/jurusan`, DELETE `/perusahaan/{id}/jurusan/{jurusanId}` | admin |
+| Sikap | GET `/sikap`, GET `/sikap/{id}` | semua role |
+| | POST `/sikap`, PUT `/sikap/{id}`, DELETE `/sikap/{id}` | admin |
+| Waktu Absen | GET `/waktu-absen` | semua role |
+| | POST `/waktu-absen`, PUT `/waktu-absen/{id}`, DELETE `/waktu-absen/{id}` | admin |
+
+**Catatan:** waktu absen tidak punya endpoint detail (`GET /waktu-absen/{id}`). Bulk upload kompetensi/perusahaan belum tersedia (Sprint 2).
+
+### 2. Format Respons Standar
+
+**List (paginated):** `GET {{base_url}}/jurusan`
+
+```json
+{
+  "data": [
+    { "id": 7, "nama": "Teknik Otomotif", "kode": "TKR" }
+  ],
+  "links": {
+    "first": "http://localhost:8000/api/jurusan?page=1",
+    "last": "http://localhost:8000/api/jurusan?page=1",
+    "prev": null,
+    "next": null
+  },
+  "meta": {
+    "current_page": 1,
+    "per_page": 20,
+    "total": 10
+  }
+}
+```
+
+**Detail:** `{ "data": { ... } }`
+
+**Create:** `201 Created`
+
+```json
+{
+  "message": "Jurusan berhasil disimpan.",
+  "data": { "id": 11, "nama": "Teknik Otomotif", "kode": "TKR" }
+}
+```
+
+**Update:** `200 OK` → `{ "message": "Jurusan berhasil diperbarui.", "data": { ... } }`
+
+**Delete:** `200 OK` → `{ "message": "Jurusan berhasil dihapus." }`
+
+**Validasi gagal:** `422 Unprocessable Entity`
+
+```json
+{
+  "message": "The nama field is required.",
+  "errors": {
+    "nama": ["The nama field is required."]
+  }
+}
+```
+
+### 3. Jurusan (6 endpoint)
+
+**GET** `/jurusan` - query: `search` (nama/kode)
+
+**GET** `/jurusan/{id}/kompetensi` - daftar kompetensi milik jurusan
+
+**POST** `/jurusan` - body:
+
+```json
+{ "nama": "Teknik Otomotif", "kode": "TKR" }
+```
+
+**PUT** `/jurusan/{id}` - body sama seperti POST.
+
+**DELETE** `/jurusan/{id}` - kompetensi terkait ikut terhapus (`CASCADE`).
+
+### 4. Kompetensi (5 endpoint)
+
+**GET** `/kompetensi` - query: `jurusan_id`, `search` (nama/kode)
+
+**POST** `/kompetensi` - body:
+
+```json
+{ "jurusan_id": 7, "nama": "Perawatan Mesin Kendaraan", "kode": "PMK" }
+```
+
+### 5. Gelombang (5 endpoint)
+
+**GET** `/gelombang` - query: `search` (nama/tahun ajaran)
+
+**POST** `/gelombang` - body:
+
+```json
+{
+  "tahun_ajaran": "2026/2027",
+  "nama": "Gelombang 1",
+  "daftar_mulai": "2026-11-01",
+  "daftar_selesai": "2026-11-30",
+  "praktik_mulai": "2027-01-05",
+  "praktik_selesai": "2027-06-30"
+}
+```
+
+**Validasi:** `daftar_mulai <= daftar_selesai` dan `praktik_mulai <= praktik_selesai`.
+
+### 6. Perusahaan (7 endpoint)
+
+**GET** `/perusahaan` - query: `jurusan_id`, `search` (nama/alamat). Filter `kuota_tersedia` menyusul Sprint 3.
+
+**POST** `/perusahaan` - body:
+
+```json
+{
+  "nama": "PT Contoh Industri",
+  "alamat": "Jl. Contoh No. 1, Magelang",
+  "latitude": -7.4698,
+  "longitude": 110.2177,
+  "pimpinan": "Budi Santoso",
+  "telp": "081234567890",
+  "email": "hrd@contoh.co.id",
+  "deskripsi": "Perusahaan manufaktur",
+  "kuota": 10,
+  "jurusan_ids": [7, 6]
+}
+```
+
+**POST** `/perusahaan/{id}/jurusan` - body: `{ "jurusan_id": 7 }` → `{ "message": "Jurusan berhasil ditambahkan ke perusahaan.", "data": { ... } }`
+
+**DELETE** `/perusahaan/{id}/jurusan/{jurusanId}` → `{ "message": "Jurusan berhasil dilepas dari perusahaan." }` (404 jika relasi tidak ada)
+
+### 7. Sikap (5 endpoint)
+
+**GET** `/sikap` - query: `search` (nama)
+
+**POST** `/sikap` - body:
+
+```json
+{ "nama": "Disiplin", "deskripsi": "Tepat waktu hadir dan menyelesaikan tugas." }
+```
+
+### 8. Waktu Absen (4 endpoint)
+
+**GET** `/waktu-absen` - tanpa endpoint detail
+
+**POST** `/waktu-absen` - body:
+
+```json
+{ "mulai": "06:00", "selesai": "22:00", "keterangan": "Jam kerja normal" }
+```
+
+**Validasi:** `mulai`/`selesai` format `H:i`, `selesai` harus lebih besar dari `mulai`.
+
+**Response resource:** `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan": "..." }`
+
+### 9. Error Umum
+
+| Status | Kapan |
+|---|---|
+| `401` | Belum login / token tidak valid |
+| `403` | Guru atau siswa mencoba menulis data |
+| `404` | ID tidak ditemukan (atau relasi pivot tidak ada) |
+| `422` | Validasi gagal |
+
+### 10. Data Seeder & Fondasi Import
+
+`php artisan migrate:fresh --seed` mengisi:
+
+| Tabel | Jumlah |
+|---|---|
+| `jurusan` | 10 |
+| `kompetensi` | 5 per jurusan |
+| `gelombang` | 2 |
+| `perusahaan` | 12 (+ relasi jurusan) |
+| `sikap` | 10 |
+| `waktu_absen` | 1 (06:00–22:00) |
+
+Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows`) sudah tersedia dan teruji, tetapi endpoint bulk upload baru dibuka di Sprint 2. Format respons import nanti:
+
+```json
+{
+  "message": "Import berhasil: 15 data. Gagal: 2 data.",
+  "success": 15,
+  "failed": 2,
+  "errors": [
+    { "row": 3, "error": "Nama jurusan wajib diisi." }
+  ]
+}
+```
