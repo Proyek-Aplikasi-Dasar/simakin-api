@@ -207,7 +207,7 @@ Branch dibuat dari `develop`, merge kembali ke `develop` secara merge lokal (`--
 - `SikapController` apiResource (read any / write admin)
 
 **Waktu Absen** — migration `create_waktu_absen_table`: `mulai` time, `selesai` time, `keterangan` varchar(255) nullable.
-- Seeder: 08:00:00–16:00:00 "Jam kerja normal"
+- Seeder: 06:00:00–22:00:00 "Sesuai sistem yang lama"
 - Validation: `mulai` required `date_format:H:i`; `selesai` required `date_format:H:i` + `after:mulai`; `keterangan` nullable max:255
 - `WaktuAbsenController` — **4 endpoint saja** (`index`, `store`, `update`, `destroy`; tanpa `show` sesuai spec)
 
