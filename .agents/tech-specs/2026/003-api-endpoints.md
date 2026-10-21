@@ -190,7 +190,7 @@ Soft delete user. Response 200: `{ "message": "User berhasil dihapus." }`
 
 ---
 
-## 3. Data Master - Jurusan (6 endpoints) 📋
+## 3. Data Master - Jurusan (6 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -207,7 +207,7 @@ Soft delete user. Response 200: `{ "message": "User berhasil dihapus." }`
 
 ---
 
-## 4. Data Master - Kompetensi (6 endpoints) 📋
+## 4. Data Master - Kompetensi (6 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -217,6 +217,8 @@ Soft delete user. Response 200: `{ "message": "User berhasil dihapus." }`
 | PUT | /api/kompetensi/{id} | Required | admin | Update kompetensi |
 | DELETE | /api/kompetensi/{id} | Required | admin | Delete kompetensi |
 | POST | /api/kompetensi/bulk-upload | Required | admin | Import Excel |
+
+> Bulk upload Excel ditunda ke Sprint 2. Fondasi import (library `maatwebsite/excel` v4 + `app/Imports`) sudah tersedia.
 
 **GET /api/kompetensi** - Query: `jurusan_id`, `search`
 
@@ -236,7 +238,7 @@ Response 200:
 
 ---
 
-## 5. Data Master - Gelombang (5 endpoints) 📋
+## 5. Data Master - Gelombang (5 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -260,7 +262,7 @@ Response 200:
 
 ---
 
-## 6. Data Master - Perusahaan (8 endpoints) 📋
+## 6. Data Master - Perusahaan (8 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -273,7 +275,9 @@ Response 200:
 | POST | /api/perusahaan/{id}/jurusan | Required | admin | Attach jurusan |
 | DELETE | /api/perusahaan/{id}/jurusan/{jurusanId} | Required | admin | Detach jurusan |
 
-**GET /api/perusahaan** - Query: `jurusan_id` (filter jurusan), `search` (nama/alamat), `kuota_tersedia` (boolean)
+> Bulk upload Excel ditunda ke Sprint 2. Fondasi import sudah tersedia di `app/Imports`.
+
+**GET /api/perusahaan** - Query: `jurusan_id` (filter jurusan), `search` (nama/alamat), `kuota_tersedia` (boolean, menyusul Sprint 3)
 
 **POST /api/perusahaan** - Body:
 ```json
@@ -286,7 +290,7 @@ Response 200:
 
 ---
 
-## 7. Data Master - Sikap (5 endpoints) 📋
+## 7. Data Master - Sikap (5 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -298,7 +302,7 @@ Response 200:
 
 ---
 
-## 8. Data Master - Waktu Absen (4 endpoints) 📋
+## 8. Data Master - Waktu Absen (4 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -307,7 +311,9 @@ Response 200:
 | PUT | /api/waktu-absen/{id} | Required | admin | Update waktu absen |
 | DELETE | /api/waktu-absen/{id} | Required | admin | Delete waktu absen |
 
-**POST** - Body: `{ "mulai": "08:00", "selesai": "16:00", "keterangan": "Jam kerja normal" }`
+**POST** - Body: `{ "mulai": "06:00", "selesai": "22:00", "keterangan": "Jam kerja normal" }`
+
+Response resource: `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan": "..." }` (format `H:i`). Tidak ada endpoint detail (`GET /api/waktu-absen/{id}`).
 
 ---
 
@@ -722,12 +728,12 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 |---|---|---|
 | 1. Authentication | 5 | 5 ✅ |
 | 2. User Management | 5 | 📋 |
-| 3. Jurusan | 6 | 📋 |
-| 4. Kompetensi | 6 | 📋 |
-| 5. Gelombang | 5 | 📋 |
-| 6. Perusahaan | 8 | 📋 |
-| 7. Sikap | 5 | 📋 |
-| 8. Waktu Absen | 4 | 📋 |
+| 3. Jurusan | 6 | 6 ✅ |
+| 4. Kompetensi | 6 | 5 ✅ + 1 Sprint 2 (bulk upload) |
+| 5. Gelombang | 5 | 5 ✅ |
+| 6. Perusahaan | 8 | 7 ✅ + 1 Sprint 2 (bulk upload) |
+| 7. Sikap | 5 | 5 ✅ |
+| 8. Waktu Absen | 4 | 4 ✅ |
 | 9. Guru | 7 | 📋 |
 | 10. Siswa | 8 | 📋 |
 | 11. Pengajuan PKL | 7 (incl. bulk) | 📋 |
@@ -738,4 +744,4 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 📋 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~118** | **5 done, ~113 planned** |
+| **Total** | **~113** | **37 done, ~76 planned** (termasuk 2 bulk upload master di Sprint 2) |

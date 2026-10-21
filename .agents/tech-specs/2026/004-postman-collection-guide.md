@@ -207,6 +207,8 @@ SIMAKIN API
     └── [Flow] Siswa PKL Flow
 ```
 
+> **Status eksekusi:** folder **03–08 (Data Master)** sudah diimplementasikan dan diuji melalui panduan terpisah: `.agents/tasks/postman-master-data-execution.md` (32 endpoint + skenario error). Request **Bulk Upload Kompetensi/Perusahaan** di folder 04 & 06 belum tersedia — endpoint bulk upload menyusul Sprint 2 (fondasi import sudah siap di `app/Imports`).
+
 ---
 
 ## 4. Best Practices

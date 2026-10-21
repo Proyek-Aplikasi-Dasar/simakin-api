@@ -189,7 +189,7 @@ Branch dibuat dari `develop`, merge kembali ke `develop` secara merge lokal (`--
 
 **Endpoint:**
 - CRUD (on create/update: `sync(jurusan_ids)` bila terisi)
-- `POST /api/perusahaan/{id}/jurusan` body `{ jurusan_id }` → `attachWithoutDuplicates` → 200 `{message, data}`
+- `POST /api/perusahaan/{id}/jurusan` body `{ jurusan_id }` → `syncWithoutDetaching` → 200 `{message, data}`
 - `DELETE /api/perusahaan/{id}/jurusan/{jurusanId}` → 200 `{message}`; bila tidak terpasang → 404
 - `GET /api/perusahaan?jurusan_id=X&search=nama|alamat`
 
@@ -303,12 +303,12 @@ Akhir Sprint 1 (semua merged ke `develop`):
 
 ## 7. Definisi Selesai (Definition of Done)
 
-- [ ] B0 rencana + panduan Postman merged
-- [ ] B1 Jurusan merged (migration + model + seeder 10 jurusan + CRUD + test)
-- [ ] B2 Kompetensi merged (termasuk route nested `GET /jurusan/{id}/kompetensi`)
-- [ ] B3 Gelombang merged (validasi urutan tanggal teruji)
-- [ ] B4 Perusahaan merged (pivot + attach/detach + filter teruji)
-- [ ] B5 Sikap + Waktu Absen merged
-- [ ] B6 Fondasi Excel merged (parse valid + invalid rows teruji)
-- [ ] B7 Dokumentasi sinkron (002, 003, API-Docs, roadmap, Panduan Postman)
-- [ ] Semua test hijau, pint bersih, `migrate:fresh --seed` sukses, `git status` bersih
+- [x] B0 rencana + panduan Postman merged
+- [x] B1 Jurusan merged (migration + model + seeder 10 jurusan + CRUD + test)
+- [x] B2 Kompetensi merged (termasuk route nested `GET /jurusan/{id}/kompetensi`)
+- [x] B3 Gelombang merged (validasi urutan tanggal teruji)
+- [x] B4 Perusahaan merged (pivot + attach/detach + filter teruji)
+- [x] B5 Sikap + Waktu Absen merged
+- [x] B6 Fondasi Excel merged (parse valid + invalid rows teruji)
+- [x] B7 Dokumentasi sinkron (002, 003, API-Docs, roadmap, Panduan Postman)
+- [x] Semua test hijau, pint bersih, `migrate:fresh --seed` sukses, `git status` bersih

@@ -81,81 +81,81 @@
 
 ---
 
-## Sprint 1: Data Master Core (14-20 Okt)
+## Sprint 1: Data Master Core (14-20 Okt) ✅ Selesai
 
 **Goal:** 7 tabel master + CRUD + Seeder. Foundation untuk semua modul lain.
 
 ### Task 1.1: Jurusan
-- [ ] Migration: `create_jurusan_table`
-- [ ] Model: `Jurusan` (fillable: nama, kode)
-- [ ] Seeder: Data jurusan SMKN 1 Magelang (TKJ, RPL, MM, TKR, TBSM, etc.)
-- [ ] Controller: `JurusanController` (resource)
-- [ ] Request: `StoreJurusanRequest`, `UpdateJurusanRequest`
-- [ ] Resource: `JurusanResource`
-- [ ] Routes: `Route::apiResource('jurusan', ...)` - middleware `auth:sanctum`
-- [ ] Policy: admin CRUD, any read
-- [ ] Test: CRUD + authorization
+- [x] Migration: `create_jurusan_table`
+- [x] Model: `Jurusan` (fillable: nama, kode)
+- [x] Seeder: 10 jurusan resmi SMKN 1 Magelang (DPIB, TKB, TEL, TITL, TPTU, TP, TKR, WEL, TJKT, DKV)
+- [x] Controller: `JurusanController` (resource)
+- [x] Request: `StoreJurusanRequest`, `UpdateJurusanRequest`
+- [x] Resource: `JurusanResource`
+- [x] Routes: `Route::apiResource('jurusan', ...)` - middleware `auth:sanctum`
+- [x] Authorization: middleware `role:admin` untuk write, `auth:sanctum` untuk read (tanpa Policy)
+- [x] Test: CRUD + authorization
 
 **Estimasi:** 0.5 hari
 
 ### Task 1.2: Kompetensi
-- [ ] Migration: `create_kompetensi_table` (FK: jurusan)
-- [ ] Model: `Kompetensi` (relasi: belongsTo Jurusan)
-- [ ] Seeder: Data kompetensi per jurusan (minimal 5 per jurusan)
-- [ ] Controller + Request + Resource
-- [ ] Route: `GET /api/jurusan/{id}/kompetensi` (nested)
-- [ ] Test: CRUD + filter by jurusan_id
+- [x] Migration: `create_kompetensi_table` (FK: jurusan)
+- [x] Model: `Kompetensi` (relasi: belongsTo Jurusan)
+- [x] Seeder: 5 kompetensi per jurusan
+- [x] Controller + Request + Resource
+- [x] Route: `GET /api/jurusan/{id}/kompetensi` (nested)
+- [x] Test: CRUD + filter by jurusan_id
 
 **Estimasi:** 0.5 hari
 
 ### Task 1.3: Gelombang
-- [ ] Migration: `create_gelombang_table`
-- [ ] Model: `Gelombang` (casts: dates)
-- [ ] Seeder: 1-2 gelombang sample (2026/2027)
-- [ ] Controller + Request + Resource
-- [ ] Test: CRUD + validasi tanggal (daftar_mulai < daftar_selesai)
+- [x] Migration: `create_gelombang_table`
+- [x] Model: `Gelombang` (casts: dates)
+- [x] Seeder: 2 gelombang sample (2026/2027)
+- [x] Controller + Request + Resource
+- [x] Test: CRUD + validasi tanggal (daftar_mulai < daftar_selesai)
 
 **Estimasi:** 0.5 hari
 
 ### Task 1.4: Perusahaan + Pivot
-- [ ] Migration: `create_perusahaan_table`
-- [ ] Migration: `create_perusahaan_jurusan_table`
-- [ ] Model: `Perusahaan` (relasi: belongsToMany Jurusan)
-- [ ] Seeder: 10-15 perusahaan sample
-- [ ] Controller + Request + Resource
-- [ ] Endpoint: `POST /api/perusahaan/{id}/jurusan`, `DELETE .../{jurusanId}`
-- [ ] Query: `GET /api/perusahaan?jurusan_id=X` (filter jurusan)
-- [ ] Test: CRUD + attach/detach jurusan + filter
+- [x] Migration: `create_perusahaan_table`
+- [x] Migration: `create_perusahaan_jurusan_table`
+- [x] Model: `Perusahaan` (relasi: belongsToMany Jurusan)
+- [x] Seeder: 12 perusahaan sample + relasi jurusan
+- [x] Controller + Request + Resource
+- [x] Endpoint: `POST /api/perusahaan/{id}/jurusan`, `DELETE .../{jurusanId}`
+- [x] Query: `GET /api/perusahaan?jurusan_id=X` (filter jurusan)
+- [x] Test: CRUD + attach/detach jurusan + filter
 
 **Estimasi:** 1 hari
 
 ### Task 1.5: Sikap
-- [ ] Migration: `create_sikap_table`
-- [ ] Model: `Sikap`
-- [ ] Seeder: Disiplin, Tanggung Jawab, Kerjasama, Inisiatif, Kedisiplinan, dll
-- [ ] Controller + Request + Resource
-- [ ] Test: CRUD
+- [x] Migration: `create_sikap_table`
+- [x] Model: `Sikap`
+- [x] Seeder: 10 sikap (Disiplin, Tanggung Jawab, Kerjasama, Inisiatif, Kejujuran, dll)
+- [x] Controller + Request + Resource
+- [x] Test: CRUD
 
 **Estimasi:** 0.5 hari
 
 ### Task 1.6: Waktu Absen
-- [ ] Migration: `create_waktu_absen_table`
-- [ ] Model: `WaktuAbsen`
-- [ ] Seeder: 08:00-16:00
-- [ ] Controller + Request + Resource
-- [ ] Test: CRUD
+- [x] Migration: `create_waktu_absen_table`
+- [x] Model: `WaktuAbsen`
+- [x] Seeder: 06:00-22:00 (sesuai sistem lama)
+- [x] Controller + Request + Resource (4 endpoint, tanpa detail)
+- [x] Test: CRUD + validasi urutan jam
 
 **Estimasi:** 0.5 hari
 
 ### Task 1.7: Bulk Upload Foundation
-- [ ] Install `maatwebsite/excel` atau `openspout/openspout`
-- [ ] Buat Import class base + error handling pattern
-- [ ] Template Excel download endpoint (opsional)
-- [ ] Test: parse Excel valid + handle invalid rows
+- [x] Install `maatwebsite/excel` v4.0.4 (PhpSpreadsheet 5)
+- [x] Buat Import class base + error handling pattern (`app/Imports/Concerns/ImportsRows`, `app/Support/ImportResult`)
+- [ ] Template Excel download endpoint (opsional, Sprint 2)
+- [x] Test: parse Excel valid + handle invalid rows
 
 **Estimasi:** 1 hari (fondasi, dipakai di Sprint 2)
 
-**Sprint 1 Total: 4.5 hari** (buffer 0.5 hari)
+**Sprint 1 Total: 4.5 hari** (selesai; bulk upload endpoint menyusul Sprint 2)
 
 ---
 
@@ -561,7 +561,7 @@
 | Date | Milestone | Check |
 |---|---|---|
 | 13 Okt | Auth lengkap + dokumentasi selesai | ☐ |
-| 27 Okt | Data Master + Guru/Siswa + Excel selesai | ☐ |
+| 27 Okt | Data Master selesai; Guru/Siswa + Excel menyusul | ◐ |
 | 3 Nov | Pengajuan + Penempatan PKL selesai | ☐ |
 | 10 Nov | Presensi selesai | ☐ |
 | 17 Nov | Jurnal Harian selesai | ☐ |
