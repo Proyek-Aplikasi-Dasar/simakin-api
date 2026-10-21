@@ -7,6 +7,8 @@ use App\Http\Controllers\GelombangController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PerusahaanController;
+use App\Http\Controllers\SikapController;
+use App\Http\Controllers\WaktuAbsenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +29,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('kompetensi', KompetensiController::class)->only(['index', 'show']);
     Route::apiResource('gelombang', GelombangController::class)->only(['index', 'show']);
     Route::apiResource('perusahaan', PerusahaanController::class)->only(['index', 'show']);
+    Route::apiResource('sikap', SikapController::class)->only(['index', 'show']);
+    // Waktu absen tanpa show (4 endpoint sesuai 003-api-endpoints.md §8)
+    Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['index']);
 
     // Write: admin only
     Route::middleware('role:admin')->group(function () {
@@ -36,5 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('perusahaan', PerusahaanController::class)->only(['store', 'update', 'destroy']);
         Route::post('perusahaan/{perusahaan}/jurusan', [PerusahaanController::class, 'attachJurusan']);
         Route::delete('perusahaan/{perusahaan}/jurusan/{jurusan}', [PerusahaanController::class, 'detachJurusan']);
+        Route::apiResource('sikap', SikapController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['store', 'update', 'destroy']);
     });
 });
