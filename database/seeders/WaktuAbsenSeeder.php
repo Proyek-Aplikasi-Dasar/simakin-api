@@ -13,7 +13,7 @@ class WaktuAbsenSeeder extends Seeder
     public function run(): void
     {
         WaktuAbsen::firstOrCreate(
-            ['mulai' => '08:00:00', 'selesai' => '16:00:00'],
+            ['mulai' => '06:00:00', 'selesai' => '22:00:00'],
             ['keterangan' => 'Jam kerja normal'],
         );
     }

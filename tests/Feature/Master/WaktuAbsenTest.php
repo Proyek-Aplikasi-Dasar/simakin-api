@@ -196,8 +196,8 @@ class WaktuAbsenTest extends TestCase
 
         $this->assertCount(1, WaktuAbsen::all());
         $this->assertDatabaseHas('waktu_absen', [
-            'mulai' => '08:00:00',
-            'selesai' => '16:00:00',
+            'mulai' => '06:00:00',
+            'selesai' => '22:00:00',
             'keterangan' => 'Jam kerja normal',
         ]);
 
