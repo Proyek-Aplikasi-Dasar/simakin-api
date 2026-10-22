@@ -103,7 +103,8 @@ pm.test("Status 200 OK", function () {
 pm.test("Data sesuai ID", function () {
     const json = pm.response.json();
     pm.expect(json).to.have.property("data");
-    pm.expect(String(json.data.id)).to.eql(pm.environment.get("jurusan_id")); // GANTI variable
+    // variable Postman selalu string, jadi bandingkan sebagai string
+    pm.expect(String(json.data.id)).to.eql(String(pm.environment.get("jurusan_id"))); // GANTI variable
 });
 ```
 
@@ -763,7 +764,7 @@ Bootstrap token admin untuk seluruh folder 03â€“08.
 
   pm.test("Data sesuai ID & berisi jurusan", function () {
       const json = pm.response.json();
-      pm.expect(String(json.data.id)).to.eql(pm.environment.get("perusahaan_id"));
+      pm.expect(String(json.data.id)).to.eql(String(pm.environment.get("perusahaan_id")));
       pm.expect(json.data).to.have.property("jurusan");
       pm.expect(json.data.jurusan).to.be.an("array").that.is.not.empty;
   });
@@ -1159,8 +1160,10 @@ Tambahkan request berikut (prefix `[Master]`). **Semua adalah skenario error** â
 - **Tests:**
   ```javascript
   pm.test("Status 422", function () { pm.response.to.have.status(422); });
-  pm.test("Ada errors.jurusan_ids", function () {
-      pm.expect(pm.response.json().errors).to.have.property("jurusan_ids");
+  pm.test("Ada errors jurusan_ids", function () {
+      const errors = pm.response.json().errors;
+      // Laravel menulis key wildcard sebagai "jurusan_ids.0"
+      pm.expect(errors).to.have.any.keys("jurusan_ids", "jurusan_ids.0");
   });
   ```
 
