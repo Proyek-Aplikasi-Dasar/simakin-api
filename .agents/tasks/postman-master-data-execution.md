@@ -412,7 +412,37 @@ Bootstrap token admin untuk seluruh folder 03–08.
   | jurusan_id | integer | Filter per jurusan |
   | search | string | Filter nama/kode |
   ```
-- **Example:** `Success (200)` — sama pola `T-List` (data array + meta).
+- **Example:** `Success (200)` — `GET {{base_url}}/kompetensi?jurusan_id={{jurusan_seed_id}}` (default jurusan 1 = DPIB, 5 kompetensi):
+  ```json
+  {
+    "data": [
+      {
+        "id": 1,
+        "jurusan_id": 1,
+        "nama": "Gambar Kerja Bangunan",
+        "kode": "DPIB-01",
+        "jurusan": {
+          "id": 1,
+          "nama": "Desain Permodelan dan Informasi Bangunan",
+          "kode": "DPIB"
+        }
+      },
+      {
+        "id": 5,
+        "jurusan_id": 1,
+        "nama": "Pengawasan Pelaksanaan Gambar Kerja",
+        "kode": "DPIB-05",
+        "jurusan": {
+          "id": 1,
+          "nama": "Desain Permodelan dan Informasi Bangunan",
+          "kode": "DPIB"
+        }
+      }
+    ],
+    "links": { "first": "...", "last": "...", "prev": null, "next": null },
+    "meta": { "current_page": 1, "last_page": 1, "per_page": 20, "total": 5 }
+  }
+  ```
 
 ---
 
