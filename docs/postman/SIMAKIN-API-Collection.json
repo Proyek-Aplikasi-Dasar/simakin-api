@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "afb77319-e905-4060-93e0-1c471566a58b",
     "name": "SIMAKIN API",
-    "description": "#### Environment Variables\n\n| Variable | Description |\n| --- | --- |\n| base_url | [http://localhost:8000/api](http://localhost:8000/api) |\n| web_url | [http://localhost:8000](http://localhost:8000) |\n| frontend_url | localhost:5173 |\n| token |  |\n| user_id |  |\n| role_id |  |\n| xsrf_token |  |\n| admin_username | admin |\n| admin_password | admin123 |\n| guru_username | guru |\n| guru_password | guru123 |\n| siswa_username | siswa |\n| siswa_password | siswa123 |",
+    "description": "#### Environment Variables\n\n| Variable | Description |\n| --- | --- |\n| base_url | [http://localhost:8000/api](http://localhost:8000/api) |\n| web_url | [http://localhost:8000](http://localhost:8000) |\n| frontend_url | localhost:5173 |\n| token |  |\n| user_id |  |\n| role_id |  |\n| xsrf_token |  |\n| admin_username | admin |\n| admin_password | admin123 |\n| guru_username | guru |\n| guru_password | guru123 |\n| siswa_username | siswa |\n| siswa_password | siswa123 |\n| admin_token |  |\n| jurusan_id |  |\n| jurusan_seed_id | 1 |\n| perusahaan_seed_id | 1 |\n| kompetensi_id |  |\n| gelombang_id |  |\n| perusahaan_id |  |\n| sikap_id |  |\n| waktu_absen_id |  |",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56116397",
     "_collection_link": "https://go.postman.co/collection/56116397-afb77319-e905-4060-93e0-1c471566a58b?source=collection_link"
@@ -1062,6 +1062,2529 @@
       ]
     },
     {
+      "name": "03. Master - Jurusan",
+      "item": [
+        {
+          "name": "POST Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Mengembalikan token admin\", function () {\r\n    pm.expect(json).to.have.property(\"token\");\r\n    pm.expect(json.user.role_id).to.eql(1);\r\n});\r\n\r\nif (json.token) {\r\n    pm.environment.set(\"admin_token\", json.token);\r\n}\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Client",
+                "value": "mobile"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"username\": \"{{admin_username}}\", \"password\": \"{{admin_password}}\" }\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "## Deskripsi\n\nLogin admin via mobile (X-Client: mobile) untuk mendapatkan Bearer token.  \nToken dipakai semua request folder 03-08 (Data Master).\n\n## Error\n\n- 422 Kredensial tidak valid"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Client",
+                    "value": "mobile"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"username\": \"{{admin_username}}\", \"password\": \"{{admin_password}}\" }\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"user\": { \"id\": 1, \"name\": \"Administrator\", \"username\": \"admin\", \"role_id\": 1 },\r\n  \"token\": \"1|xxxxxxxx\"\r\n}\r\n"
+            }
+          ]
+        },
+        {
+          "name": "GET List Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array + meta\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n    pm.expect(json).to.have.property(\"meta\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jurusan?search=Teknik",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Teknik"
+                }
+              ]
+            },
+            "description": "## Deskripsi\n\nList jurusan. Terbuka untuk semua role login.\n\n## Query\n\n| Param | Type | Keterangan |\n| --- | --- | --- |\n| search | string | Filter nama/kode (opsional) |\n\n## Response\n\n- 200: `{ data: [...], links, meta }` (paginated, 20/halaman)"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/jurusan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"data\": [\r\n    { \"id\": 1, \"nama\": \"Teknik Jaringan Komputer dan Telekomunikasi\", \"kode\": \"TJKT\" },\r\n    { \"id\": 2, \"nama\": \"Desain Komunikasi Visual\", \"kode\": \"DKV\" }\r\n  ],\r\n  \"links\": { \"first\": \"...\", \"last\": \"...\", \"prev\": null, \"next\": null },\r\n  \"meta\": { \"current_page\": 1, \"last_page\": 1, \"per_page\": 20, \"total\": 10 }\r\n}\r\n"
+            }
+          ]
+        },
+        {
+          "name": "POST Create Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.have.property(\"id\");\r\n});\r\n\r\nif (json.data && json.data.id) {\r\n    pm.environment.set(\"jurusan_id\", json.data.id); // GANTI nama variable per resource\r\n}\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nama\": \"Teknik Uji {{$timestamp}}\",\r\n  \"kode\": \"UJ{{$timestamp}}\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/jurusan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan"
+              ]
+            },
+            "description": "## Deskripsi\n\nBuat jurusan baru. Admin only.\n\n## Request Body\n\n| Field | Type | Required | Maks |\n| --- | --- | --- | --- |\n| nama | string | Ya | 100 |\n| kode | string | Tidak | 20 |\n\n## Error\n\n- 401 belum login / 403 bukan admin\n    \n- 422 `nama` kosong atau > 100 karakter"
+          },
+          "response": [
+            {
+              "name": "Example 201 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nama\": \"Teknik Uji {{$timestamp}}\",\r\n  \"kode\": \"UJ{{$timestamp}}\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/jurusan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Jurusan berhasil disimpan.\",\r\n  \"data\": { \"id\": 11, \"nama\": \"Teknik Uji 1760123456789\", \"kode\": \"UJ1760123456789\" }\r\n}\r\n"
+            },
+            {
+              "name": "Example 422 Validation Error",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nama\": \"Teknik Uji {{$timestamp}}\",\r\n  \"kode\": \"UJ{{$timestamp}}\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/jurusan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan"
+                  ]
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{ \"message\": \"The nama field is required.\", \"errors\": { \"nama\": [\"The nama field is required.\"] } }\r\n"
+            }
+          ]
+        },
+        {
+          "name": "GET Get Jurusan Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Data sesuai ID\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    // variable Postman selalu string, jadi bandingkan sebagai string\r\n    pm.expect(String(json.data.id)).to.eql(String(pm.environment.get(\"jurusan_id\"))); // GANTI variable\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jurusan/{{jurusan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan",
+                "{{jurusan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nDetail satu jurusan. Terbuka untuk semua role login.\n\n## Error\n\n- 404 ID tidak ditemukan"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/jurusan/{{jurusan_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan",
+                    "{{jurusan_id}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{ \"data\": { \"id\": 11, \"nama\": \"Teknik Uji 1760123456789\", \"kode\": \"UJ1760123456789\" } }\r\n"
+            }
+          ]
+        },
+        {
+          "name": "PUT Update Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nama\": \"Teknik Uji Updated {{$timestamp}}\", \"kode\": \"UJD\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/jurusan/{{jurusan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan",
+                "{{jurusan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate jurusan. Admin only. Body sama dengan Create (semua field boleh dikirim).\n\n## Error\n\n- 403 bukan admin, 404 tidak ditemukan, 422 validasi"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"nama\": \"Teknik Uji Updated {{$timestamp}}\", \"kode\": \"UJD\" }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/jurusan/{{jurusan_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan",
+                    "{{jurusan_id}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Jurusan berhasil diperbarui.\",\r\n  \"data\": { \"id\": 11, \"nama\": \"Teknik Uji Updated 1760123456789\", \"kode\": \"UJD\" }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET List Kompetensi per Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jurusan/{{jurusan_id}}/kompetensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan",
+                "{{jurusan_id}}",
+                "kompetensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nList kompetensi milik satu jurusan (route nested).\n\n## Catatan\n\n- Jurusan uji ({{jurusan_id}}) belum punya kompetensi → `data: []` (wajar).\n    \n- Untuk data terisi, coba manual dengan `{{jurusan_seed_id}}` (jurusan seeder, berisi 5+ kompetensi).\n    \n\n## Error\n\n- 404 jurusan tidak ditemukan"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/jurusan/{{jurusan_id}}/kompetensi",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan",
+                    "{{jurusan_id}}",
+                    "kompetensi"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{ \"data\": [ { \"id\": 1, \"jurusan_id\": 1, \"nama\": \"Instalasi Jaringan Kabel Terstruktur\", \"kode\": \"TJKT-01\" } ] }"
+            }
+          ]
+        },
+        {
+          "name": "DELETE Delete Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jurusan/{{jurusan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan",
+                "{{jurusan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nHapus jurusan. Admin only. Jurusan dengan data kompetensi anak akan ikut terhapus (FK CASCADE).\n\n## Error\n\n- 403 bukan admin, 404 tidak ditemukan\n    \n- 422 data masih direferensikan tabel lain (FK RESTRICT) — `message` dijelaskan server"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/jurusan/{{jurusan_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "jurusan",
+                    "{{jurusan_id}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{ \"message\": \"Jurusan berhasil dihapus.\" }"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04. Master - Kompetensi",
+      "item": [
+        {
+          "name": "GET List Kompetensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array + meta\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n    pm.expect(json).to.have.property(\"meta\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/kompetensi?jurusan_id={{jurusan_seed_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kompetensi"
+              ],
+              "query": [
+                {
+                  "key": "jurusan_id",
+                  "value": "{{jurusan_seed_id}}"
+                }
+              ]
+            },
+            "description": "## Deskripsi\n\nList kompetensi. Terbuka untuk semua role login.\n\n## Query\n\n| Param | Type | Keterangan |\n| --- | --- | --- |\n| jurusan_id | integer | Filter per jurusan |\n| search | string | Filter nama/kode |"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/kompetensi?jurusan_id={{jurusan_seed_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "kompetensi"
+                  ],
+                  "query": [
+                    {
+                      "key": "jurusan_id",
+                      "value": "{{jurusan_seed_id}}"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": 1,\r\n      \"jurusan_id\": 1,\r\n      \"nama\": \"Gambar Kerja Bangunan\",\r\n      \"kode\": \"DPIB-01\",\r\n      \"jurusan\": {\r\n        \"id\": 1,\r\n        \"nama\": \"Desain Permodelan dan Informasi Bangunan\",\r\n        \"kode\": \"DPIB\"\r\n      }\r\n    },\r\n    {\r\n      \"id\": 5,\r\n      \"jurusan_id\": 1,\r\n      \"nama\": \"Pengawasan Pelaksanaan Gambar Kerja\",\r\n      \"kode\": \"DPIB-05\",\r\n      \"jurusan\": {\r\n        \"id\": 1,\r\n        \"nama\": \"Desain Permodelan dan Informasi Bangunan\",\r\n        \"kode\": \"DPIB\"\r\n      }\r\n    }\r\n  ],\r\n  \"links\": { \"first\": \"...\", \"last\": \"...\", \"prev\": null, \"next\": null },\r\n  \"meta\": { \"current_page\": 1, \"last_page\": 1, \"per_page\": 20, \"total\": 5 }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Create Kompetensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.have.property(\"id\");\r\n});\r\n\r\nif (json.data && json.data.id) {\r\n    pm.environment.set(\"kompetensi_id\", json.data.id); // GANTI nama variable per resource\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"jurusan_id\": {{jurusan_seed_id}},\r\n  \"nama\": \"Kompetensi Uji {{$timestamp}}\",\r\n  \"kode\": \"KU-{{$timestamp}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/kompetensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kompetensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nBuat kompetensi baru. Admin only. `jurusan_id` harus existing.\n\n## Request Body\n\n| Field | Type | Required | Maks |\n| --- | --- | --- | --- |\n| jurusan_id | integer | Ya | \\- (exists) |\n| nama | string | Ya | 255 |\n| kode | string | Tidak | 50 |\n\n## Error\n\n- 422 `jurusan_id` tidak valid / `nama` kosong"
+          },
+          "response": [
+            {
+              "name": "Example 201 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"jurusan_id\": {{jurusan_seed_id}},\r\n  \"nama\": \"Kompetensi Uji {{$timestamp}}\",\r\n  \"kode\": \"KU-{{$timestamp}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/kompetensi",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "kompetensi"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Kompetensi berhasil disimpan.\",\r\n  \"data\": { \"id\": 51, \"jurusan_id\": 1, \"nama\": \"Kompetensi Uji 1760123456789\", \"kode\": \"KU-1760123456789\" }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Get Kompetensi Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Data sesuai ID\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    // variable Postman selalu string, jadi bandingkan sebagai string\r\n    pm.expect(String(json.data.id)).to.eql(String(pm.environment.get(\"kompetensi_id\"))); // GANTI variable\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/kompetensi/{{kompetensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kompetensi",
+                "{{kompetensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nDetail satu kompetensi.\n\n## Error\n\n- 404 tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Kompetensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"jurusan_id\": {{jurusan_seed_id}},\r\n  \"nama\": \"Kompetensi Uji Updated {{$timestamp}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/kompetensi/{{kompetensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kompetensi",
+                "{{kompetensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate kompetensi. Admin only."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Delete Kompetensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/kompetensi/{{kompetensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kompetensi",
+                "{{kompetensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nHapus kompetensi. Admin only.\n\n## Error\n\n- 422 kompetensi masih direferensikan jurnal/penilaian (FK RESTRICT) — muncul di Sprint 5+"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05. Master - Gelombang",
+      "item": [
+        {
+          "name": "GET List Gelombang",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array + meta\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n    pm.expect(json).to.have.property(\"meta\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gelombang",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gelombang"
+              ]
+            },
+            "description": "## Deskripsi\n\nList gelombang PKL. Terbuka untuk semua role login."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Gelombang",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.have.property(\"id\");\r\n});\r\n\r\nif (json.data && json.data.id) {\r\n    pm.environment.set(\"gelombang_id\", json.data.id); // GANTI nama variable per resource\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"tahun_ajaran\": \"2028/2029\",\r\n  \"nama\": \"Gelombang Uji {{$timestamp}}\",\r\n  \"daftar_mulai\": \"2028-11-01\",\r\n  \"daftar_selesai\": \"2028-11-30\",\r\n  \"praktik_mulai\": \"2029-01-05\",\r\n  \"praktik_selesai\": \"2029-06-30\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/gelombang",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gelombang"
+              ]
+            },
+            "description": "## Deskripsi\n\nBuat gelombang PKL baru. Admin only.\n\n## Request Body\n\n| Field | Type | Required | Catatan |\n| --- | --- | --- | --- |\n| tahun_ajaran | string | Ya | Maks 20, format \"2026/2027\" |\n| nama | string | Ya | Maks 100 |\n| daftar_mulai | date | Ya | YYYY-MM-DD |\n| daftar_selesai | date | Ya | \\>= daftar_mulai |\n| praktik_mulai | date | Ya | YYYY-MM-DD |\n| praktik_selesai | date | Ya | \\>= praktik_mulai |\n\n## Business Rules\n\n- daftar_selesai tidak boleh sebelum daftar_mulai\n    \n- praktik_selesai tidak boleh sebelum praktik_mulai\n    \n\n## Error\n\n- 422 tanggal tidak berurutan (`errors.daftar_selesai` / `errors.praktik_selesai`)"
+          },
+          "response": [
+            {
+              "name": "Example 201 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"tahun_ajaran\": \"2028/2029\",\r\n  \"nama\": \"Gelombang Uji {{$timestamp}}\",\r\n  \"daftar_mulai\": \"2028-11-01\",\r\n  \"daftar_selesai\": \"2028-11-30\",\r\n  \"praktik_mulai\": \"2029-01-05\",\r\n  \"praktik_selesai\": \"2029-06-30\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/gelombang",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "gelombang"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Gelombang berhasil disimpan.\",\r\n  \"data\": {\r\n    \"id\": 3, \"tahun_ajaran\": \"2028/2029\", \"nama\": \"Gelombang Uji 1760123456789\",\r\n    \"daftar_mulai\": \"2028-11-01\", \"daftar_selesai\": \"2028-11-30\",\r\n    \"praktik_mulai\": \"2029-01-05\", \"praktik_selesai\": \"2029-06-30\"\r\n  }\r\n}"
+            },
+            {
+              "name": "Example 422 Validation Error",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"tahun_ajaran\": \"2028/2029\",\r\n  \"nama\": \"Gelombang Uji {{$timestamp}}\",\r\n  \"daftar_mulai\": \"2028-11-01\",\r\n  \"daftar_selesai\": \"2028-11-30\",\r\n  \"praktik_mulai\": \"2029-01-05\",\r\n  \"praktik_selesai\": \"2029-06-30\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/gelombang",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "gelombang"
+                  ]
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"The daftar selesai must be a date after or equal to daftar mulai.\",\r\n  \"errors\": { \"daftar_selesai\": [\"The daftar selesai must be a date after or equal to daftar mulai.\"] }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Get Gelombang Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Data sesuai ID\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    // variable Postman selalu string, jadi bandingkan sebagai string\r\n    pm.expect(String(json.data.id)).to.eql(String(pm.environment.get(\"gelombang_id\"))); // GANTI variable\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gelombang/{{gelombang_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gelombang",
+                "{{gelombang_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Gelombang",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"tahun_ajaran\": \"2028/2029\",\r\n  \"nama\": \"Gelombang Uji Updated {{$timestamp}}\",\r\n  \"daftar_mulai\": \"2028-11-01\",\r\n  \"daftar_selesai\": \"2028-12-15\",\r\n  \"praktik_mulai\": \"2029-01-05\",\r\n  \"praktik_selesai\": \"2029-06-30\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/gelombang/{{gelombang_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gelombang",
+                "{{gelombang_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate gelombang. Admin only. Validasi tanggal sama seperti Create."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Delete Gelombang",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/gelombang/{{gelombang_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gelombang",
+                "{{gelombang_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nHapus gelombang. Admin only.\n\n## Error\n\n- 422 gelombang masih direferensikan siswa/penempatan (FK RESTRICT) — muncul di Sprint 2+"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06. Master - Jurusan",
+      "item": [
+        {
+          "name": "GET List Perusahaan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array + meta\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n    pm.expect(json).to.have.property(\"meta\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/perusahaan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan"
+              ]
+            },
+            "description": "## Deskripsi\n\nList perusahaan/industri. Terbuka untuk semua role login.\n\n## Query\n\n| Param | Type | Keterangan |\n| --- | --- | --- |\n| jurusan_id | integer | Hanya perusahaan yang menerima jurusan tsb |\n| search | string | Filter nama/alamat |\n\n## Catatan\n\nFilter `kuota_tersedia` diuji penuh di Sprint 3 (butuh data penempatan)."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Perusahaan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.have.property(\"id\");\r\n});\r\n\r\nif (json.data && json.data.id) {\r\n    pm.environment.set(\"perusahaan_id\", json.data.id); // GANTI nama variable per resource\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nama\": \"PT Uji {{$timestamp}}\",\r\n  \"alamat\": \"Jl. Uji No. 1, Magelang\",\r\n  \"latitude\": -7.49160000,\r\n  \"longitude\": 110.21800000,\r\n  \"pimpinan\": \"Budi Uji\",\r\n  \"telp\": \"0293123456\",\r\n  \"email\": \"hrd.uji{{$timestamp}}@example.com\",\r\n  \"deskripsi\": \"Perusahaan uji Collection Runner\",\r\n  \"kuota\": 10,\r\n  \"jurusan_ids\": [1, 2]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/perusahaan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan"
+              ]
+            },
+            "description": "## Deskripsi\n\nBuat perusahaan baru + attach jurusan sekaligus. Admin only.\n\n## Request Body\n\n| Field | Type | Required | Catatan |\n| --- | --- | --- | --- |\n| nama | string | Ya | Maks 255 |\n| alamat | text | Ya |  |\n| latitude | decimal | Tidak | \\-90..90 |\n| longitude | decimal | Tidak | \\-180..180 |\n| pimpinan | string | Tidak | Maks 255 |\n| telp | string | Tidak | Maks 20 |\n| email | string | Tidak | Format email |\n| deskripsi | text | Tidak |  |\n| kuota | integer | Tidak | \\>= 0 |\n| jurusan_ids | array\\[int\\] | Tidak | Semua harus exists |\n\n## Error\n\n- 422 `jurusan_ids.0` tidak valid bila ada ID jurusan tak ditemukan"
+          },
+          "response": [
+            {
+              "name": "Example 201 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nama\": \"PT Uji {{$timestamp}}\",\r\n  \"alamat\": \"Jl. Uji No. 1, Magelang\",\r\n  \"latitude\": -7.49160000,\r\n  \"longitude\": 110.21800000,\r\n  \"pimpinan\": \"Budi Uji\",\r\n  \"telp\": \"0293123456\",\r\n  \"email\": \"hrd.uji{{$timestamp}}@example.com\",\r\n  \"deskripsi\": \"Perusahaan uji Collection Runner\",\r\n  \"kuota\": 10,\r\n  \"jurusan_ids\": [1, 2]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/perusahaan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "perusahaan"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Perusahaan berhasil disimpan.\",\r\n  \"data\": {\r\n    \"id\": 13,\r\n    \"nama\": \"PT Uji 1760123456789\",\r\n    \"alamat\": \"Jl. Uji No. 1, Magelang\",\r\n    \"latitude\": -7.4916, \"longitude\": 110.218,\r\n    \"pimpinan\": \"Budi Uji\", \"telp\": \"0293123456\",\r\n    \"email\": \"hrd.uji1760123456789@example.com\",\r\n    \"deskripsi\": \"Perusahaan uji Collection Runner\",\r\n    \"kuota\": 10,\r\n    \"jurusan\": [\r\n      { \"id\": 1, \"nama\": \"Teknik Jaringan Komputer dan Telekomunikasi\", \"kode\": \"TJKT\" },\r\n      { \"id\": 2, \"nama\": \"Desain Komunikasi Visual\", \"kode\": \"DKV\" }\r\n    ]\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Get Perusahaan Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Data sesuai ID & berisi jurusan\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(String(json.data.id)).to.eql(String(pm.environment.get(\"perusahaan_id\")));\r\n    pm.expect(json.data).to.have.property(\"jurusan\");\r\n    pm.expect(json.data.jurusan).to.be.an(\"array\").that.is.not.empty;\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan",
+                "{{perusahaan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nDetail perusahaan termasuk daftar jurusan yang diterima (eager load).\n\n## Error\n\n- 404 tidak ditemukan"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Perusahaan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nama\": \"PT Uji Updated {{$timestamp}}\",\r\n  \"alamat\": \"Jl. Uji No. 2, Magelang\",\r\n  \"latitude\": -7.49160000,\r\n  \"longitude\": 110.21800000,\r\n  \"pimpinan\": \"Budi Uji\",\r\n  \"telp\": \"0293123456\",\r\n  \"email\": \"hrd.uji@example.com\",\r\n  \"deskripsi\": \"Perusahaan uji (updated)\",\r\n  \"kuota\": 12,\r\n  \"jurusan_ids\": [1, 3]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan",
+                "{{perusahaan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate perusahaan. Admin only. `jurusan_ids` (bila dikirim) menggantikan seluruh attach (sync).\n\n## Error\n\n- 422 validasi / `jurusan_ids` invalid"
+          },
+          "response": []
+        },
+        {
+          "name": "POST Attach Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data.jurusan\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json.data).to.have.property(\"jurusan\");\r\n});\r\n\r\npm.test(\"jurusan_id 2 sudah terpasang\", function () {\r\n    const ids = json.data.jurusan.map(j => j.id);\r\n    pm.expect(ids).to.include(2);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"jurusan_id\": 2 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}/jurusan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan",
+                "{{perusahaan_id}}",
+                "jurusan"
+              ]
+            },
+            "description": "## Deskripsi\n\nTambah satu jurusan ke perusahaan (attach). Admin only. Idempotent — jurusan yang sudah terpasang tidak diduplikasi.\n\n## Request Body\n\n| Field | Type | Required |\n| --- | --- | --- |\n| jurusan_id | integer | Ya |\n\n## Error\n\n- 404 perusahaan tidak ditemukan\n    \n- 422 `jurusan_id` tidak exists"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"jurusan_id\": 2 }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}/jurusan",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "perusahaan",
+                    "{{perusahaan_id}}",
+                    "jurusan"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Jurusan berhasil ditambahkan ke perusahaan.\",\r\n  \"data\": {\r\n    \"id\": 13,\r\n    \"nama\": \"PT Uji Updated 1760123456789\",\r\n    \"jurusan\": [ { \"id\": 1, \"nama\": \"...\" }, { \"id\": 2, \"nama\": \"...\" } ]\r\n  }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "DELETE Detach Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}/jurusan/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan",
+                "{{perusahaan_id}}",
+                "jurusan",
+                "2"
+              ]
+            },
+            "description": "## Deskripsi\n\nLepas satu jurusan dari perusahaan (detach). Admin only.\n\n## Error\n\n- 404 perusahaan tidak ditemukan ATAU jurusan tidak terpasang di perusahaan tsb"
+          },
+          "response": [
+            {
+              "name": "Example 200 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}/jurusan/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "perusahaan",
+                    "{{perusahaan_id}}",
+                    "jurusan",
+                    "2"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{ \"message\": \"Jurusan berhasil dilepas dari perusahaan.\" }"
+            }
+          ]
+        },
+        {
+          "name": "DELETE Delete Perusahaan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/perusahaan/{{perusahaan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan",
+                "{{perusahaan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nHapus perusahaan. Admin only. Relasi pivot ikut terhapus (CASCADE).\n\n## Error\n\n- 422 masih direferensikan pengajuan/penempatan (Sprint 3+)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07. Master - Sikap",
+      "item": [
+        {
+          "name": "GET List Sikap",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array + meta\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n    pm.expect(json).to.have.property(\"meta\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/sikap",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sikap"
+              ]
+            },
+            "description": "## Deskripsi\n\nList master sikap/soft skill untuk penilaian. Terbuka untuk semua role login."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Sikap",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.have.property(\"id\");\r\n});\r\n\r\nif (json.data && json.data.id) {\r\n    pm.environment.set(\"sikap_id\", json.data.id); // GANTI nama variable per resource\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nama\": \"Sikap Uji {{$timestamp}}\",\r\n  \"deskripsi\": \"Sikap hasil uji Collection Runner\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/sikap",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sikap"
+              ]
+            },
+            "description": "## Deskripsi\n\nBuat master sikap baru. Admin only.\n\n## Request Body\n\n| Field | Type | Required | Maks |\n| --- | --- | --- | --- |\n| nama | string | Ya | 100 |\n| deskripsi | text | Tidak | \\- |"
+          },
+          "response": [
+            {
+              "name": "Example 201 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nama\": \"Sikap Uji {{$timestamp}}\",\r\n  \"deskripsi\": \"Sikap hasil uji Collection Runner\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/sikap",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "sikap"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Sikap berhasil disimpan.\",\r\n  \"data\": { \"id\": 11, \"nama\": \"Sikap Uji 1760123456789\", \"deskripsi\": \"Sikap hasil uji Collection Runner\" }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Get Sikap Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Data sesuai ID\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    // variable Postman selalu string, jadi bandingkan sebagai string\r\n    pm.expect(String(json.data.id)).to.eql(String(pm.environment.get(\"sikap_id\"))); // GANTI variable\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/sikap/{{sikap_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sikap",
+                "{{sikap_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Sikap",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nama\": \"Sikap Uji Updated {{$timestamp}}\", \"deskripsi\": \"Updated\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/sikap/{{sikap_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sikap",
+                "{{sikap_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Delete Sikap",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/sikap/{{sikap_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sikap",
+                "{{sikap_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nHapus master sikap. Admin only.\n\n## Error\n\n- 422 masih direferensikan penilaian_sikap (Sprint 6+)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08. Master - Waktu Absen",
+      "item": [
+        {
+          "name": "GET List Waktu Absen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data array + meta\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.be.an(\"array\");\r\n    pm.expect(json).to.have.property(\"meta\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/waktu-absen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "waktu-absen"
+              ]
+            },
+            "description": "## Deskripsi\n\nList konfigurasi jam kerja PKL. Terbuka untuk semua role login."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Waktu Absen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n    pm.expect(json.data).to.have.property(\"id\");\r\n});\r\n\r\nif (json.data && json.data.id) {\r\n    pm.environment.set(\"waktu_absen_id\", json.data.id); // GANTI nama variable per resource\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"mulai\": \"07:30\",\r\n  \"selesai\": \"15:30\",\r\n  \"keterangan\": \"Jam kerja uji {{$timestamp}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/waktu-absen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "waktu-absen"
+              ]
+            },
+            "description": "## Deskripsi\n\nBuat konfigurasi waktu absen baru. Admin only.\n\n## Request Body\n\n| Field | Type | Required | Format |\n| --- | --- | --- | --- |\n| mulai | string | Ya | HH:mm (contoh \"08:00\") |\n| selesai | string | Ya | HH:mm, harus setelah `mulai` |\n| keterangan | string | Tidak | Maks 255 |\n\n## Error\n\n- 422 `selesai` tidak setelah `mulai` (`errors.selesai`)\n    \n- 422 format jam salah"
+          },
+          "response": [
+            {
+              "name": "Example 201 Success",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"mulai\": \"07:30\",\r\n  \"selesai\": \"15:30\",\r\n  \"keterangan\": \"Jam kerja uji {{$timestamp}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/waktu-absen",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "waktu-absen"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"Waktu absen berhasil disimpan.\",\r\n  \"data\": { \"id\": 2, \"mulai\": \"07:30:00\", \"selesai\": \"15:30:00\", \"keterangan\": \"Jam kerja uji 1760123456789\" }\r\n}"
+            },
+            {
+              "name": "Example 422 Validation Error",
+              "originalRequest": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"mulai\": \"07:30\",\r\n  \"selesai\": \"15:30\",\r\n  \"keterangan\": \"Jam kerja uji {{$timestamp}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/waktu-absen",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "waktu-absen"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\r\n  \"message\": \"The selesai must be a date after mulai.\",\r\n  \"errors\": { \"selesai\": [\"The selesai must be a date after mulai.\"] }\r\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT Update Waktu Absen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\npm.test(\"Response berisi message & data\", function () {\r\n    pm.expect(json).to.have.property(\"message\");\r\n    pm.expect(json).to.have.property(\"data\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"mulai\": \"08:00\", \"selesai\": \"16:00\", \"keterangan\": \"Jam kerja normal (updated)\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/waktu-absen/{{waktu_absen_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "waktu-absen",
+                "{{waktu_absen_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate waktu absen. Admin only. Validasi jam sama seperti Create."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Delete Waktu Absen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berisi message\", function () {\r\n    pm.expect(pm.response.json()).to.have.property(\"message\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/waktu-absen/{{waktu_absen_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "waktu-absen",
+                "{{waktu_absen_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "99. Test Scenarios",
       "item": [
         {
@@ -1637,6 +4160,449 @@
               ]
             },
             "description": "## Deskripsi\n\nMengambil data user yang sedang login (mobile: kirim Bearer token).\n\n## Authorization\n\n- `Authorization: Bearer {{token}}`, `X-Client: mobile`\n    \n\n## Error\n\n- 401 `Unauthenticated.` (token tidak ada/kedaluwarsa)"
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 1] POST Create Jurusan - Tanpa Nama",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\r\npm.test(\"Ada errors.nama\", function () {\r\n    pm.expect(pm.response.json().errors).to.have.property(\"nama\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"kode\": \"X1\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/jurusan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 2] POST Create Jurusan - Sebagai Siswa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nama\": \"Uji 403\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/jurusan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 3] GET List Jurusan - Tanpa Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/jurusan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "jurusan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 4] POST Create Gelombang - Tanggal Terbalik",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\r\npm.test(\"Ada errors.daftar_selesai\", function () {\r\n    pm.expect(pm.response.json().errors).to.have.property(\"daftar_selesai\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"tahun_ajaran\": \"2028/2029\",\r\n  \"nama\": \"Gelombang Salah Tanggal\",\r\n  \"daftar_mulai\": \"2028-11-30\",\r\n  \"daftar_selesai\": \"2028-11-01\",\r\n  \"praktik_mulai\": \"2029-01-05\",\r\n  \"praktik_selesai\": \"2029-06-30\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/gelombang",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "gelombang"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 5] POST Create Kompetensi - Jurusan Tidak Ada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\r\npm.test(\"Ada errors.jurusan_id\", function () {\r\n    pm.expect(pm.response.json().errors).to.have.property(\"jurusan_id\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"jurusan_id\": 99999, \"nama\": \"Kompetensi Yatim\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/kompetensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "kompetensi"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 6] POST Create Perusahaan - Jurusan ID Invalid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\r\npm.test(\"Ada errors jurusan_ids\", function () {\r\n    const errors = pm.response.json().errors;\r\n    // Laravel menulis key wildcard sebagai \"jurusan_ids.0\"\r\n    pm.expect(errors).to.have.any.keys(\"jurusan_ids\", \"jurusan_ids.0\");\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"nama\": \"PT Tanpa Jurusan\", \"alamat\": \"Magelang\", \"jurusan_ids\": [99999] }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/perusahaan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 7] DELETE Detach Jurusan - Tidak Terpasang",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/perusahaan/{{perusahaan_seed_id}}/jurusan/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "perusahaan",
+                "{{perusahaan_seed_id}}",
+                "jurusan",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 8] POST Create Waktu Absen - Selesai Sebelum Mulai",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\r\npm.test(\"Ada errors.selesai\", function () {\r\n    pm.expect(pm.response.json().errors).to.have.property(\"selesai\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"mulai\": \"16:00\", \"selesai\": \"08:00\", \"keterangan\": \"Terbalik\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/waktu-absen",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "waktu-absen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[Master 9] POST Create Sikap - Tanpa Nama",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\r\npm.test(\"Ada errors.nama\", function () {\r\n    pm.expect(pm.response.json().errors).to.have.property(\"nama\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"deskripsi\": \"Tanpa nama\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/sikap",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sikap"
+              ]
+            }
           },
           "response": []
         }
