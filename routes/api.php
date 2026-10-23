@@ -9,6 +9,7 @@ use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\SikapController;
+use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\WaktuAbsenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sikap', SikapController::class)->only(['index', 'show']);
     // Detail guru boleh admin & guru; list hanya admin (003-api-endpoints.md §9)
     Route::middleware('role:admin,guru')->get('guru/{guru}', [GuruController::class, 'show']);
+    // Siswa: list & detail boleh admin & guru (003-api-endpoints.md §10)
+    Route::middleware('role:admin,guru')->get('siswa', [SiswaController::class, 'index']);
+    Route::middleware('role:admin,guru')->get('siswa/{siswa}', [SiswaController::class, 'show']);
     // Waktu absen tanpa show (4 endpoint sesuai 003-api-endpoints.md §8)
     Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['index']);
 
@@ -50,6 +54,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('guru/bulk-upload', [GuruController::class, 'bulkUpload']);
         Route::put('guru/{guru}', [GuruController::class, 'update']);
         Route::delete('guru/{guru}', [GuruController::class, 'destroy']);
+        Route::post('siswa', [SiswaController::class, 'store']);
+        Route::post('siswa/bulk-upload', [SiswaController::class, 'bulkUpload']);
+        Route::put('siswa/{siswa}', [SiswaController::class, 'update']);
+        Route::delete('siswa/{siswa}', [SiswaController::class, 'destroy']);
         Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['store', 'update', 'destroy']);
     });
 });

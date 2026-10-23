@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             WaktuAbsenSeeder::class,
             PerusahaanSeeder::class,
             KompetensiSeeder::class,
+            SiswaSeeder::class,
         ]);
     }
 }

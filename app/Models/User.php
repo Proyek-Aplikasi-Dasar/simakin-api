@@ -93,6 +93,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke Siswa (One-to-One).
+     */
+    public function siswa(): HasOne
+    {
+        return $this->hasOne(Siswa::class, 'user_id');
+    }
+
+    /**
      * Cek apakah user adalah Siswa.
      */
     public function isSiswa(): bool
