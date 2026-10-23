@@ -36,6 +36,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin,guru')->get('guru/{guru}', [GuruController::class, 'show']);
     // Siswa: list & detail boleh admin & guru (003-api-endpoints.md §10)
     Route::middleware('role:admin,guru')->get('siswa', [SiswaController::class, 'index']);
+
+    // Onboarding siswa — wajib didaftarkan SEBELUM route siswa/{siswa}
+    Route::middleware('role:siswa')->group(function () {
+        Route::get('siswa/me', [SiswaController::class, 'me']);
+        Route::put('siswa/me/profil', [SiswaController::class, 'updateProfil']);
+        Route::put('siswa/me/konfirmasi', [SiswaController::class, 'konfirmasi']);
+    });
+
     Route::middleware('role:admin,guru')->get('siswa/{siswa}', [SiswaController::class, 'show']);
     // Waktu absen tanpa show (4 endpoint sesuai 003-api-endpoints.md §8)
     Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['index']);

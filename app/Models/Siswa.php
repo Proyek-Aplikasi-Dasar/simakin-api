@@ -97,6 +97,32 @@ class Siswa extends Model
     }
 
     /**
+     * Daftar field wajib konfirmasi yang masih kosong.
+     *
+     * @return array<int, string>
+     */
+    public function missingProfilFields(): array
+    {
+        $this->loadMissing('user');
+
+        $fields = [
+            'name' => $this->user?->name,
+            'jenis_kelamin' => $this->jenis_kelamin,
+            'kelas' => $this->kelas,
+            'telp' => $this->telp,
+            'email' => $this->user?->email,
+            'alamat' => $this->alamat,
+            'jurusan_id' => $this->jurusan_id,
+            'gelombang_id' => $this->gelombang_id,
+            'nama_ortu' => $this->nama_ortu,
+            'telp_ortu' => $this->telp_ortu,
+            'alamat_ortu' => $this->alamat_ortu,
+        ];
+
+        return array_keys(array_filter($fields, fn ($nilai): bool => $nilai === null || $nilai === ''));
+    }
+
+    /**
      * Cek seluruh field wajib konfirmasi sudah terisi.
      *
      * Field wajib: name, jenis_kelamin, kelas, telp, email, alamat,
@@ -104,28 +130,6 @@ class Siswa extends Model
      */
     public function isProfilLengkap(): bool
     {
-        $this->loadMissing('user');
-
-        $wajib = [
-            $this->user?->name,
-            $this->jenis_kelamin,
-            $this->kelas,
-            $this->telp,
-            $this->user?->email,
-            $this->alamat,
-            $this->jurusan_id,
-            $this->gelombang_id,
-            $this->nama_ortu,
-            $this->telp_ortu,
-            $this->alamat_ortu,
-        ];
-
-        foreach ($wajib as $nilai) {
-            if ($nilai === null || $nilai === '') {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->missingProfilFields() === [];
     }
 }
