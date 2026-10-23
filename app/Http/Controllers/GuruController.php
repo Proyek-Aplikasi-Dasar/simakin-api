@@ -21,7 +21,6 @@ class GuruController extends Controller
                 $search = $request->string('search')->toString();
                 $query->where(function ($w) use ($search) {
                     $w->where('nip', 'like', "%{$search}%")
-                        ->orWhere('mata_pelajaran', 'like', "%{$search}%")
                         ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
                 });
             })
@@ -48,7 +47,6 @@ class GuruController extends Controller
             return Guru::create([
                 'user_id' => $user->id,
                 'nip' => $data['nip'],
-                'mata_pelajaran' => $data['mata_pelajaran'] ?? null,
             ])->load('user');
         });
 
@@ -92,10 +90,6 @@ class GuruController extends Controller
 
             if (array_key_exists('nip', $data)) {
                 $guruData['nip'] = $data['nip'];
-            }
-
-            if (array_key_exists('mata_pelajaran', $data)) {
-                $guruData['mata_pelajaran'] = $data['mata_pelajaran'];
             }
 
             if (! empty($guruData)) {

@@ -158,7 +158,6 @@ class GuruTest extends TestCase
             'nip' => '198801012020011001',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'mata_pelajaran' => 'Produktif',
         ]);
 
         $response->assertStatus(201)
@@ -232,10 +231,10 @@ class GuruTest extends TestCase
         $guruId = $created['data']['id'];
 
         $this->actingAs($admin, 'sanctum')->putJson("/api/guru/{$guruId}", [
-            'mata_pelajaran' => 'Bahasa Indonesia',
-        ])->assertStatus(200)->assertJsonPath('data.mata_pelajaran', 'Bahasa Indonesia');
+            'name' => 'Guru Nama Baru',
+        ])->assertStatus(200)->assertJsonPath('data.user.name', 'Guru Nama Baru');
 
-        $this->assertDatabaseHas('guru', ['id' => $guruId, 'mata_pelajaran' => 'Bahasa Indonesia']);
+        $this->assertDatabaseHas('users', ['id' => $created['data']['user_id'], 'name' => 'Guru Nama Baru']);
     }
 
     public function test_update_guru_without_password_keeps_password(): void
@@ -295,9 +294,9 @@ class GuruTest extends TestCase
     {
         $admin = $this->admin();
         $path = $this->makeXlsx([
-            ['nip', 'nama', 'mata_pelajaran'],
-            ['198801012020011001', 'Guru Import 1', 'Produktif'],
-            ['198801012020011002', 'Guru Import 2', 'Matematika'],
+            ['nip', 'nama'],
+            ['198801012020011001', 'Guru Import 1'],
+            ['198801012020011002', 'Guru Import 2'],
         ]);
 
         $this->actingAs($admin, 'sanctum')
@@ -317,10 +316,10 @@ class GuruTest extends TestCase
         $this->createGuru($admin, '198801012020011001');
 
         $path = $this->makeXlsx([
-            ['nip', 'nama', 'mata_pelajaran'],
-            ['198801012020011003', 'Guru Valid', 'Produktif'],
-            ['198801012020011004', '', 'Matematika'],
-            ['198801012020011001', 'Guru Duplikat', 'Bahasa Indonesia'],
+            ['nip', 'nama'],
+            ['198801012020011003', 'Guru Valid'],
+            ['198801012020011004', ''],
+            ['198801012020011001', 'Guru Duplikat'],
         ]);
 
         $response = $this->actingAs($admin, 'sanctum')

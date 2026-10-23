@@ -15,11 +15,11 @@ class GuruSeeder extends Seeder
     public function run(): void
     {
         $gurus = [
-            ['name' => 'Guru Pembimbing 1', 'nip' => '198701012010011001', 'mata_pelajaran' => 'Produktif'],
-            ['name' => 'Guru Pembimbing 2', 'nip' => '198702012010012002', 'mata_pelajaran' => 'Produktif'],
-            ['name' => 'Guru Pembimbing 3', 'nip' => '198703012010013003', 'mata_pelajaran' => 'Bahasa Indonesia'],
-            ['name' => 'Guru Pembimbing 4', 'nip' => '198704012010014004', 'mata_pelajaran' => 'Matematika'],
-            ['name' => 'Guru Pembimbing 5', 'nip' => '198705012010015005', 'mata_pelajaran' => 'Kewirausahaan'],
+            ['name' => 'Guru Pembimbing 1', 'nip' => '198701012010011001'],
+            ['name' => 'Guru Pembimbing 2', 'nip' => '198702012010012002'],
+            ['name' => 'Guru Pembimbing 3', 'nip' => '198703012010013003'],
+            ['name' => 'Guru Pembimbing 4', 'nip' => '198704012010014004'],
+            ['name' => 'Guru Pembimbing 5', 'nip' => '198705012010015005'],
         ];
 
         foreach ($gurus as $data) {
@@ -37,7 +37,6 @@ class GuruSeeder extends Seeder
                 Guru::create([
                     'user_id' => $user->id,
                     'nip' => $data['nip'],
-                    'mata_pelajaran' => $data['mata_pelajaran'],
                 ]);
             }
         }
@@ -49,7 +48,6 @@ class GuruSeeder extends Seeder
                 ['user_id' => $demoGuru->id],
                 [
                     'nip' => null,
-                    'mata_pelajaran' => null,
                 ]
             );
         }

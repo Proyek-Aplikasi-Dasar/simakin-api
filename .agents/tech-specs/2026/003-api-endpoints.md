@@ -335,7 +335,7 @@ Response resource: `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan
 {
   "name": "Nama Guru", "username": "198701012010011001",
   "password": "password123", "password_confirmation": "password123",
-  "nip": "198701012010011001", "mata_pelajaran": "Produktif"
+  "nip": "198701012010011001"
 }
 ```
 **Logic:** Create `users` (role_id=2, **username = NIP**) → Create `guru` (user_id).

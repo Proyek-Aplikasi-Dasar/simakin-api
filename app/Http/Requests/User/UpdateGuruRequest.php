@@ -40,7 +40,6 @@ class UpdateGuruRequest extends FormRequest
                 Rule::unique('guru', 'nip')->ignore($guruId),
                 Rule::unique('users', 'username')->ignore($userId),
             ],
-            'mata_pelajaran' => ['nullable', 'string', 'max:100'],
         ];
     }
 

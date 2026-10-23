@@ -100,20 +100,20 @@ Branch dari `develop`; merge lokal `--no-ff` ke `develop` (tanpa push/PR). Commi
 ### B1 — `feature/user-guru` (1.5 hari)
 
 **Migration** `create_guru_table`:
-- `user_id` FK unique → `users` (CASCADE), `nip` varchar(30) nullable unique, `mata_pelajaran` varchar(100) nullable, timestamps
+- `user_id` FK unique → `users` (CASCADE), `nip` varchar(30) nullable unique, timestamps
 
-**Model** `Guru`: `fillable = [user_id, nip, mata_pelajaran]`; relasi `belongsTo(User)`, `hasMany(LokasiPkl)` (Sprint 3).
+**Model** `Guru`: `fillable = [user_id, nip]`; relasi `belongsTo(User)`, `hasMany(LokasiPkl)` (Sprint 3).
 
 **Seeder** `GuruSeeder`: 5 guru (NIP realistis, `username = NIP`), password `password123`; lampirkan profil ke user demo `guru` bila ada.
 
 **Request:**
-- `StoreGuruRequest`: `name` required max:255; `username` required unique:users,username (harus = `nip`); `password` required confirmed min:8; `nip` required unique:guru,nip; `mata_pelajaran` nullable max:100
+- `StoreGuruRequest`: `name` required max:255; `username` required unique:users,username (harus = `nip`); `password` required confirmed min:8; `nip` required unique:guru,nip
 - `UpdateGuruRequest`: sama, `username`/`nip` unique ignore current; password nullable (opsional)
 
 **Logic:**
 - Store/update dalam transaction: `users` (role_id=2) + `guru`; `users.name`/`username` mengikuti `name`/`nip`
 - Delete: soft delete user? Ikuti konvensi Sprint 1 — hapus `guru` + `users` (CASCADE) atau soft delete `users`; pilih soft delete `users` + `guru` (tanpa `deleted_at` di guru) → gunakan `User::delete()` dan biarkan FK; dokumentasikan.
-- Bulk upload: `GuruImport` (kolom: `nip`, `nama`, `mata_pelajaran`; password default `password123`), per baris transaksi, error per baris `{row, error}`
+- Bulk upload: `GuruImport` (kolom: `nip`, `nama`; password default `password123`), per baris transaksi, error per baris `{row, error}`
 
 **Routes:** read `admin` (sesuai 003 §9), write `admin`; bulk upload `admin`.
 
@@ -244,7 +244,7 @@ Route::middleware(['auth:sanctum', 'role:siswa'])->group(function () {
 ### B5 — `feature/excel-templates` (0.5 hari, opsional)
 
 - Template siswa: `nis`, `nama`, `jenis_kelamin`, `kelas`, `jurusan`, `gelombang`, `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu`
-- Template guru: `nip`, `nama`, `mata_pelajaran`
+- Template guru: `nip`, `nama`
 - Template perusahaan & kompetensi (dari Sprint 1)
 - Endpoint download opsional; alternatif file statis di `docs/templates/`
 - Test: file bisa diunduh / struktur kolom sesuai
