@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\User\StoreSiswaRequest;
+use App\Http\Requests\User\UpdateProfilSiswaRequest;
 use App\Http\Requests\User\UpdateSiswaRequest;
 use App\Http\Resources\SiswaResource;
 use App\Imports\SiswaImport;
@@ -83,6 +84,111 @@ class SiswaController extends Controller
         return new SiswaResource($siswa->load(['user', 'jurusan', 'gelombang']));
     }
 
+    /**
+     * Profil siswa yang sedang login beserta status onboarding.
+     */
+    public function me(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        if (! $siswa) {
+            return response()->json([
+                'message' => 'Profil siswa tidak ditemukan.',
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => $this->profilPayload($siswa),
+        ]);
+    }
+
+    /**
+     * Siswa melengkapi/mengubah profilnya selama belum dikonfirmasi.
+     */
+    public function updateProfil(UpdateProfilSiswaRequest $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        if (! $siswa) {
+            return response()->json([
+                'message' => 'Profil siswa tidak ditemukan.',
+            ], 404);
+        }
+
+        if ($siswa->isProfilTerkonfirmasi()) {
+            return response()->json([
+                'message' => 'Profil sudah dikonfirmasi. Perubahan hanya dapat dilakukan oleh admin.',
+                'code' => 'PROFIL_SUDAH_DIKONFIRMASI',
+            ], 422);
+        }
+
+        $data = $request->validated();
+
+        DB::transaction(function () use ($data, $siswa) {
+            $userData = Arr::only($data, ['name', 'email']);
+
+            if (! empty($userData)) {
+                $siswa->user->update($userData);
+            }
+
+            $siswaData = Arr::only($data, self::PROFIL_FIELDS);
+
+            if (! empty($siswaData)) {
+                $siswa->update($siswaData);
+            }
+        });
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui.',
+            'data' => $this->profilPayload($siswa->fresh()),
+        ]);
+    }
+
+    /**
+     * Konfirmasi profil siswa setelah seluruh field wajib terisi.
+     */
+    public function konfirmasi(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+
+        if (! $siswa) {
+            return response()->json([
+                'message' => 'Profil siswa tidak ditemukan.',
+            ], 404);
+        }
+
+        // Idempotent: konfirmasi ulang tidak mengubah timestamp.
+        if ($siswa->isProfilTerkonfirmasi()) {
+            return response()->json([
+                'message' => 'Profil sudah dikonfirmasi sebelumnya.',
+                'data' => $this->profilPayload($siswa),
+            ]);
+        }
+
+        $missing = $siswa->missingProfilFields();
+
+        if ($missing !== []) {
+            $errors = [];
+
+            foreach ($missing as $field) {
+                $errors[$field] = ['Field ini wajib diisi sebelum konfirmasi.'];
+            }
+
+            return response()->json([
+                'message' => 'Profil belum lengkap. Lengkapi data berikut sebelum konfirmasi.',
+                'code' => 'PROFIL_BELUM_LENGKAP',
+                'errors' => $errors,
+            ], 422);
+        }
+
+        $siswa->update(['profil_confirmed_at' => now()]);
+
+        return response()->json([
+            'message' => 'Profil berhasil dikonfirmasi.',
+            'data' => $this->profilPayload($siswa->fresh()),
+        ]);
+    }
+
     public function update(UpdateSiswaRequest $request, Siswa $siswa)
     {
         $data = $request->validated();
@@ -157,5 +263,50 @@ class SiswaController extends Controller
         $result = (new SiswaImport)->import($request->file('file')->getRealPath());
 
         return response()->json($result->toArray());
+    }
+
+    /**
+     * Payload profil siswa untuk endpoint onboarding.
+     *
+     * @return array<string, mixed>
+     */
+    private function profilPayload(Siswa $siswa): array
+    {
+        $siswa->loadMissing(['user', 'jurusan', 'gelombang']);
+
+        return [
+            'user' => [
+                'id' => $siswa->user->id,
+                'name' => $siswa->user->name,
+                'username' => $siswa->user->username,
+                'email' => $siswa->user->email,
+            ],
+            'siswa' => [
+                'id' => $siswa->id,
+                'nis' => $siswa->nis,
+                'jenis_kelamin' => $siswa->jenis_kelamin,
+                'kelas' => $siswa->kelas,
+                'telp' => $siswa->telp,
+                'alamat' => $siswa->alamat,
+                'nama_ortu' => $siswa->nama_ortu,
+                'telp_ortu' => $siswa->telp_ortu,
+                'alamat_ortu' => $siswa->alamat_ortu,
+            ],
+            'akademik' => [
+                'jurusan' => $siswa->jurusan ? [
+                    'id' => $siswa->jurusan->id,
+                    'nama' => $siswa->jurusan->nama,
+                    'kode' => $siswa->jurusan->kode,
+                ] : null,
+                'gelombang' => $siswa->gelombang ? [
+                    'id' => $siswa->gelombang->id,
+                    'nama' => $siswa->gelombang->nama,
+                    'tahun_ajaran' => $siswa->gelombang->tahun_ajaran,
+                ] : null,
+            ],
+            'profil_confirmed_at' => $siswa->profil_confirmed_at,
+            'profil_terkonfirmasi' => $siswa->isProfilTerkonfirmasi(),
+            'profil_lengkap' => $siswa->isProfilLengkap(),
+        ];
     }
 }
