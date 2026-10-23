@@ -29,7 +29,6 @@ class GuruImport implements Import, WithHeadingRow
                 Rule::unique('users', 'username'),
             ],
             'nama' => ['required', 'string', 'max:255'],
-            'mata_pelajaran' => ['nullable', 'string', 'max:100'],
         ];
     }
 
@@ -57,9 +56,8 @@ class GuruImport implements Import, WithHeadingRow
     {
         $nip = (string) $data['nip'];
         $nama = (string) $data['nama'];
-        $mataPelajaran = $data['mata_pelajaran'] ?? null;
 
-        DB::transaction(function () use ($nip, $nama, $mataPelajaran) {
+        DB::transaction(function () use ($nip, $nama) {
             $user = User::create([
                 'name' => $nama,
                 'username' => $nip,
@@ -71,7 +69,6 @@ class GuruImport implements Import, WithHeadingRow
             Guru::create([
                 'user_id' => $user->id,
                 'nip' => $nip,
-                'mata_pelajaran' => $mataPelajaran,
             ]);
         });
     }
@@ -86,7 +83,6 @@ class GuruImport implements Import, WithHeadingRow
             'nip.unique' => 'NIP sudah terdaftar.',
             'nama.required' => 'Nama wajib diisi.',
             'nama.max' => 'Nama maksimal 255 karakter.',
-            'mata_pelajaran.max' => 'Mata pelajaran maksimal 100 karakter.',
         ];
     }
 }

@@ -246,7 +246,6 @@
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | user_id | bigint unsigned | NO | - | FK, UNIQUE | → users.id |
 | nip | varchar(30) | YES | NULL | UNIQUE | Nomor Induk Pegawai |
-| mata_pelajaran | varchar(100) | YES | NULL | - | Mata pelajaran yang diampu |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
@@ -601,7 +600,7 @@ Menggunakan tabel default Laravel. Tidak perlu migration custom.
 | 7 | `perusahaan_jurusan` | ✅ Ada | ERD |
 | 8 | `sikap` | ✅ Ada | ERD |
 | 9 | `waktu_absen` | ✅ Ada | ERD + tambah keterangan |
-| 10 | `guru` | ❌ Belum | ERD + tambah mata_pelajaran |
+| 10 | `guru` | ✅ Sudah ada | ERD |
 | 11 | `siswa` | ❌ Belum | ERD + onboarding (alamat, alamat_ortu, profil_confirmed_at) |
 | 12 | `pengajuan_pkl` | ❌ Baru | Tambahan (belum ada di ERD) |
 | 13 | `lokasi_pkl` | ❌ Belum | ERD (status enum revisi) |
