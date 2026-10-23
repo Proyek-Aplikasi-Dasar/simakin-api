@@ -67,6 +67,7 @@
 - Siswa hanya bisa login via mobile (`X-Client: mobile`)
 - Admin/guru bisa login via web (session) atau mobile (token)
 - Registrasi: admin membuat akun guru/admin via `POST /api/register`; akun siswa dibuat lewat menu data siswa
+- Email siswa diisi saat onboarding dan disimpan di `users.email` sebagai data kontak (bukan login/notifikasi)
 - Ubah kata sandi: pengguna ubah sendiri via `PUT /api/user/password`; setelah sukses token/sesi lain dicabut
 - Lupa kata sandi: tidak ada reset via email; admin mereset via `PUT /api/users/{id}/password`
 
@@ -261,35 +262,42 @@
 
 ## 11. Tabel `siswa`
 
-**Deskripsi:** Data detail siswa PKL.
+**Deskripsi:** Data detail siswa PKL. Sebagian besar kolom profil diisi siswa saat onboarding (setelah login pertama) lalu dikonfirmasi.
 
 | Column | Type | Nullable | Default | Index | Description |
 |---|---|---|---|---|---|
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | user_id | bigint unsigned | NO | - | FK, UNIQUE | → users.id |
-| jurusan_id | bigint unsigned | NO | - | FK | → jurusan.id |
-| gelombang_id | bigint unsigned | NO | - | FK | → gelombang.id (1 siswa = 1 gelombang) |
-| nis | varchar(20) | NO | - | UNIQUE | Nomor Induk Siswa |
-| jenis_kelamin | enum('L','P') | NO | - | - | Laki-laki / Perempuan |
-| kelas | varchar(10) | NO | - | - | Kelas (A, B, C, D, E) |
-| telp | varchar(20) | YES | NULL | - | No telepon siswa |
+| jurusan_id | bigint unsigned | YES | NULL | FK | → jurusan.id (diisi saat onboarding) |
+| gelombang_id | bigint unsigned | YES | NULL | FK | → gelombang.id (1 siswa = 1 gelombang; diisi saat onboarding) |
+| nis | varchar(20) | NO | - | UNIQUE | Nomor Induk Siswa (read-only dari `users.username`) |
+| jenis_kelamin | enum('L','P') | YES | NULL | - | Laki-laki / Perempuan (diisi saat onboarding) |
+| kelas | varchar(20) | YES | NULL | - | Kelas, mis. `XII TJKT 1` (diisi saat onboarding) |
+| telp | varchar(20) | YES | NULL | - | No HP/WA siswa |
+| alamat | text | YES | NULL | - | Alamat domisili siswa |
 | nama_ortu | varchar(255) | YES | NULL | - | Nama orang tua/wali |
-| telp_ortu | varchar(20) | YES | NULL | - | No telepon orang tua |
+| telp_ortu | varchar(20) | YES | NULL | - | No HP/WA orang tua/wali |
+| alamat_ortu | text | YES | NULL | - | Alamat domisili orang tua/wali |
+| profil_confirmed_at | timestamp | YES | NULL | INDEX | Waktu siswa mengonfirmasi profil |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 | deleted_at | timestamp | YES | NULL | - | Soft delete |
 
 **Foreign Keys:**
 - `user_id` → `users(id)` ON DELETE CASCADE
-- `jurusan_id` → `jurusan(id)` ON DELETE RESTRICT
-- `gelombang_id` → `gelombang(id)` ON DELETE RESTRICT
+- `jurusan_id` → `jurusan(id)` ON DELETE RESTRICT (nullable)
+- `gelombang_id` → `gelombang(id)` ON DELETE RESTRICT (nullable)
 
 **Business Rules:**
-- Create siswa otomatis create `users` record (role_id = 3)
-- NIS unique
-- Satu siswa hanya bisa 1 gelombang (unik di `user_id`)
+- Create siswa otomatis create `users` record (role_id = 3); `users.name` wajib diisi, `username` = NIS
+- NIS unik dan sama dengan `users.username`; perubahan NIS hanya oleh admin dan harus menyinkronkan `siswa.nis` + `users.username`
+- Profil awal boleh NULL: `jurusan_id`, `gelombang_id`, `jenis_kelamin`, `kelas`, `telp`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu`; `users.email` diisi saat onboarding
+- Tahun ajaran **tidak** disimpan di `siswa`; ditampilkan dari `gelombang.tahun_ajaran`
+- Konfirmasi profil (`PUT /api/siswa/me/konfirmasi`) hanya berhasil jika seluruh field wajib terisi; jika belum → `PROFIL_BELUM_LENGKAP` (422)
+- Setelah `profil_confirmed_at` terisi, siswa tidak dapat mengubah profil (`PROFIL_SUDAH_DIKONFIRMASI`, 422); perubahan hanya oleh admin (validasi sekolah)
+- Admin update (`PUT /api/siswa/{id}`) tidak mereset `profil_confirmed_at`
+- Satu user hanya punya satu baris `siswa` (`user_id` unik) → satu siswa hanya bisa 1 gelombang
 - Admin CRUD + bulk upload Excel
-- Tidak ada kolom `alamat` (sesuai konfirmasi)
 
 ---
 
@@ -589,7 +597,7 @@ Menggunakan tabel default Laravel. Tidak perlu migration custom.
 | 8 | `sikap` | ✅ Ada | ERD |
 | 9 | `waktu_absen` | ✅ Ada | ERD + tambah keterangan |
 | 10 | `guru` | ❌ Belum | ERD + tambah mata_pelajaran |
-| 11 | `siswa` | ❌ Belum | ERD (tanpa alamat) |
+| 11 | `siswa` | ❌ Belum | ERD + onboarding (alamat, alamat_ortu, profil_confirmed_at) |
 | 12 | `pengajuan_pkl` | ❌ Baru | Tambahan (belum ada di ERD) |
 | 13 | `lokasi_pkl` | ❌ Belum | ERD (status enum revisi) |
 | 14 | `absensi_siswa` | ❌ Belum | ERD (revisi: tanpa jam_keluar/foto_keluar) |

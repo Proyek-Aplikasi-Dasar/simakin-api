@@ -60,6 +60,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 7. **Role & Akses** - RBAC admin/guru/siswa
 8. **Autentikasi Lengkap** - Login multi-platform, registrasi (admin), ubah kata sandi
 9. **Rekap Excel** (basic) - Export data presensi/jurnal/penilaian
+10. **Onboarding Profil Siswa** - Setelah login pertama, siswa melengkapi data diri, akademik, dan orang tua/wali lalu mengonfirmasi; perubahan setelah konfirmasi hanya oleh admin
 
 ### Scope PAD 2 (Lanjutan Semester Depan)
 
@@ -103,6 +104,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | Login | Web | Web | Mobile |
 | Register user | CRUD (guru/admin) | - | - (admin only create) |
 | Kelola data master | Full CRUD | Read only | - |
+| Profil siswa (onboarding) | Lihat semua + ubah (setelah konfirmasi) | Lihat (siswa bimbingan) | Isi & konfirmasi milik sendiri (sekali); ubah kata sandi |
 | Bulk upload Excel | Full | - | - |
 | Pengajuan PKL | Approve/Reject | Approve/Reject | Create/Cancel |
 | Penempatan (lokasi PKL) | Full CRUD + bulk approve | Read (siswa bimbingan) | Read (milik sendiri) |
@@ -133,6 +135,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 ### PAD 1 (12 Desember 2026)
 
 - [ ] Autentikasi lengkap: login, logout, register (admin), ubah kata sandi (web + mobile)
+- [ ] Onboarding siswa: data diri, akademik, orang tua/wali terisi & terkonfirmasi; profil terkunci untuk siswa setelah konfirmasi (perubahan via admin)
 - [ ] RBAC berjalan: admin/guru/siswa dengan akses berbeda
 - [ ] CRUD data master: siswa, guru, perusahaan, jurusan, kompetensi, gelombang, sikap + bulk upload Excel
 - [ ] Pengajuan PKL: siswa apply → admin/guru approve/reject → penempatan
@@ -165,4 +168,6 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | Chat | Tidak masuk scope PAD 1 |
 | GPS validation | Rekam lat/long tanpa validasi radius |
 | Login identifier | `username` (unik): siswa = NIS, guru = NIP, admin = kustom. Email tidak dipakai di PAD 1 (notifikasi database saja); lupa sandi via admin |
+| Onboarding siswa | Setelah login pertama, siswa mengisi & mengonfirmasi data diri, akademik, dan orang tua/wali. Setelah `profil_confirmed_at` terisi, siswa tidak dapat mengubah profil; perubahan hanya oleh admin (validasi sekolah). Siswa tetap dapat mengubah kata sandi sendiri |
+| Email siswa | Disimpan di `users.email` sebagai data kontak; bukan identitas login dan tidak dipakai untuk notifikasi PAD 1 |
 | Excel | Bulk upload (siswa, guru, perusahaan) + export rekap |

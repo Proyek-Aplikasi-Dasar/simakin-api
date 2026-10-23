@@ -49,6 +49,8 @@ X-Client: mobile
 }
 ```
 
+> Untuk akun siswa, `username` = **NIS** (contoh: `0012345`). Akun demo `siswa/siswa123` tetap tersedia; siswa hasil import/bulk upload login memakai NIS masing-masing.
+
 **Output:** `200 OK`
 
 ```json
@@ -741,3 +743,151 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
   ]
 }
 ```
+
+---
+
+## G. Onboarding Profil Siswa (Mobile)
+
+**Prasyarat:** sudah login mobile (`X-Client: mobile`). Semua request memakai header:
+
+```
+Accept: application/json
+Authorization: Bearer {token}
+```
+
+**Identitas:** siswa login dengan `username` = **NIS**. NIS di onboarding bersifat **read-only** (diambil dari `users.username`).
+
+**Data yang dilengkapi:** data diri (nama lengkap, NIS, jenis kelamin, no HP/WA, email aktif, alamat domisili), akademik (kelas, jurusan, tahun ajaran dari gelombang), dan orang tua/wali (nama, no HP/WA, alamat).
+
+### 1. Ambil Profil Sendiri
+
+```
+GET {{base_url}}/siswa/me
+```
+
+**Output:** `200 OK`
+
+```json
+{
+  "data": {
+    "user": {
+      "id": 4,
+      "name": "Siswa Teladan",
+      "username": "0012345",
+      "email": null
+    },
+    "siswa": {
+      "id": 1,
+      "nis": "0012345",
+      "jenis_kelamin": null,
+      "kelas": null,
+      "telp": null,
+      "alamat": null,
+      "nama_ortu": null,
+      "telp_ortu": null,
+      "alamat_ortu": null
+    },
+    "akademik": {
+      "jurusan": null,
+      "gelombang": null
+    },
+    "profil_confirmed_at": null,
+    "profil_terkonfirmasi": false,
+    "profil_lengkap": false
+  }
+}
+```
+
+> `akademik.gelombang` memuat `tahun_ajaran` (tidak ada kolom tahun ajaran terpisah). `profil_lengkap` bernilai `true` jika seluruh field wajib konfirmasi sudah terisi.
+
+### 2. Lengkapi / Ubah Profil
+
+```
+PUT {{base_url}}/siswa/me/profil
+```
+
+**Body (raw, JSON)** — partial, semua field opsional:
+
+```json
+{
+  "name": "Siswa Teladan",
+  "jenis_kelamin": "L",
+  "telp": "081234567890",
+  "email": "siswa@example.com",
+  "alamat": "Jl. Contoh No. 1, Magelang",
+  "kelas": "XII TJKT 1",
+  "jurusan_id": 7,
+  "gelombang_id": 1,
+  "nama_ortu": "Budi Santoso",
+  "telp_ortu": "081234567891",
+  "alamat_ortu": "Jl. Contoh No. 1, Magelang"
+}
+```
+
+**Output:** `200 OK`
+
+```json
+{
+  "message": "Profil berhasil diperbarui.",
+  "data": { "...": "sama seperti GET /siswa/me" }
+}
+```
+
+**Aturan:**
+
+- `name` disimpan ke `users.name`; `email` ke `users.email` (unik, bukan identitas login).
+- `nis` dan `username` **tidak diterima** dari siswa.
+- Hanya bisa dilakukan sebelum profil dikonfirmasi. Setelah konfirmasi → `422 PROFIL_SUDAH_DIKONFIRMASI` (hubungi admin).
+
+### 3. Konfirmasi Profil
+
+```
+PUT {{base_url}}/siswa/me/konfirmasi
+```
+
+Tanpa body. Validasi kelengkapan: `name`, `jenis_kelamin`, `telp`, `email`, `alamat`, `kelas`, `jurusan_id`, `gelombang_id`, `nama_ortu`, `telp_ortu`, `alamat_ortu`.
+
+**Output sukses:** `200 OK`
+
+```json
+{
+  "message": "Profil berhasil dikonfirmasi.",
+  "data": { "...": "profil dengan profil_terkonfirmasi = true" }
+}
+```
+
+**Belum lengkap:** `422 Unprocessable Entity`
+
+```json
+{
+  "message": "Profil belum lengkap.",
+  "code": "PROFIL_BELUM_LENGKAP",
+  "errors": {
+    "email": ["Email wajib diisi."],
+    "alamat": ["Alamat wajib diisi."]
+  }
+}
+```
+
+**Sudah pernah dikonfirmasi:** `200 OK` → `{ "message": "Profil sudah dikonfirmasi sebelumnya." }`
+
+### 4. Error Onboarding
+
+| Code | HTTP | Kapan |
+|---|---|---|
+| `PROFIL_BELUM_KONFIRMASI` | `403` | Mengakses endpoint transaksional sebelum konfirmasi (Sprint 3+) |
+| `PROFIL_BELUM_LENGKAP` | `422` | Konfirmasi saat masih ada field wajib kosong |
+| `PROFIL_SUDAH_DIKONFIRMASI` | `422` | Siswa mengubah profil setelah konfirmasi |
+
+### 5. Alur Aplikasi Mobile
+
+```
+Login (username = NIS)
+  → GET /siswa/me
+  → profil_terkonfirmasi == false ? tampilkan onboarding
+      → PUT /siswa/me/profil (isi bertahap)
+      → PUT /siswa/me/konfirmasi
+  → masuk ke halaman utama
+```
+
+Setelah konfirmasi, siswa **tidak bisa** mengubah data diri/akademik/orang tua/wali. Perubahan hanya oleh admin (validasi sekolah); siswa tetap bisa mengubah kata sandi lewat `PUT /api/user/password`.

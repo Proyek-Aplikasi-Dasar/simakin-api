@@ -4,6 +4,8 @@ Dokumen kerja untuk **membangun koleksi Postman secara manual** (di GUI Postman)
 
 Panduan konsep/umum: `.agents/tech-specs/2026/004-postman-collection-guide.md`.
 
+**Onboarding siswa (Sprint 2):** lihat `.agents/tasks/postman-onboarding-execution.md` untuk request `GET /api/siswa/me`, `PUT /api/siswa/me/profil`, dan `PUT /api/siswa/me/konfirmasi`.
+
 **Ruang lingkup:** 5 endpoint autentikasi yang sudah *Done*
 `POST /api/login`, `POST /api/logout`, `GET /api/user`, `POST /api/register`, `PUT /api/user/password`.
 
@@ -25,6 +27,7 @@ Panduan konsep/umum: `.agents/tech-specs/2026/004-postman-collection-guide.md`.
    ```
 3. Postman Desktop terpasang.
 4. User demo (hasil seeder): `admin/admin123`, `guru/guru123`, `siswa/siswa123` (login memakai **`username`**, bukan email).
+5. Setelah Sprint 2: siswa hasil seeder/import login dengan **NIS** sebagai `username` (password default `password123`). Akun demo `siswa/siswa123` tetap bisa dipakai.
 
 > Nilai `frontend_url` **harus sama** dengan `SANCTUM_STATEFUL_DOMAINS`. Jika berbeda, login web gagal (cookie session tidak tersimpan).
 
@@ -49,6 +52,7 @@ Postman → **Environments** → **Create Environment** → nama `SIMAKIN Local`
 | `guru_password` | `guru123` | |
 | `siswa_username` | `siswa` | Akun siswa |
 | `siswa_password` | `siswa123` | |
+| `siswa_nis` | `0012345` | NIS siswa hasil import (username login) |
 
 Simpan (Ctrl+S) lalu pilih environment ini di kanan atas Postman.
 
@@ -211,6 +215,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
   ```json
   { "username": "{{siswa_username}}", "password": "{{siswa_password}}" }
   ```
+  > Untuk siswa hasil import, ganti body menjadi `{ "username": "{{siswa_nis}}", "password": "password123" }` (atau buat request terpisah `[Onboarding] POST Login (Mobile) - NIS`).
 - **Tests:**
   ```javascript
   pm.test("Status 200 OK", function () {
@@ -233,7 +238,7 @@ Buat request **sesuai urutan di bawah** (urutan ini penting untuk Collection Run
 - **Documentation (tab):**
   ```markdown
   ## Deskripsi
-  Login mobile (siswa) berbasis Bearer token. Header `X-Client: mobile` menandakan klien mobile.
+  Login mobile (siswa) berbasis Bearer token. Header `X-Client: mobile` menandakan klien mobile. Untuk siswa, `username` = **NIS**.
 
   ## Request Body
   | Field | Type | Required |

@@ -191,6 +191,7 @@ php artisan make:request StoreSiswaRequest
 - **Web (admin/guru):** Session + CSRF cookie. `GET /sanctum/csrf-cookie` dulu, lalu login tanpa `X-Client`.
 - **Mobile (siswa):** Bearer token. Login dengan header `X-Client: mobile`, simpan token, kirim `Authorization: Bearer {token}`.
 - Siswa **tidak bisa login via web** (dicek di LoginController).
+- **Onboarding siswa:** setelah login pertama, siswa wajib melengkapi & mengonfirmasi profil (data diri, akademik, orang tua/wali) via `GET /api/siswa/me`, `PUT /api/siswa/me/profil`, dan `PUT /api/siswa/me/konfirmasi`. NIS diambil dari `users.username` dan read-only. Setelah `profil_confirmed_at` terisi, siswa **tidak bisa** mengubah profil; perubahan hanya oleh admin. Siswa tetap bisa mengubah kata sandi sendiri.
 
 ## Error Codes Kustom
 
@@ -204,6 +205,9 @@ php artisan make:request StoreSiswaRequest
 | `PERUSAHAAN_KUOTA_PENUH` | 422 | Kuota perusahaan habis |
 | `SISWA_ALREADY_PLACED` | 422 | Siswa sudah punya PKL aktif |
 | `GELOMBANG_NOT_ACTIVE` | 422 | Pendaftaran gelombang tertutup |
+| `PROFIL_BELUM_KONFIRMASI` | 403 | Profil siswa belum dikonfirmasi (gate endpoint transaksional) |
+| `PROFIL_BELUM_LENGKAP` | 422 | Data profil belum lengkap saat konfirmasi |
+| `PROFIL_SUDAH_DIKONFIRMASI` | 422 | Siswa mencoba mengubah profil setelah konfirmasi (hanya admin) |
 
 ## Git Workflow
 
@@ -218,6 +222,8 @@ php artisan make:request StoreSiswaRequest
 - **Siswa:** 700+ per angkatan, 1 siswa = 1 gelombang
 - **Presensi:** Hanya check-in (tanpa jam keluar), rekam GPS tanpa validasi radius
 - **Registrasi siswa:** Admin only (bukan self-register)
+- **Onboarding siswa:** Profil awal nullable; siswa mengisi data diri, akademik, dan orang tua/wali lalu konfirmasi. Setelah konfirmasi, profil hanya bisa diubah admin (validasi sekolah); siswa hanya bisa mengubah kata sandi
+- **Email siswa:** Disimpan di `users.email` sebagai data kontak, bukan identitas login/notifikasi
 - **Excel:** Bulk upload (siswa, guru, perusahaan, kompetensi) + export rekap
 - **Notifikasi:** Database saja via queue (tanpa email & push notification di PAD 1)
 - **Lupa sandi:** Hubungi admin; admin reset kata sandi user (tanpa reset via email)

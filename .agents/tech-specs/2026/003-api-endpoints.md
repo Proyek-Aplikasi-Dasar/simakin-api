@@ -22,8 +22,9 @@
 
 **Mobile** (header `X-Client: mobile`):
 ```json
-{ "username": "siswa", "password": "siswa123" }
+{ "username": "0012345", "password": "siswa123" }
 ```
+> Untuk siswa, isi `username` dengan **NIS** (NIS = `users.username`). NIS yang sama ditampilkan read-only saat onboarding.
 Response 200:
 ```json
 {
@@ -341,6 +342,8 @@ Response resource: `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan
 
 **GET /api/guru/{id}/siswa-bimbingan** - Query: `status` (active/completed), `tanggal` (filter presensi/jurnal hari ini)
 
+> Endpoint ini baru diimplementasikan **Sprint 3** karena bergantung pada tabel `lokasi_pkl`.
+
 Response: siswa list + status hari ini:
 ```json
 {
@@ -356,34 +359,91 @@ Response: siswa list + status hari ini:
 
 ---
 
-## 10. Data Master - Siswa (8 endpoints) 📋
+## 10. Data Master - Siswa + Onboarding (10 endpoints) 📋
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
 | GET | /api/siswa | Required | admin, guru | List siswa |
 | GET | /api/siswa/{id} | Required | admin, guru | Detail siswa |
 | POST | /api/siswa | Required | admin | Create siswa + user |
-| PUT | /api/siswa/{id} | Required | admin | Update siswa |
+| PUT | /api/siswa/{id} | Required | admin | Update siswa (termasuk data akademik/pribadi/ortu) |
 | DELETE | /api/siswa/{id} | Required | admin | Delete siswa |
 | POST | /api/siswa/bulk-upload | Required | admin | Import Excel |
-| GET | /api/siswa/me | Required | siswa | Data diri sendiri |
+| GET | /api/siswa/me | Required | siswa | Profil sendiri + status onboarding |
+| PUT | /api/siswa/me/profil | Required | siswa | Lengkapi/ubah profil saat onboarding |
+| PUT | /api/siswa/me/konfirmasi | Required | siswa | Konfirmasi profil |
 | GET | /api/siswa/{id}/lokasi-pkl | Required | admin, guru, siswa | Lokasi PKL siswa |
+
+> **Urutan route:** daftarkan `/api/siswa/me`, `/api/siswa/me/profil`, dan `/api/siswa/me/konfirmasi` **sebelum** `/api/siswa/{id}` agar tidak tertangkap wildcard `{id}`.
+
+> `GET /api/siswa/{id}/lokasi-pkl` baru diimplementasikan **Sprint 3** karena bergantung pada tabel `lokasi_pkl`.
 
 **GET /api/siswa** - Query: `jurusan_id`, `gelombang_id`, `kelas`, `search` (nis/nama), `status_pkl` (active/pending/none), `page`
 
-**POST /api/siswa** - Body:
+**POST /api/siswa** - Body (field profil opsional; minimal `name`, `nis`, `password`; `username` opsional dan default = NIS):
 ```json
 {
-  "name": "...", "username": "0012345",
+  "name": "...",
   "password": "password123", "password_confirmation": "password123",
-  "nis": "0012345", "jurusan_id": 1, "gelombang_id": 1,
-  "jenis_kelamin": "L", "kelas": "XII-A",
-  "telp": "08xxx", "nama_ortu": "...", "telp_ortu": "08xxx"
+  "nis": "0012345",
+  "jurusan_id": 1, "gelombang_id": 1,
+  "jenis_kelamin": "L", "kelas": "XII TJKT 1",
+  "email": "siswa@example.com",
+  "telp": "08xxx", "alamat": "...",
+  "nama_ortu": "...", "telp_ortu": "08xxx", "alamat_ortu": "..."
 }
 ```
-**Logic:** Create `users` (role_id=3, **username = NIS**) → Create `siswa` (user_id).
+**Logic:** Create `users` (role_id=3, **username = NIS**, `email` opsional) → Create `siswa` (user_id) dalam satu transaksi. Field profil yang tidak dikirim dibiarkan `NULL` dan dilengkapi siswa saat onboarding.
 
-**GET /api/siswa/me** - Response: profil lengkap + status PKL + ringkasan hari ini.
+**PUT /api/siswa/{id}** (admin) - Bisa mengubah seluruh field profil, termasuk `nis`/`username` (harus sinkron), `jurusan_id`, `gelombang_id`, `kelas`, data pribadi, dan data ortu. Tidak mereset `profil_confirmed_at`.
+
+**GET /api/siswa/me** - Response:
+```json
+{
+  "data": {
+    "user": { "id": 4, "name": "...", "username": "0012345", "email": null },
+    "siswa": {
+      "id": 1, "nis": "0012345", "jenis_kelamin": null, "kelas": null,
+      "telp": null, "alamat": null,
+      "nama_ortu": null, "telp_ortu": null, "alamat_ortu": null
+    },
+    "akademik": { "jurusan": null, "gelombang": null },
+    "profil_confirmed_at": null,
+    "profil_terkonfirmasi": false,
+    "profil_lengkap": false
+  }
+}
+```
+> `akademik.gelombang` memuat `tahun_ajaran`; tidak ada kolom tahun ajaran terpisah. `profil_lengkap` = seluruh field wajib konfirmasi sudah terisi.
+
+**PUT /api/siswa/me/profil** (siswa) - Body partial (semua opsional):
+```json
+{
+  "name": "...", "jenis_kelamin": "L", "telp": "08xxx",
+  "email": "siswa@example.com", "alamat": "...",
+  "kelas": "XII TJKT 1", "jurusan_id": 1, "gelombang_id": 1,
+  "nama_ortu": "...", "telp_ortu": "08xxx", "alamat_ortu": "..."
+}
+```
+**Logic:**
+- Hanya boleh saat `profil_confirmed_at` masih `NULL`
+- `name` → `users.name`; `email` → `users.email` (unique, ignore milik sendiri)
+- `nis`/`username` tidak diterima dari siswa
+- Jika sudah dikonfirmasi → **422 `PROFIL_SUDAH_DIKONFIRMASI`** (hubungi admin)
+
+**PUT /api/siswa/me/konfirmasi** (siswa):
+- Validasi seluruh field wajib sudah terisi: `name`, `jenis_kelamin`, `telp`, `email`, `alamat`, `kelas`, `jurusan_id`, `gelombang_id`, `nama_ortu`, `telp_ortu`, `alamat_ortu`
+- Jika belum lengkap → **422 `PROFIL_BELUM_LENGKAP`** dengan `errors`
+- Jika lengkap → set `profil_confirmed_at` → 200 `{ "message": "Profil berhasil dikonfirmasi." }`
+- Idempotent: konfirmasi ulang → 200 dengan pesan "Profil sudah dikonfirmasi sebelumnya."
+
+**Error kustom:**
+
+| Code | HTTP | Kapan |
+|---|---|---|
+| `PROFIL_BELUM_KONFIRMASI` | 403 | Mengakses endpoint transaksional sebelum konfirmasi (Sprint 3+) |
+| `PROFIL_BELUM_LENGKAP` | 422 | Konfirmasi saat masih ada field wajib kosong |
+| `PROFIL_SUDAH_DIKONFIRMASI` | 422 | Siswa mengubah profil setelah konfirmasi |
 
 ---
 
@@ -735,7 +795,7 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 7. Sikap | 5 | 5 ✅ |
 | 8. Waktu Absen | 4 | 4 ✅ |
 | 9. Guru | 7 | 📋 |
-| 10. Siswa | 8 | 📋 |
+| 10. Siswa | 10 | 📋 |
 | 11. Pengajuan PKL | 7 (incl. bulk) | 📋 |
 | 12. Lokasi PKL | 6 | 📋 |
 | 13. Presensi | 9 | 📋 |
@@ -744,4 +804,4 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 📋 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~113** | **37 done, ~76 planned** (termasuk 2 bulk upload master di Sprint 2) |
+| **Total** | **~115** | **37 done, ~78 planned** (termasuk 2 bulk upload master + 2 endpoint onboarding di Sprint 2) |

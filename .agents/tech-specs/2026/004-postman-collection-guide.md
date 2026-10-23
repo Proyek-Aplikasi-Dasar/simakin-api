@@ -43,6 +43,7 @@ Tambahkan variables berikut:
 | `guru_password` | `guru123` | `guru123` | Password guru |
 | `siswa_username` | `siswa` | `siswa` | Akun siswa demo |
 | `siswa_password` | `siswa123` | `siswa123` | Password siswa |
+| `siswa_nis` | `0012345` | `0012345` | NIS siswa hasil import/bulk upload (dipakai sebagai `username` login) |
 | `idempotency_key` | | | Akan diisi otomatis |
 
 ### 2.2 Membuat Environment Production (nanti)
@@ -121,7 +122,7 @@ SIMAKIN API
 │   ├── PUT Update Guru
 │   ├── DELETE Delete Guru
 │   ├── POST Bulk Upload Guru
-│   └── GET Siswa Bimbingan
+│   └── GET Siswa Bimbingan (Sprint 3)
 ├── 10. Data - Siswa
 │   ├── GET List Siswa
 │   ├── GET Get Siswa Detail
@@ -130,7 +131,9 @@ SIMAKIN API
 │   ├── DELETE Delete Siswa
 │   ├── POST Bulk Upload Siswa
 │   ├── GET Saya (Me)
-│   └── GET Lokasi PKL Siswa
+│   ├── PUT Update Profil Saya
+│   ├── PUT Konfirmasi Profil
+│   └── GET Lokasi PKL Siswa (Sprint 3)
 ├── 11. Pengajuan PKL
 │   ├── GET List Pengajuan
 │   ├── GET Get Pengajuan Detail
@@ -203,11 +206,15 @@ SIMAKIN API
     ├── [Auth] PUT Change Password - Konfirmasi Beda
     ├── [Auth] POST Logout - Cleanup
     ├── [Auth] GET Get User - Setelah Logout
+    ├── [Onboarding] GET Saya (Me) - Belum Konfirmasi
+    ├── [Onboarding] PUT Konfirmasi Profil - Belum Lengkap
+    ├── [Onboarding] PUT Update Profil - Setelah Konfirmasi
+    ├── [Flow] Onboarding Siswa Flow
     ├── [Flow] Admin Full Flow
     └── [Flow] Siswa PKL Flow
 ```
 
-> **Status eksekusi:** folder **03–08 (Data Master)** sudah diimplementasikan dan diuji melalui panduan terpisah: `.agents/tasks/postman-master-data-execution.md` (32 endpoint + skenario error). Request **Bulk Upload Kompetensi/Perusahaan** di folder 04 & 06 belum tersedia — endpoint bulk upload menyusul Sprint 2 (fondasi import sudah siap di `app/Imports`).
+> **Status eksekusi:** folder **03–08 (Data Master)** sudah diimplementasikan dan diuji melalui `.agents/tasks/postman-master-data-execution.md` (32 endpoint + skenario error). Folder **09–10 (Guru/Siswa)** + `GET/PUT /api/siswa/me*` dikerjakan Sprint 2; panduan onboarding: `.agents/tasks/postman-onboarding-execution.md`. Request `GET Siswa Bimbingan` & `GET Lokasi PKL Siswa` menyusul Sprint 3 karena bergantung pada tabel `lokasi_pkl`. Request **Bulk Upload Kompetensi/Perusahaan** di folder 04 & 06 menyusul Sprint 2.
 
 ---
 
@@ -441,7 +448,7 @@ Di setiap request, tambahkan **Examples** (tab Examples):
 
 ## 5. Test Scenarios (Collection Runner)
 
-> Catatan: baru sebagian skenario (autentikasi) yang dapat dijalankan sekarang. Skenario Admin Full Flow & Siswa PKL Flow bergantung pada endpoint modul lain yang belum dibangun.
+> Catatan: skenario autentikasi & onboarding sudah dapat dijalankan setelah Sprint 2. Skenario Admin Full Flow & Siswa PKL Flow bergantung pada endpoint modul lain yang belum dibangun.
 
 ### 5.1 Scenario: Admin Full Flow
 
@@ -460,17 +467,19 @@ Urutan request untuk dijalankan via **Collection Runner**:
 
 ### 5.2 Scenario: Siswa PKL Flow
 
-1. `POST Login (Mobile)` sebagai siswa
-2. `GET Saya (Me)`
-3. `POST Ajukan PKL` (alternatif: admin assign via Lokasi PKL)
-4. `POST Check-in (Dengan Foto)`
-5. `POST Create Jurnal`
-6. `GET List Jurnal`
-7. `GET Notifications`
+1. `POST Login (Mobile)` sebagai siswa (`username` = NIS)
+2. `GET Saya (Me)` → cek `profil_terkonfirmasi`
+3. `PUT Update Profil Saya` (lengkapi data diri, akademik, orang tua/wali)
+4. `PUT Konfirmasi Profil` → `profil_confirmed_at` terisi
+5. `POST Ajukan PKL` (alternatif: admin assign via Lokasi PKL)
+6. `POST Check-in (Dengan Foto)`
+7. `POST Create Jurnal`
+8. `GET List Jurnal`
+9. `GET Notifications`
 
-### 5.3 Scenario: Error Cases (Autentikasi — tersedia)
+### 5.3 Scenario: Error Cases (Autentikasi & Onboarding — tersedia)
 
-> Hanya endpoint autentikasi yang tersedia saat ini. Skenario modul lain ditambahkan saat endpoint-nya dibangun.
+> Endpoint autentikasi + onboarding tersedia setelah Sprint 2. Skenario modul lain ditambahkan saat endpoint-nya dibangun.
 
 1. `POST Login` password salah → assert 422 (`errors.username`)
 2. `POST Login` field kosong → assert 422 (`errors.username`, `errors.password`)
@@ -481,6 +490,9 @@ Urutan request untuk dijalankan via **Collection Runner**:
 7. `PUT /api/user/password` `current_password` salah → assert 422 (`errors.current_password`)
 8. `PUT /api/user/password` konfirmasi tidak cocok → assert 422 (`errors.password`)
 9. `POST Logout` lalu `GET /api/user` → assert 401
+10. `GET /api/siswa/me` tanpa token → assert 401
+11. `PUT /api/siswa/me/konfirmasi` saat profil belum lengkap → assert 422 (`code` = `PROFIL_BELUM_LENGKAP`)
+12. `PUT /api/siswa/me/profil` setelah konfirmasi → assert 422 (`code` = `PROFIL_SUDAH_DIKONFIRMASI`)
 
 ### 5.4 Menjalankan Collection Runner
 
