@@ -4,6 +4,7 @@ namespace App\Imports\Concerns;
 
 use App\Exceptions\InvalidFileTypeException;
 use App\Support\ImportResult;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -60,8 +61,13 @@ trait ImportsRows
                 continue;
             }
 
-            $this->saveRow($validator->validated());
-            $result->addSuccess();
+            try {
+                $this->saveRow($validator->validated());
+                $result->addSuccess();
+            } catch (QueryException) {
+                // Satu baris gagal tidak boleh menggagalkan seluruh import.
+                $result->addError($rowNumber, 'Data gagal disimpan karena duplikat atau tidak valid.');
+            }
         }
 
         return $result;
@@ -106,6 +112,17 @@ trait ImportsRows
      * @return array<array-key, mixed>
      */
     protected function prepareRow(array $row): array
+    {
+        return $this->normalizeRow($row);
+    }
+
+    /**
+     * Implementasi normalisasi dasar, bisa dipakai ulang oleh class import yang override prepareRow().
+     *
+     * @param  array<array-key, mixed>  $row
+     * @return array<array-key, mixed>
+     */
+    protected function normalizeRow(array $row): array
     {
         $data = [];
 

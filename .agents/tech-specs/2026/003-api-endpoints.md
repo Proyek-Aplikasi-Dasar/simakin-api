@@ -318,7 +318,7 @@ Response resource: `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan
 
 ---
 
-## 9. Data Master - Guru (7 endpoints) 📋
+## 9. Data Master - Guru (7 endpoints) — 6 selesai, 1 Sprint 3
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -794,7 +794,7 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 6. Perusahaan | 8 | 7 ✅ + 1 Sprint 2 (bulk upload) |
 | 7. Sikap | 5 | 5 ✅ |
 | 8. Waktu Absen | 4 | 4 ✅ |
-| 9. Guru | 7 | 📋 |
+| 9. Guru | 7 | 6 selesai + 1 Sprint 3 (siswa-bimbingan) |
 | 10. Siswa | 10 | 📋 |
 | 11. Pengajuan PKL | 7 (incl. bulk) | 📋 |
 | 12. Lokasi PKL | 6 | 📋 |

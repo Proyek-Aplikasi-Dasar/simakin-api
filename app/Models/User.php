@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -81,6 +82,14 @@ class User extends Authenticatable
     public function isGuru(): bool
     {
         return $this->hasRole('guru');
+    }
+
+    /**
+     * Relasi ke Guru (One-to-One).
+     */
+    public function guru(): HasOne
+    {
+        return $this->hasOne(Guru::class, 'user_id');
     }
 
     /**

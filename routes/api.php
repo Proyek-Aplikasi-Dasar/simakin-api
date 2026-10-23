@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\GelombangController;
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PerusahaanController;
@@ -30,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('gelombang', GelombangController::class)->only(['index', 'show']);
     Route::apiResource('perusahaan', PerusahaanController::class)->only(['index', 'show']);
     Route::apiResource('sikap', SikapController::class)->only(['index', 'show']);
+    // Detail guru boleh admin & guru; list hanya admin (003-api-endpoints.md §9)
+    Route::middleware('role:admin,guru')->get('guru/{guru}', [GuruController::class, 'show']);
     // Waktu absen tanpa show (4 endpoint sesuai 003-api-endpoints.md §8)
     Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['index']);
 
@@ -42,6 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('perusahaan/{perusahaan}/jurusan', [PerusahaanController::class, 'attachJurusan']);
         Route::delete('perusahaan/{perusahaan}/jurusan/{jurusan}', [PerusahaanController::class, 'detachJurusan']);
         Route::apiResource('sikap', SikapController::class)->only(['store', 'update', 'destroy']);
+        Route::get('guru', [GuruController::class, 'index']);
+        Route::post('guru', [GuruController::class, 'store']);
+        Route::post('guru/bulk-upload', [GuruController::class, 'bulkUpload']);
+        Route::put('guru/{guru}', [GuruController::class, 'update']);
+        Route::delete('guru/{guru}', [GuruController::class, 'destroy']);
         Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['store', 'update', 'destroy']);
     });
 });
