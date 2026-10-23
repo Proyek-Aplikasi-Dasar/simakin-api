@@ -134,6 +134,9 @@
 | `PERUSAHAAN_KUOTA_PENUH` | 422 | Company quota full |
 | `PERIODE_CLOSED` | 422 | Penilaian period not active |
 | `GELOMBANG_NOT_ACTIVE` | 422 | Gelombang registration closed |
+| `PROFIL_BELUM_KONFIRMASI` | 403 | Profil siswa belum dikonfirmasi (gate endpoint transaksional) |
+| `PROFIL_BELUM_LENGKAP` | 422 | Data profil belum lengkap saat konfirmasi |
+| `PROFIL_SUDAH_DIKONFIRMASI` | 422 | Siswa mengubah profil setelah konfirmasi (hanya admin) |
 | `SISWA_ALREADY_PLACED` | 422 | Siswa already has active PKL |
 | `NOT_SINGLE_GELOMBANG` | 422 | Siswa can only join 1 gelombang |
 | `FILE_TOO_LARGE` | 422 | File exceeds size limit |
@@ -163,10 +166,15 @@
 **Mobile (Siswa) - Token-based:**
 ```
 1. POST /api/login                 → Header X-Client: mobile → return user + token
-2. GET /api/user                   → Header Authorization: Bearer {token}, X-Client: mobile
-3. PUT /api/user/password          → Ubah kata sandi (token lain dicabut)
-4. POST /api/logout                → Header Authorization: Bearer {token} → delete token
+2. GET /api/siswa/me               → Ambil profil + status onboarding
+3. PUT /api/siswa/me/profil        → (onboarding) isi/ubah data diri, akademik, ortu
+4. PUT /api/siswa/me/konfirmasi    → Konfirmasi profil (set profil_confirmed_at)
+5. GET /api/user                   → Header Authorization: Bearer {token}, X-Client: mobile
+6. PUT /api/user/password          → Ubah kata sandi (token lain dicabut)
+7. POST /api/logout                → Header Authorization: Bearer {token} → delete token
 ```
+
+> Setelah login, aplikasi memanggil `GET /api/siswa/me`. Jika `profil_terkonfirmasi = false`, tampilkan halaman onboarding (data diri → akademik → orang tua/wali → konfirmasi). NIS diambil dari `users.username` dan read-only. Setelah konfirmasi, profil terkunci untuk siswa; perubahan hanya oleh admin.
 
 - Token disimpan di secure storage (Flutter: `flutter_secure_storage`)
 - Token expiration: default Sanctum (sesuai config)
@@ -207,6 +215,28 @@ public function update(User $user, Jurnal $jurnal): bool
         && $jurnal->status_review !== 'approved';
 }
 ```
+
+Untuk profil siswa:
+- `GET /api/siswa/me` hanya mengembalikan profil siswa yang login.
+- `PUT /api/siswa/me/profil` dan `PUT /api/siswa/me/konfirmasi` hanya untuk role `siswa` dan hanya sebelum `profil_confirmed_at` terisi.
+- Setelah konfirmasi, perubahan profil (pribadi, akademik, ortu) hanya lewat `PUT /api/siswa/{id}` oleh admin. Siswa hanya dapat mengubah kata sandi sendiri (`PUT /api/user/password`).
+
+### 3.5 Onboarding Profil Siswa
+
+Alur setelah login pertama siswa:
+
+1. `GET /api/siswa/me` → cek `profil_terkonfirmasi` dan `profil_lengkap`.
+2. `PUT /api/siswa/me/profil` → isi/ubah data diri, akademik, dan orang tua/wali (partial update).
+3. `PUT /api/siswa/me/konfirmasi` → validasi kelengkapan lalu set `profil_confirmed_at`.
+4. Endpoint transaksional (pengajuan, presensi, jurnal, penilaian) dijaga middleware `EnsureSiswaProfileConfirmed`:
+   - profil belum dikonfirmasi → **403 `PROFIL_BELUM_KONFIRMASI`**
+   - middleware mulai diterapkan saat endpoint terkait tersedia (Sprint 3+)
+
+Aturan data:
+- `name` → `users.name`, `email` → `users.email` (data kontak, bukan login)
+- `nis` = `users.username` (read-only untuk siswa)
+- tahun ajaran ditampilkan dari `gelombang.tahun_ajaran`
+- setelah `profil_confirmed_at` terisi: `PROFIL_SUDAH_DIKONFIRMASI` (422) untuk perubahan oleh siswa; admin tetap bisa mengubah tanpa mereset konfirmasi
 
 ## 4. Anti-Double Submit Strategy
 

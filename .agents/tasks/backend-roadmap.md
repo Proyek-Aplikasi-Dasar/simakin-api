@@ -12,7 +12,7 @@
 |---|---|---|---|
 | 0 | 9-13 Okt | Auth lengkap + Fondasi | 5 hari |
 | 1 | 14-20 Okt | Data Master (7 tabel) | 5 hari |
-| 2 | 21-27 Okt | Data Master User (Guru + Siswa + Excel) | 5 hari |
+| 2 | 21-27 Okt | Data Master User (Guru + Siswa + Onboarding + Excel) | 6.5 hari |
 | 3 | 28 Okt - 3 Nov | Pengajuan & Penempatan PKL | 5 hari |
 | 4 | 4-10 Nov | Presensi Harian | 5 hari |
 | 5 | 11-17 Nov | Jurnal Harian | 5 hari |
@@ -159,9 +159,9 @@
 
 ---
 
-## Sprint 2: User Detail - Guru & Siswa + Excel (21-27 Okt)
+## Sprint 2: User Detail - Guru & Siswa + Onboarding + Excel (21-27 Okt)
 
-**Goal:** Tabel guru & siswa lengkap dengan bulk upload Excel.
+**Goal:** Tabel guru & siswa lengkap dengan bulk upload Excel + onboarding profil siswa (data diri, akademik, orang tua/wali).
 
 ### Task 2.1: Guru CRUD
 - [ ] Migration: `create_guru_table` (FK: users, UNIQUE nip)
@@ -170,25 +170,37 @@
 - [ ] Controller: `GuruController`
 - [ ] Store logic: create `users` (role_id=2, **username = NIP**) + create `guru` dalam transaction
 - [ ] Bulk upload: `POST /api/guru/bulk-upload` (Excel)
-- [ ] Endpoint: `GET /api/guru/{id}/siswa-bimbingan`
+- [ ] Endpoint: `GET /api/guru/{id}/siswa-bimbingan` → **Sprint 3** (butuh tabel `lokasi_pkl`)
 - [ ] Test: CRUD guru + bulk upload + auto-create user
 
 **Estimasi:** 1.5 hari
 
-### Task 2.2: Siswa CRUD
-- [ ] Migration: `create_siswa_table` (FK: users, jurusan, gelombang)
+### Task 2.2: Siswa CRUD + Bulk Upload
+- [ ] Migration: `create_siswa_table` (FK: users, jurusan nullable, gelombang nullable; field profil nullable)
 - [ ] Model: `Siswa` (relasi: belongsTo User, Jurusan, Gelombang)
-- [ ] Seeder: 20 siswa sample
+- [ ] Seeder: 20 siswa sample (1–2 belum konfirmasi profil)
 - [ ] Controller: `SiswaController`
-- [ ] Store logic: create `users` (role_id=3, **username = NIS**) + create `siswa` dalam transaction
-- [ ] Bulk upload: `POST /api/siswa/bulk-upload` (Excel, ~700 rows)
-- [ ] Endpoint: `GET /api/siswa/me` (profil siswa login)
-- [ ] Validation: NIS unique, username unique (= NIS), gelombang exists
+- [ ] Store logic: create `users` (role_id=3, **username = NIS**, email opsional) + create `siswa` dalam transaction
+- [ ] Bulk upload: `POST /api/siswa/bulk-upload` (Excel, ~700 rows; kolom profil opsional)
+- [ ] Endpoint: `GET /api/siswa/me` (profil + `profil_terkonfirmasi`/`profil_lengkap`)
+- [ ] Endpoint: `GET /api/siswa/{id}/lokasi-pkl` → **Sprint 3** (butuh tabel `lokasi_pkl`)
+- [ ] Validation: NIS unique, username unique (= NIS), gelombang/jurusan exists jika diisi
 - [ ] Test: CRUD siswa + bulk upload + validation NIS duplikat
 
 **Estimasi:** 2 hari
 
-### Task 2.3: User Management Endpoints
+### Task 2.3: Onboarding Profil Siswa
+- [ ] `PUT /api/siswa/me/profil` — partial update data diri, akademik, ortu (sebelum konfirmasi)
+- [ ] `PUT /api/siswa/me/konfirmasi` — validasi kelengkapan → set `profil_confirmed_at`
+- [ ] Logic: `name` → `users.name`, `email` → `users.email`; `nis`/`username` read-only untuk siswa
+- [ ] Error: `PROFIL_BELUM_LENGKAP` (422), `PROFIL_SUDAH_DIKONFIRMASI` (422)
+- [ ] Middleware `EnsureSiswaProfileConfirmed` (`PROFIL_BELUM_KONFIRMASI`, 403) — didaftarkan, diterapkan ke endpoint transaksional Sprint 3+
+- [ ] Route order: `/siswa/me*` sebelum `/siswa/{id}`
+- [ ] Test: onboarding flow, konfirmasi belum lengkap, edit setelah konfirmasi ditolak, admin tetap bisa ubah
+
+**Estimasi:** 1.5 hari
+
+### Task 2.4: User Management Endpoints
 - [ ] `GET /api/users` (list + filter role + search + pagination)
 - [ ] `GET /api/users/{id}`
 - [ ] `PUT /api/users/{id}`
@@ -198,14 +210,15 @@
 
 **Estimasi:** 1 hari
 
-### Task 2.4: Excel Template
+### Task 2.5: Excel Template
 - [ ] Buat template Excel untuk: siswa, guru, perusahaan, kompetensi
+- [ ] Kolom siswa: `nis`, `nama`, `jenis_kelamin`, `kelas`, `jurusan`, `gelombang`, `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu` (kolom profil boleh kosong → diisi saat onboarding)
 - [ ] Endpoint download template (opsional, bisa file statis di docs/)
 - [ ] Dokumentasi format kolom di `docs/API-Docs-fondasi.md` atau file terpisah
 
 **Estimasi:** 0.5 hari
 
-**Sprint 2 Total: 5 hari** (pas, tanpa buffer)
+**Sprint 2 Total: 6.5 hari** (melebihi window 5 hari — opsi: defer Task 2.5 Excel Template ke Sprint 3, atau extend 1–1.5 hari)
 
 ---
 
@@ -561,7 +574,7 @@
 | Date | Milestone | Check |
 |---|---|---|
 | 13 Okt | Auth lengkap + dokumentasi selesai | ☐ |
-| 27 Okt | Data Master selesai; Guru/Siswa + Excel menyusul | ◐ |
+| 27 Okt | Data Master + Guru/Siswa + onboarding selesai; Excel template menyusul | ◐ |
 | 3 Nov | Pengajuan + Penempatan PKL selesai | ☐ |
 | 10 Nov | Presensi selesai | ☐ |
 | 17 Nov | Jurnal Harian selesai | ☐ |
