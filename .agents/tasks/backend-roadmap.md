@@ -164,14 +164,15 @@
 **Goal:** Tabel guru & siswa lengkap dengan bulk upload Excel + onboarding profil siswa (data diri, akademik, orang tua/wali).
 
 ### Task 2.1: Guru CRUD
-- [ ] Migration: `create_guru_table` (FK: users, UNIQUE nip)
-- [ ] Model: `Guru` (relasi: belongsTo User, hasMany LokasiPkl)
-- [ ] Seeder: 5 guru sample
-- [ ] Controller: `GuruController`
-- [ ] Store logic: create `users` (role_id=2, **username = NIP**) + create `guru` dalam transaction
-- [ ] Bulk upload: `POST /api/guru/bulk-upload` (Excel)
+- [x] Migration: `create_guru_table` (FK: users, UNIQUE nip)
+- [x] Model: `Guru` (relasi: belongsTo User)
+- [ ] Model: relasi `hasMany(LokasiPkl)` → **Sprint 3** (butuh tabel `lokasi_pkl`)
+- [x] Seeder: 5 guru sample
+- [x] Controller: `GuruController`
+- [x] Store logic: create `users` (role_id=2, **username = NIP**) + create `guru` dalam transaction
+- [x] Bulk upload: `POST /api/guru/bulk-upload` (Excel)
 - [ ] Endpoint: `GET /api/guru/{id}/siswa-bimbingan` → **Sprint 3** (butuh tabel `lokasi_pkl`)
-- [ ] Test: CRUD guru + bulk upload + auto-create user
+- [x] Test: CRUD guru + bulk upload + auto-create user
 
 **Estimasi:** 1.5 hari
 

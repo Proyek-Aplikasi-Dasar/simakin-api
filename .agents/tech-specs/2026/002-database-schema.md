@@ -255,8 +255,13 @@
 
 **Business Rules:**
 - Create guru otomatis create `users` record (role_id = 2)
-- Admin CRUD + bulk upload Excel
-- NIP unique jika diisi
+- Identitas login guru = `nip`; `users.username` selalu disinkronkan dengan `nip` saat create/update
+- Admin CRUD + bulk upload Excel (password default `password123`, error per baris)
+- NIP unique jika diisi; NIP juga harus unik di `users.username`
+- Delete = **hard delete** transaksional: hapus `guru` + `users` (token mobile dicabut) sehingga NIP/username bisa dipakai ulang
+- Relasi `hasMany(LokasiPkl)` ditambahkan pada Sprint 3 saat tabel `lokasi_pkl` tersedia
+
+**Status:** Sudah ada (migration + model + seeder + endpoint CRUD + bulk upload)
 
 ---
 
