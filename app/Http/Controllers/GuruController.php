@@ -115,7 +115,11 @@ class GuruController extends Controller
             if ($user) {
                 // Hard delete (tanpa soft delete) agar username/NIP bisa dipakai ulang.
                 $user->tokens()->delete();
-                $user->delete();
+                if (method_exists($user, 'forceDelete')) {
+                    $user->forceDelete();
+                } else {
+                    $user->delete();
+                }
             }
         });
 

@@ -879,7 +879,20 @@ Tanpa body. Validasi kelengkapan: `name`, `jenis_kelamin`, `telp`, `email`, `ala
 | `PROFIL_BELUM_LENGKAP` | `422` | Konfirmasi saat masih ada field wajib kosong |
 | `PROFIL_SUDAH_DIKONFIRMASI` | `422` | Siswa mengubah profil setelah konfirmasi |
 
-### 5. Alur Aplikasi Mobile
+### 5. Template Excel Bulk Upload
+
+Admin dapat mengunduh template siap pakai untuk import data via `GET /api/templates/{type}` (auth: `admin`, header `Authorization: Bearer {token}` atau session).
+
+| Tipe | File | Kolom | Keterangan |
+|---|---|---|---|
+| `guru` | `template-guru.xlsx` | `nip`, `nama` | Wajib diisi. `nip` dinormalisasi (hindari notasi ilmiah), jadi username/login. |
+| `siswa` | `template-siswa.xlsx` | `nis`, `nama`, `jenis_kelamin`, `kelas`, `jurusan`, `gelombang`, `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu` | `nis` & `nama` wajib. `jenis_kelamin` `L`/`P` atau `Laki-laki`/`Perempuan`. `jurusan` bisa kode/nama (case-insensitive). `gelombang` berdasarkan nama. Kolom profil boleh kosong → diisi saat onboarding. |
+| `perusahaan` | `template-perusahaan.xlsx` | `nama`, `alamat`, `latitude`, `longitude`, `pimpinan`, `telp`, `email`, `deskripsi`, `kuota`, `jurusan_kode` | Ikuti aturan import perusahaan. |
+| `kompetensi` | `template-kompetensi.xlsx` | `jurusan_kode`, `nama`, `kode` | `jurusan_kode` wajib merujuk jurusan valid. |
+
+> Password default hasil import: `password123` (guru & siswa).
+
+### 6. Alur Aplikasi Mobile
 
 ```
 Login (username = NIS)
