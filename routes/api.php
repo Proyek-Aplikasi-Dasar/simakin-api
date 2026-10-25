@@ -10,6 +10,7 @@ use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\SikapController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WaktuAbsenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -67,5 +68,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('siswa/{siswa}', [SiswaController::class, 'update']);
         Route::delete('siswa/{siswa}', [SiswaController::class, 'destroy']);
         Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['store', 'update', 'destroy']);
+
+        // User Management
+        Route::get('users', [UserController::class, 'index']);
+        Route::get('users/{user}', [UserController::class, 'show']);
+        Route::put('users/{user}', [UserController::class, 'update']);
+        Route::put('users/{user}/password', [UserController::class, 'resetPassword']);
+        Route::delete('users/{user}', [UserController::class, 'destroy']);
     });
 });

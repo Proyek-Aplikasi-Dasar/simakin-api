@@ -24,11 +24,11 @@ return new class extends Migration
         });
 
         // Backfill: username = bagian sebelum '@' pada email (data lama)
-        User::query()
+        DB::table('users')
             ->whereNull('username')
             ->whereNotNull('email')
             ->get()
-            ->each(function (User $user) {
+            ->each(function ($user) {
                 $username = Str::before($user->email, '@');
                 DB::table('users')->where('id', $user->id)->update(['username' => $username]);
             });
