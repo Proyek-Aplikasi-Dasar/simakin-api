@@ -10,6 +10,7 @@ use App\Http\Controllers\KompetensiController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\SikapController;
 use App\Http\Controllers\SiswaController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WaktuAbsenController;
 use Illuminate\Http\Request;
@@ -75,5 +76,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('users/{user}', [UserController::class, 'update']);
         Route::put('users/{user}/password', [UserController::class, 'resetPassword']);
         Route::delete('users/{user}', [UserController::class, 'destroy']);
+
+        // Template Excel untuk bulk upload
+        Route::get('templates/{type}', [TemplateController::class, 'download']);
     });
 });
