@@ -20,8 +20,18 @@ class UserResource extends JsonResource
                 'id' => $this->role->id,
                 'nama' => $this->role->nama,
             ]),
+            'guru' => $this->whenLoaded('guru', fn () => [
+                'id' => $this->guru->id,
+                'nip' => $this->guru->nip,
+            ]),
+            'siswa' => $this->whenLoaded('siswa', fn () => [
+                'id' => $this->siswa->id,
+                'nis' => $this->siswa->nis,
+                'profil_confirmed_at' => $this->siswa->profil_confirmed_at,
+            ]),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }
