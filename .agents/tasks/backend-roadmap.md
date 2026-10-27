@@ -177,45 +177,45 @@
 **Estimasi:** 1.5 hari
 
 ### Task 2.2: Siswa CRUD + Bulk Upload
-- [ ] Migration: `create_siswa_table` (FK: users, jurusan nullable, gelombang nullable; field profil nullable)
-- [ ] Model: `Siswa` (relasi: belongsTo User, Jurusan, Gelombang)
-- [ ] Seeder: 20 siswa sample (1–2 belum konfirmasi profil)
-- [ ] Controller: `SiswaController`
-- [ ] Store logic: create `users` (role_id=3, **username = NIS**, email opsional) + create `siswa` dalam transaction
-- [ ] Bulk upload: `POST /api/siswa/bulk-upload` (Excel, ~700 rows; kolom profil opsional)
-- [ ] Endpoint: `GET /api/siswa/me` (profil + `profil_terkonfirmasi`/`profil_lengkap`)
+- [x] Migration: `create_siswa_table` (FK: users, jurusan nullable, gelombang nullable; field profil nullable)
+- [x] Model: `Siswa` (relasi: belongsTo User, Jurusan, Gelombang)
+- [x] Seeder: 20 siswa sample (1–2 belum konfirmasi profil)
+- [x] Controller: `SiswaController`
+- [x] Store logic: create `users` (role_id=3, **username = NIS**, email opsional) + create `siswa` dalam transaction
+- [x] Bulk upload: `POST /api/siswa/bulk-upload` (Excel, ~700 rows; kolom profil opsional)
+- [x] Endpoint: `GET /api/siswa/me` (profil + `profil_terkonfirmasi`/`profil_lengkap`)
 - [ ] Endpoint: `GET /api/siswa/{id}/lokasi-pkl` → **Sprint 3** (butuh tabel `lokasi_pkl`)
-- [ ] Validation: NIS unique, username unique (= NIS), gelombang/jurusan exists jika diisi
-- [ ] Test: CRUD siswa + bulk upload + validation NIS duplikat
+- [x] Validation: NIS unique, username unique (= NIS), gelombang/jurusan exists jika diisi
+- [x] Test: CRUD siswa + bulk upload + validation NIS duplikat
 
 **Estimasi:** 2 hari
 
 ### Task 2.3: Onboarding Profil Siswa
-- [ ] `PUT /api/siswa/me/profil` — partial update data diri, akademik, ortu (sebelum konfirmasi)
-- [ ] `PUT /api/siswa/me/konfirmasi` — validasi kelengkapan → set `profil_confirmed_at`
-- [ ] Logic: `name` → `users.name`, `email` → `users.email`; `nis`/`username` read-only untuk siswa
-- [ ] Error: `PROFIL_BELUM_LENGKAP` (422), `PROFIL_SUDAH_DIKONFIRMASI` (422)
-- [ ] Middleware `EnsureSiswaProfileConfirmed` (`PROFIL_BELUM_KONFIRMASI`, 403) — didaftarkan, diterapkan ke endpoint transaksional Sprint 3+
-- [ ] Route order: `/siswa/me*` sebelum `/siswa/{id}`
-- [ ] Test: onboarding flow, konfirmasi belum lengkap, edit setelah konfirmasi ditolak, admin tetap bisa ubah
+- [x] `PUT /api/siswa/me/profil` — partial update data diri, akademik, ortu (sebelum konfirmasi)
+- [x] `PUT /api/siswa/me/konfirmasi` — validasi kelengkapan → set `profil_confirmed_at`
+- [x] Logic: `name` → `users.name`, `email` → `users.email`; `nis`/`username` read-only untuk siswa
+- [x] Error: `PROFIL_BELUM_LENGKAP` (422), `PROFIL_SUDAH_DIKONFIRMASI` (422)
+- [x] Middleware `EnsureSiswaProfileConfirmed` (`PROFIL_BELUM_KONFIRMASI`, 403) — didaftarkan, diterapkan ke endpoint transaksional Sprint 3+
+- [x] Route order: `/siswa/me*` sebelum `/siswa/{id}`
+- [x] Test: onboarding flow, konfirmasi belum lengkap, edit setelah konfirmasi ditolak, admin tetap bisa ubah
 
 **Estimasi:** 1.5 hari
 
 ### Task 2.4: User Management Endpoints
-- [ ] `GET /api/users` (list + filter role + search + pagination)
-- [ ] `GET /api/users/{id}`
-- [ ] `PUT /api/users/{id}`
-- [ ] `PUT /api/users/{id}/password` (admin reset kata sandi — **jalur lupa sandi**, cabut sesi user)
-- [ ] `DELETE /api/users/{id}` (soft delete)
-- [ ] Test: CRUD user + reset password + authorization
+- [x] `GET /api/users` (list + filter role + search + pagination)
+- [x] `GET /api/users/{id}`
+- [x] `PUT /api/users/{id}`
+- [x] `PUT /api/users/{id}/password` (admin reset kata sandi — **jalur lupa sandi**, cabut sesi user)
+- [x] `DELETE /api/users/{id}` (soft delete)
+- [x] Test: CRUD user + reset password + authorization
 
 **Estimasi:** 1 hari
 
 ### Task 2.5: Excel Template
-- [ ] Buat template Excel untuk: siswa, guru, perusahaan, kompetensi
-- [ ] Kolom siswa: `nis`, `nama`, `jenis_kelamin`, `kelas`, `jurusan`, `gelombang`, `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu` (kolom profil boleh kosong → diisi saat onboarding)
-- [ ] Endpoint download template (opsional, bisa file statis di docs/)
-- [ ] Dokumentasi format kolom di `docs/API-Docs-fondasi.md` atau file terpisah
+- [x] Buat template Excel untuk: siswa, guru, perusahaan, kompetensi
+- [x] Kolom siswa: `nis`, `nama`, `jenis_kelamin`, `kelas`, `jurusan`, `gelombang`, `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu` (kolom profil boleh kosong → diisi saat onboarding)
+- [x] Endpoint download template (opsional, bisa file statis di docs/)
+- [x] Dokumentasi format kolom di `docs/API-Docs-fondasi.md` atau file terpisah
 
 **Estimasi:** 0.5 hari
 

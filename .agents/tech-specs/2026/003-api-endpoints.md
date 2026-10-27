@@ -138,7 +138,7 @@ Response 200: `{ "message": "Kata sandi berhasil diubah." }`
 
 ---
 
-## 2. User Management (5 endpoints) 📋
+## 2. User Management (5 endpoints) ✅ Done
 
 ### 2.1 GET /api/users
 
@@ -318,7 +318,7 @@ Response resource: `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan
 
 ---
 
-## 9. Data Master - Guru (7 endpoints) — 6 selesai, 1 Sprint 3
+## 9. Data Master - Guru (7 endpoints) — ✅ 6 selesai, 1 Sprint 3
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -359,7 +359,7 @@ Response: siswa list + status hari ini:
 
 ---
 
-## 10. Data Master - Siswa + Onboarding (10 endpoints) 📋
+## 10. Data Master - Siswa + Onboarding (10 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -787,15 +787,15 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | Module | Endpoints | Status |
 |---|---|---|
 | 1. Authentication | 5 | 5 ✅ |
-| 2. User Management | 5 | 📋 |
+| 2. User Management | 5 | 5 ✅ |
 | 3. Jurusan | 6 | 6 ✅ |
 | 4. Kompetensi | 6 | 5 ✅ + 1 Sprint 2 (bulk upload) |
 | 5. Gelombang | 5 | 5 ✅ |
 | 6. Perusahaan | 8 | 7 ✅ + 1 Sprint 2 (bulk upload) |
 | 7. Sikap | 5 | 5 ✅ |
 | 8. Waktu Absen | 4 | 4 ✅ |
-| 9. Guru | 7 | 6 selesai + 1 Sprint 3 (siswa-bimbingan) |
-| 10. Siswa | 10 | 📋 |
+| 9. Guru | 7 | 6 ✅ + 1 Sprint 3 (siswa-bimbingan) |
+| 10. Siswa | 10 | 9 ✅ + 1 Sprint 3 (lokasi-pkl) |
 | 11. Pengajuan PKL | 7 (incl. bulk) | 📋 |
 | 12. Lokasi PKL | 6 | 📋 |
 | 13. Presensi | 9 | 📋 |
@@ -804,4 +804,4 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 📋 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~115** | **37 done, ~78 planned** (termasuk 2 bulk upload master + 2 endpoint onboarding di Sprint 2) |
+| **Total** | **~115** | **57 done, ~58 planned** (Sprint 1: 37; Sprint 2: +20 — User Management 5, Guru 6, Siswa 9) |

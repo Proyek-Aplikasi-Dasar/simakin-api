@@ -746,6 +746,62 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 
 ---
 
+## F2. Data Guru (Sprint 2)
+
+**Auth:** `Authorization: Bearer {token}` (mobile) atau session (web). Write: **admin** only.
+
+| Method | Endpoint | Role | Keterangan |
+|---|---|---|---|
+| GET | `/guru` | admin, guru | List guru (query: `search`) |
+| GET | `/guru/{id}` | admin, guru | Detail guru + user |
+| POST | `/guru` | admin | Create guru + user (`username` = NIP) |
+| PUT | `/guru/{id}` | admin | Update (NIP disinkronkan ke `users.username`) |
+| DELETE | `/guru/{id}` | admin | Hard delete guru + user (token dicabut) |
+| POST | `/guru/bulk-upload` | admin | Import Excel (`nip`, `nama`; password default `password123`) |
+
+**POST /guru** body:
+```json
+{ "name": "Nama Guru", "nip": "198701012010011001", "password": "password123", "password_confirmation": "password123" }
+```
+
+**GET /guru/{id}/siswa-bimbingan** — menyusul Sprint 3 (bergantung `lokasi_pkl`).
+
+---
+
+## F3. Data Siswa (Sprint 2)
+
+**Auth:** `Authorization: Bearer {token}`. Read: admin/guru; Write: admin.
+
+| Method | Endpoint | Role | Keterangan |
+|---|---|---|---|
+| GET | `/siswa` | admin, guru | List (query: `search`, `jurusan_id`, `gelombang_id`, `kelas`) |
+| GET | `/siswa/{id}` | admin, guru | Detail siswa + user + jurusan + gelombang |
+| POST | `/siswa` | admin | Create siswa + user (`username` = NIS); field profil opsional |
+| PUT | `/siswa/{id}` | admin | Update user & profil; sync `username` jika NIS berubah; tidak reset `profil_confirmed_at` |
+| DELETE | `/siswa/{id}` | admin | Soft delete siswa (user tetap ada, token dicabut) |
+| POST | `/siswa/bulk-upload` | admin | Import Excel (`nis`, `nama` + profil opsional) |
+
+**POST /siswa** body (minimal):
+```json
+{ "name": "Nama Siswa", "nis": "0012345", "password": "password123", "password_confirmation": "password123" }
+```
+
+---
+
+## F4. Manajemen User (Admin, Sprint 2)
+
+**Auth:** `Authorization: Bearer {token}` (admin).
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/users` | List (query: `role_id`, `search`, `page`, `per_page`) |
+| GET | `/users/{id}` | Detail + relasi `role`, `guru`, `siswa` |
+| PUT | `/users/{id}` | Update `name`/`username`/`email`/`role_id` |
+| PUT | `/users/{id}/password` | Reset password (jalur lupa sandi); cabut semua token & sesi user |
+| DELETE | `/users/{id}` | Soft delete; tidak boleh hapus akun sendiri → `422 CANNOT_DELETE_SELF` |
+
+---
+
 ## G. Onboarding Profil Siswa (Mobile)
 
 **Prasyarat:** sudah login mobile (`X-Client: mobile`). Semua request memakai header:

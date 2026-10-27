@@ -214,7 +214,7 @@ SIMAKIN API
     └── [Flow] Siswa PKL Flow
 ```
 
-> **Status eksekusi:** folder **03–08 (Data Master)** sudah diimplementasikan dan diuji melalui `.agents/tasks/postman-master-data-execution.md` (32 endpoint + skenario error). Folder **09–10 (Guru/Siswa)** + `GET/PUT /api/siswa/me*` dikerjakan Sprint 2; panduan onboarding: `.agents/tasks/postman-onboarding-execution.md`. Request `GET Siswa Bimbingan` & `GET Lokasi PKL Siswa` menyusul Sprint 3 karena bergantung pada tabel `lokasi_pkl`. Request **Bulk Upload Kompetensi/Perusahaan** di folder 04 & 06 menyusul Sprint 2.
+> **Status eksekusi:** Sprint 1 (folder **03–08 Data Master**) dan Sprint 2 (folder **02 User Management**, **09 Data - Guru**, **10 Data - Siswa**, **19 Template Excel**) sudah diimplementasikan. Panduan Sprint 2: `.agents/tasks/postman-sprint2-execution.md`. Request `GET Siswa Bimbingan` & `GET Lokasi PKL Siswa` menyusul Sprint 3 (bergantung tabel `lokasi_pkl`). Request **Bulk Upload Kompetensi/Perusahaan** di folder 04 & 06 menyusul Sprint 2.
 
 ---
 
