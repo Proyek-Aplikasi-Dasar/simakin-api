@@ -802,6 +802,57 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 
 ---
 
+## F5. Pengajuan PKL (Sprint 3)
+
+**Auth:** `Authorization: Bearer {token}`.
+
+| Method | Endpoint | Role | Keterangan |
+|---|---|---|---|
+| GET | `/pengajuan-pkl` | admin, guru, siswa | List (query: `status`, `siswa_id`, `perusahaan_id`, `gelombang_id`, `page`). Siswa hanya miliknya. |
+| GET | `/pengajuan-pkl/{id}` | admin, guru, siswa | Detail. Siswa hanya miliknya. |
+| POST | `/pengajuan-pkl` | siswa (profil confirmed) | Ajukan PKL. Body: `{ "perusahaan_id", "gelombang_id" }`. |
+| PUT | `/pengajuan-pkl/{id}/approve` | admin, guru | Approve + opsional `guru_pembimbing_id`; auto-create `lokasi_pkl` (active). |
+| PUT | `/pengajuan-pkl/{id}/reject` | admin, guru | Reject + wajib `alasan_penolakan`. |
+| PUT | `/pengajuan-pkl/bulk-approve` | admin, guru | Bulk approve `{ "ids": [...], "guru_pembimbing_id" }`. |
+| DELETE | `/pengajuan-pkl/{id}` | siswa | Cancel (hanya jika status `pending` & miliknya). |
+
+**Validasi pengajuan:** gelombang aktif (`GELOMBANG_NOT_ACTIVE`), siswa belum placed (`SISWA_ALREADY_PLACED`), belum ada pengajuan pending (`PENGAJUAN_DUPLICATE`), jurusan sesuai, kuota perusahaan (`PERUSAHAAN_KUOTA_PENUH`).
+
+**Notifikasi:** approve/reject mengirim database notification ke siswa (`pengajuan-approved` / `pengajuan-rejected`).
+
+---
+
+## F6. Lokasi PKL / Penempatan (Sprint 3)
+
+**Auth:** `Authorization: Bearer {token}`.
+
+| Method | Endpoint | Role | Keterangan |
+|---|---|---|---|
+| GET | `/lokasi-pkl` | admin, guru | List (query: `status`, `siswa_id`, `guru_id`, `perusahaan_id`, `gelombang_id`, `search`, `page`) |
+| GET | `/lokasi-pkl/{id}` | admin, guru, siswa | Detail (siswa hanya miliknya) |
+| POST | `/lokasi-pkl` | admin | Assign siswa ke perusahaan |
+| PUT | `/lokasi-pkl/{id}` | admin | Update `guru_id`, `perusahaan_id`, `gelombang_id`, `catatan` |
+| PUT | `/lokasi-pkl/{id}/status` | admin | Update status. Flow: `pending` → `active`/`cancelled`; `active` → `completed`/`cancelled`. |
+| DELETE | `/lokasi-pkl/{id}` | admin | Hapus penempatan |
+
+**GET /api/guru/{id}/siswa-bimbingan** — daftar siswa bimbingan (status `active`), `presensi_hari_ini` & `jurnal_hari_ini` = `null` (Sprint 4/5).
+
+**GET /api/siswa/{id}/lokasi-pkl** — lokasi PKL milik siswa (admin/guru semua; siswa hanya miliknya).
+
+**Filter perusahaan:** `GET /api/perusahaan?kuota_tersedia=1` — perusahaan yang kuota belum penuh.
+
+---
+
+## F7. Dashboard Admin (Sprint 3)
+
+**Auth:** `Authorization: Bearer {token}` (admin).
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/dashboard/admin` | Statistik: `total_siswa`, `total_guru`, `total_perusahaan`, `siswa_by_status`, `pengajuan_pending`, `presensi_hari_ini` (placeholder). Di-cache 10 menit. |
+
+---
+
 ## G. Onboarding Profil Siswa (Mobile)
 
 **Prasyarat:** sudah login mobile (`X-Client: mobile`). Semua request memakai header:

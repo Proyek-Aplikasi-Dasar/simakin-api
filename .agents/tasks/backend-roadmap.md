@@ -166,12 +166,12 @@
 ### Task 2.1: Guru CRUD
 - [x] Migration: `create_guru_table` (FK: users, UNIQUE nip)
 - [x] Model: `Guru` (relasi: belongsTo User)
-- [ ] Model: relasi `hasMany(LokasiPkl)` → **Sprint 3** (butuh tabel `lokasi_pkl`)
+- [x] Model: relasi `hasMany(LokasiPkl)` → **Sprint 3** (selesai Sprint 3)
 - [x] Seeder: 5 guru sample
 - [x] Controller: `GuruController`
 - [x] Store logic: create `users` (role_id=2, **username = NIP**) + create `guru` dalam transaction
 - [x] Bulk upload: `POST /api/guru/bulk-upload` (Excel)
-- [ ] Endpoint: `GET /api/guru/{id}/siswa-bimbingan` → **Sprint 3** (butuh tabel `lokasi_pkl`)
+- [x] Endpoint: `GET /api/guru/{id}/siswa-bimbingan` → **Sprint 3** (selesai Sprint 3)
 - [x] Test: CRUD guru + bulk upload + auto-create user
 
 **Estimasi:** 1.5 hari
@@ -184,7 +184,7 @@
 - [x] Store logic: create `users` (role_id=3, **username = NIS**, email opsional) + create `siswa` dalam transaction
 - [x] Bulk upload: `POST /api/siswa/bulk-upload` (Excel, ~700 rows; kolom profil opsional)
 - [x] Endpoint: `GET /api/siswa/me` (profil + `profil_terkonfirmasi`/`profil_lengkap`)
-- [ ] Endpoint: `GET /api/siswa/{id}/lokasi-pkl` → **Sprint 3** (butuh tabel `lokasi_pkl`)
+- [x] Endpoint: `GET /api/siswa/{id}/lokasi-pkl` → **Sprint 3** (selesai Sprint 3)
 - [x] Validation: NIS unique, username unique (= NIS), gelombang/jurusan exists jika diisi
 - [x] Test: CRUD siswa + bulk upload + validation NIS duplikat
 
@@ -228,46 +228,46 @@
 **Goal:** Alur PKL: siswa ajukan → admin approve → penempatan aktif.
 
 ### Task 3.1: Tabel Pengajuan PKL
-- [ ] Migration: `create_pengajuan_pkl_table`
-- [ ] Model: `PengajuanPkl` (relasi: Siswa, Perusahaan, Gelombang, User)
-- [ ] Seeder: sample pengajuan
-- [ ] Controller: `PengajuanPklController`
-- [ ] Endpoint: GET, GET/{id}, POST (siswa), PUT approve, PUT reject, DELETE (cancel)
-- [ ] Business logic:
+- [x] Migration: `create_pengajuan_pkl_table`
+- [x] Model: `PengajuanPkl` (relasi: Siswa, Perusahaan, Gelombang, User)
+- [x] Seeder: sample pengajuan
+- [x] Controller: `PengajuanPklController`
+- [x] Endpoint: GET, GET/{id}, POST (siswa), PUT approve, PUT reject, DELETE (cancel)
+- [x] Business logic:
   - Siswa hanya bisa 1 pengajuan pending per gelombang (`PENGAJUAN_DUPLICATE`)
   - Validasi gelombang aktif (`GELOMBANG_NOT_ACTIVE`)
   - Validasi kuota perusahaan (`PERUSAHAAN_KUOTA_PENUH`)
   - Validasi jurusan siswa sesuai perusahaan
-- [ ] Bulk approve: `PUT /api/pengajuan-pkl/bulk-approve` (array IDs)
-- [ ] Notifikasi: approve/reject → database notification ke siswa
-- [ ] Test: full flow + setiap error code
+- [x] Bulk approve: `PUT /api/pengajuan-pkl/bulk-approve` (array IDs)
+- [x] Notifikasi: approve/reject → database notification ke siswa
+- [x] Test: full flow + setiap error code
 
 **Estimasi:** 2.5 hari
 
 ### Task 3.2: Lokasi PKL (Penempatan)
-- [ ] Migration: `create_lokasi_pkl_table`
-- [ ] Model: `LokasiPkl` (relasi: Siswa, Guru, Perusahaan, Gelombang)
-- [ ] Seeder: sample penempatan
-- [ ] Controller: `LokasiPklController`
-- [ ] Endpoint: CRUD + `PUT /{id}/status`
-- [ ] Business logic:
+- [x] Migration: `create_lokasi_pkl_table`
+- [x] Model: `LokasiPkl` (relasi: Siswa, Guru, Perusahaan, Gelombang)
+- [x] Seeder: sample penempatan
+- [x] Controller: `LokasiPklController`
+- [x] Endpoint: CRUD + `PUT /{id}/status`
+- [x] Business logic:
   - Satu siswa hanya 1 `active` (`SISWA_ALREADY_PLACED`)
   - Status flow: pending → active → completed/cancelled
-- [ ] Auto-create dari pengajuan approve (link pengajuan → lokasi)
-- [ ] Test: CRUD + status flow + validation
+- [x] Auto-create dari pengajuan approve (link pengajuan → lokasi)
+- [x] Test: CRUD + status flow + validation
 
 **Estimasi:** 1.5 hari
 
 ### Task 3.3: Dashboard Admin (Basic)
-- [ ] `GET /api/dashboard/admin` - stats: total siswa/guru/perusahaan, pengajuan pending
-- [ ] Cache 10 menit
-- [ ] Test
+- [x] `GET /api/dashboard/admin` - stats: total siswa/guru/perusahaan, pengajuan pending
+- [x] Cache 10 menit
+- [x] Test
 
 **Estimasi:** 0.5 hari
 
 ### Task 3.4: API Docs + Postman
-- [ ] Update dokumentasi Sprint 3 endpoints
-- [ ] Update Postman collection
+- [x] Update dokumentasi Sprint 3 endpoints
+- [x] Update Postman collection
 
 **Estimasi:** 0.5 hari
 
