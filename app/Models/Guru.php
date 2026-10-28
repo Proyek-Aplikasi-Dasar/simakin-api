@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Guru extends Model
 {
@@ -32,5 +33,11 @@ class Guru extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relasi hasMany(LokasiPkl) ditambahkan pada Sprint 3 saat tabel/model lokasi_pkl tersedia.
+    /**
+     * Relasi ke LokasiPkl (One-to-Many / HasMany).
+     */
+    public function lokasiPkl(): HasMany
+    {
+        return $this->hasMany(LokasiPkl::class, 'guru_id');
+    }
 }

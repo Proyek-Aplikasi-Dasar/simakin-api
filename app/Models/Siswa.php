@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
@@ -86,6 +87,22 @@ class Siswa extends Model
     public function gelombang(): BelongsTo
     {
         return $this->belongsTo(Gelombang::class, 'gelombang_id');
+    }
+
+    /**
+     * Relasi ke PengajuanPkl (One-to-Many / HasMany).
+     */
+    public function pengajuanPkl(): HasMany
+    {
+        return $this->hasMany(PengajuanPkl::class, 'siswa_id');
+    }
+
+    /**
+     * Relasi ke LokasiPkl (One-to-Many / HasMany).
+     */
+    public function lokasiPkl(): HasMany
+    {
+        return $this->hasMany(LokasiPkl::class, 'siswa_id');
     }
 
     /**

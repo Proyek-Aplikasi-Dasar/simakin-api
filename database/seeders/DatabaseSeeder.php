@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             PerusahaanSeeder::class,
             KompetensiSeeder::class,
             SiswaSeeder::class,
+            PengajuanPklSeeder::class,
+            LokasiPklSeeder::class,
         ]);
     }
 }
