@@ -602,17 +602,17 @@ Menggunakan tabel default Laravel. Tidak perlu migration custom.
 | 9 | `waktu_absen` | ✅ Ada | ERD + tambah keterangan |
 | 10 | `guru` | ✅ Sudah ada | ERD |
 | 11 | `siswa` | ✅ Sudah ada | ERD + onboarding (alamat, alamat_ortu, profil_confirmed_at) |
-| 12 | `pengajuan_pkl` | ❌ Baru | Tambahan (belum ada di ERD) |
-| 13 | `lokasi_pkl` | ❌ Belum | ERD (status enum revisi) |
+| 12 | `pengajuan_pkl` | ✅ Sudah ada | Tambahan (belum ada di ERD) |
+| 13 | `lokasi_pkl` | ✅ Sudah ada | ERD (status enum revisi) |
 | 14 | `absensi_siswa` | ❌ Belum | ERD (revisi: tanpa jam_keluar/foto_keluar) |
 | 15 | `jurnal_harian` | ❌ Belum | ERD (tambah review fields) |
 | 16 | `aktivasi_penilaian` | ❌ Baru | Tambahan (belum ada di ERD) |
 | 17 | `penilaian_bulanan` | ❌ Baru | Revisi dari `penilaian_gelombang` |
 | 18 | `penilaian_kompetensi` | ❌ Baru | Revisi dari ERD |
 | 19 | `penilaian_sikap` | ❌ Baru | Revisi dari ERD |
-| 20 | `notifications` | ❌ Baru | Laravel default |
+| 20 | `notifications` | ✅ Sudah ada | Laravel default |
 
-**Total: 20 tabel** (11 sudah ada, 9 belum)
+**Total: 20 tabel** (14 sudah ada, 6 belum)
 
 ---
 

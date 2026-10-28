@@ -447,7 +447,7 @@ Response: siswa list + status hari ini:
 
 ---
 
-## 11. Pengajuan PKL (6 endpoints) 📋
+## 11. Pengajuan PKL (6 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -478,7 +478,7 @@ Body: { "ids": [1, 2, 3], "guru_pembimbing_id": 3 }
 
 ---
 
-## 12. Lokasi PKL / Penempatan (6 endpoints) 📋
+## 12. Lokasi PKL / Penempatan (6 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -715,7 +715,7 @@ Response: Laravel paginated notifications.
 
 ---
 
-## 17. Dashboard (3 endpoints) 📋
+## 17. Dashboard (3 endpoints) — 1 selesai, 2 Sprint 7
 
 ### 17.1 GET /api/dashboard/admin
 
@@ -794,14 +794,14 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 6. Perusahaan | 8 | 7 ✅ + 1 Sprint 2 (bulk upload) |
 | 7. Sikap | 5 | 5 ✅ |
 | 8. Waktu Absen | 4 | 4 ✅ |
-| 9. Guru | 7 | 6 ✅ + 1 Sprint 3 (siswa-bimbingan) |
-| 10. Siswa | 10 | 9 ✅ + 1 Sprint 3 (lokasi-pkl) |
-| 11. Pengajuan PKL | 7 (incl. bulk) | 📋 |
-| 12. Lokasi PKL | 6 | 📋 |
+| 9. Guru | 7 | 7 ✅ (siswa-bimbingan selesai Sprint 3) |
+| 10. Siswa | 10 | 10 ✅ (lokasi-pkl selesai Sprint 3) |
+| 11. Pengajuan PKL | 7 (incl. bulk) | 7 ✅ |
+| 12. Lokasi PKL | 6 | 6 ✅ |
 | 13. Presensi | 9 | 📋 |
 | 14. Jurnal Harian | 10 | 📋 |
 | 15. Penilaian | 12 | 📋 |
 | 16. Notifications | 4 | 📋 |
-| 17. Dashboard | 3 | 📋 |
+| 17. Dashboard | 3 | 1 ✅ + 2 Sprint 7 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~115** | **57 done, ~58 planned** (Sprint 1: 37; Sprint 2: +20 — User Management 5, Guru 6, Siswa 9) |
+| **Total** | **~115** | **73 done, ~42 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16 — Pengajuan 7, Lokasi 6, Guru siswa-bimbingan 1, Siswa lokasi-pkl 1, Dashboard 1) |
