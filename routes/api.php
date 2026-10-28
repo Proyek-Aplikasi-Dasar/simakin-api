@@ -7,6 +7,7 @@ use App\Http\Controllers\GelombangController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\PengajuanPklController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\SikapController;
 use App\Http\Controllers\SiswaController;
@@ -46,9 +47,28 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('siswa/me/konfirmasi', [SiswaController::class, 'konfirmasi']);
     });
 
+    // Pengajuan PKL (siswa transaksional, gate profil)
+    Route::middleware(['role:siswa', 'profil.confirmed'])->group(function () {
+        Route::post('pengajuan-pkl', [PengajuanPklController::class, 'store']);
+        Route::delete('pengajuan-pkl/{pengajuan_pkl}', [PengajuanPklController::class, 'destroy']);
+    });
+
     Route::middleware('role:admin,guru')->get('siswa/{siswa}', [SiswaController::class, 'show']);
+
+    // Pengajuan PKL (read)
+    Route::middleware('role:admin,guru,siswa')->group(function () {
+        Route::get('pengajuan-pkl', [PengajuanPklController::class, 'index']);
+        Route::get('pengajuan-pkl/{pengajuan_pkl}', [PengajuanPklController::class, 'show']);
+    });
     // Waktu absen tanpa show (4 endpoint sesuai 003-api-endpoints.md §8)
     Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['index']);
+
+    // Pengajuan PKL (admin/guru write) — bulk-approve SEBELUM {pengajuan_pkl}
+    Route::middleware('role:admin,guru')->group(function () {
+        Route::put('pengajuan-pkl/bulk-approve', [PengajuanPklController::class, 'bulkApprove']);
+        Route::put('pengajuan-pkl/{pengajuan_pkl}/approve', [PengajuanPklController::class, 'approve']);
+        Route::put('pengajuan-pkl/{pengajuan_pkl}/reject', [PengajuanPklController::class, 'reject']);
+    });
 
     // Write: admin only
     Route::middleware('role:admin')->group(function () {
