@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Master\StorePerusahaanRequest;
 use App\Http\Requests\Master\UpdatePerusahaanRequest;
 use App\Http\Resources\PerusahaanResource;
+use App\Imports\PerusahaanImport;
 use App\Models\Jurusan;
 use App\Models\Perusahaan;
 use Illuminate\Http\Request;
@@ -16,12 +17,18 @@ class PerusahaanController extends Controller
     {
         $perusahaan = Perusahaan::query()
             ->when($request->filled('jurusan_id'), function ($query) use ($request) {
-                $query->whereHas('jurusan', fn ($w) => $w->where('jurusan.id', $request->integer('jurusan_id')));
+                $query->whereHas('jurusan', fn($w) => $w->where('jurusan.id', $request->integer('jurusan_id')));
+            })
+            ->when($request->boolean('kuota_tersedia'), function ($query) {
+                $query->where(function ($w) {
+                    $w->whereNull('kuota')
+                        ->orWhereRaw('kuota > (select count(*) from lokasi_pkl where lokasi_pkl.perusahaan_id = perusahaan.id and lokasi_pkl.status in (\'pending\', \'active\'))');
+                });
             })
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
-                $query->where(fn ($w) => $w
+                $query->where(fn($w) => $w
                     ->where('nama', 'like', "%{$search}%")
                     ->orWhere('alamat', 'like', "%{$search}%"));
             })
@@ -111,5 +118,16 @@ class PerusahaanController extends Controller
         return response()->json([
             'message' => 'Jurusan berhasil dilepas dari perusahaan.',
         ]);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $result = (new PerusahaanImport)->import($request->file('file')->getRealPath());
+
+        return response()->json($result->toArray());
     }
 }

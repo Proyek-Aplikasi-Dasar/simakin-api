@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Master\StoreKompetensiRequest;
 use App\Http\Requests\Master\UpdateKompetensiRequest;
 use App\Http\Resources\KompetensiResource;
+use App\Imports\KompetensiImport;
 use App\Models\Kompetensi;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,7 @@ class KompetensiController extends Controller
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
-                $query->where(fn ($w) => $w
+                $query->where(fn($w) => $w
                     ->where('nama', 'like', "%{$search}%")
                     ->orWhere('kode', 'like', "%{$search}%"));
             })
@@ -63,5 +64,16 @@ class KompetensiController extends Controller
         return response()->json([
             'message' => 'Kompetensi berhasil dihapus.',
         ]);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $result = (new KompetensiImport)->import($request->file('file')->getRealPath());
+
+        return response()->json($result->toArray());
     }
 }

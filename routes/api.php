@@ -7,6 +7,7 @@ use App\Http\Controllers\GelombangController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\KompetensiController;
+use App\Http\Controllers\LokasiPklController;
 use App\Http\Controllers\PengajuanPklController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\SikapController;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', fn (Request $r) => $r->user()->load('role'));
+    Route::get('/user', fn(Request $r) => $r->user()->load('role'));
     Route::post('/logout', [LoginController::class, 'logout']);
 
     Route::post('/register', [RegisterController::class, 'register'])
@@ -55,10 +56,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:admin,guru')->get('siswa/{siswa}', [SiswaController::class, 'show']);
 
+    // Lokasi PKL siswa (admin, guru, siswa miliknya)
+    Route::middleware('role:admin,guru,siswa')->get('siswa/{siswa}/lokasi-pkl', [SiswaController::class, 'lokasiPkl']);
+
+    // Siswa bimbingan guru
+    Route::middleware('role:admin,guru')->get('guru/{guru}/siswa-bimbingan', [GuruController::class, 'siswaBimbingan']);
+
     // Pengajuan PKL (read)
     Route::middleware('role:admin,guru,siswa')->group(function () {
         Route::get('pengajuan-pkl', [PengajuanPklController::class, 'index']);
         Route::get('pengajuan-pkl/{pengajuan_pkl}', [PengajuanPklController::class, 'show']);
+    });
+
+    // Lokasi PKL (read)
+    Route::middleware('role:admin,guru')->group(function () {
+        Route::get('lokasi-pkl', [LokasiPklController::class, 'index']);
+        Route::get('lokasi-pkl/{lokasi_pkl}', [LokasiPklController::class, 'show']);
     });
     // Waktu absen tanpa show (4 endpoint sesuai 003-api-endpoints.md §8)
     Route::apiResource('waktu-absen', WaktuAbsenController::class)->only(['index']);
@@ -68,6 +81,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('pengajuan-pkl/bulk-approve', [PengajuanPklController::class, 'bulkApprove']);
         Route::put('pengajuan-pkl/{pengajuan_pkl}/approve', [PengajuanPklController::class, 'approve']);
         Route::put('pengajuan-pkl/{pengajuan_pkl}/reject', [PengajuanPklController::class, 'reject']);
+    });
+
+    // Lokasi PKL (write admin)
+    Route::middleware('role:admin')->group(function () {
+        Route::post('lokasi-pkl', [LokasiPklController::class, 'store']);
+        Route::put('lokasi-pkl/{lokasi_pkl}', [LokasiPklController::class, 'update']);
+        Route::put('lokasi-pkl/{lokasi_pkl}/status', [LokasiPklController::class, 'updateStatus']);
+        Route::delete('lokasi-pkl/{lokasi_pkl}', [LokasiPklController::class, 'destroy']);
+    });
+
+    // Bulk upload (admin only) - carry-over Sprint 1/2
+    Route::middleware('role:admin')->group(function () {
+        Route::post('kompetensi/bulk-upload', [KompetensiController::class, 'bulkUpload']);
+        Route::post('perusahaan/bulk-upload', [PerusahaanController::class, 'bulkUpload']);
     });
 
     // Write: admin only

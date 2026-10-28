@@ -138,4 +138,27 @@ class GuruController extends Controller
 
         return response()->json($result->toArray());
     }
+
+    /**
+     * List siswa bimbingan guru (dari lokasi_pkl active).
+     */
+    public function siswaBimbingan(Guru $guru)
+    {
+        $lokasiList = $guru->lokasiPkl()->where('status', 'active')->with(['siswa.user', 'siswa.jurusan', 'perusahaan', 'gelombang'])->get();
+
+        $data = $lokasiList->map(function ($lokasi) {
+            return [
+                'siswa' => [
+                    'id' => $lokasi->siswa->id,
+                    'nis' => $lokasi->siswa->nis,
+                    'nama' => $lokasi->siswa->user?->name,
+                ],
+                'perusahaan' => $lokasi->perusahaan?->nama,
+                'presensi_hari_ini' => null,
+                'jurnal_hari_ini' => null,
+            ];
+        });
+
+        return response()->json(['data' => $data]);
+    }
 }

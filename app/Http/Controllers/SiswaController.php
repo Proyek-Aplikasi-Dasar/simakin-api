@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\StoreSiswaRequest;
 use App\Http\Requests\User\UpdateProfilSiswaRequest;
 use App\Http\Requests\User\UpdateSiswaRequest;
+use App\Http\Resources\LokasiPklResource;
 use App\Http\Resources\SiswaResource;
 use App\Imports\SiswaImport;
 use App\Models\Siswa;
@@ -40,12 +41,12 @@ class SiswaController extends Controller
                 $search = $request->string('search')->toString();
                 $query->where(function ($w) use ($search) {
                     $w->where('nis', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
+                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
                 });
             })
-            ->when($request->filled('jurusan_id'), fn ($query) => $query->where('jurusan_id', $request->integer('jurusan_id')))
-            ->when($request->filled('gelombang_id'), fn ($query) => $query->where('gelombang_id', $request->integer('gelombang_id')))
-            ->when($request->filled('kelas'), fn ($query) => $query->where('kelas', $request->string('kelas')->toString()))
+            ->when($request->filled('jurusan_id'), fn($query) => $query->where('jurusan_id', $request->integer('jurusan_id')))
+            ->when($request->filled('gelombang_id'), fn($query) => $query->where('gelombang_id', $request->integer('gelombang_id')))
+            ->when($request->filled('kelas'), fn($query) => $query->where('kelas', $request->string('kelas')->toString()))
             ->orderBy('nis')
             ->paginate(20);
 
@@ -308,5 +309,21 @@ class SiswaController extends Controller
             'profil_terkonfirmasi' => $siswa->isProfilTerkonfirmasi(),
             'profil_lengkap' => $siswa->isProfilLengkap(),
         ];
+    }
+
+    /**
+     * Lokasi PKL milik siswa.
+     */
+    public function lokasiPkl(Siswa $siswa)
+    {
+        $user = request()->user();
+
+        if ($user?->isSiswa() && $siswa->user_id !== $user->id) {
+            return response()->json(['message' => 'Tidak diizinkan.'], 403);
+        }
+
+        $lokasi = $siswa->lokasiPkl()->with(['guru.user', 'perusahaan', 'gelombang'])->get();
+
+        return LokasiPklResource::collection($lokasi);
     }
 }
