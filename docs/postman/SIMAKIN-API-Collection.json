@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "c059533e-9878-4f99-b2a8-f4f13a4b7eff",
+    "_postman_id": "09e15b78-08e2-4191-ab61-ceac81d96b19",
     "name": "SIMAKIN API",
-    "description": "#### Environment Variables\n\n| Variable | Description |\n| --- | --- |\n| base_url | [http://localhost:8000/api](http://localhost:8000/api) |\n| web_url | [http://localhost:8000](http://localhost:8000) |\n| frontend_url | localhost:5173 |\n| token |  |\n| user_id |  |\n| role_id |  |\n| xsrf_token |  |\n| admin_username | admin |\n| admin_password | admin123 |\n| guru_username | guru |\n| guru_password | guru123 |\n| siswa_username | siswa |\n| siswa_password | siswa123 |\n| admin_token |  |\n| jurusan_id |  |\n| jurusan_seed_id | 1 |\n| perusahaan_seed_id | 1 |\n| kompetensi_id |  |\n| gelombang_id |  |\n| perusahaan_id |  |\n| sikap_id |  |\n| waktu_absen_id |  |\n| guru_token |  |\n| siswa_token |  |\n| guru_id |  |\n| siswa_id |  |\n| admin_user_id |  |\n| siswa_nis | 0012345 |\n| siswa_baru_password | password123 |",
+    "description": "#### Environment Variables\n\n| Variable | Description |\n| --- | --- |\n| base_url | [http://localhost:8000/api](http://localhost:8000/api) |\n| web_url | [http://localhost:8000](http://localhost:8000) |\n| frontend_url | localhost:5173 |\n| token |  |\n| user_id |  |\n| role_id |  |\n| xsrf_token |  |\n| admin_username | admin |\n| admin_password | admin123 |\n| guru_username | guru |\n| guru_password | guru123 |\n| siswa_username | siswa |\n| siswa_password | siswa123 |\n| admin_token |  |\n| jurusan_id |  |\n| jurusan_seed_id | 1 |\n| perusahaan_seed_id | 1 |\n| kompetensi_id |  |\n| gelombang_id |  |\n| perusahaan_id |  |\n| sikap_id |  |\n| waktu_absen_id |  |\n| guru_token |  |\n| siswa_token |  |\n| guru_id |  |\n| siswa_id |  |\n| admin_user_id |  |\n| siswa_nis | 0012345 |\n| siswa_baru_password | password123 |\n| pengajuan_id |  |\n| lokasi_pkl_id |  |\n| gelombang_tutup_id |  |\n| perusahaan_lain_id |  |\n| perusahaan_penuh_id |  |\n| siswa_placed_id |  |\n| lokasi_completed_id |  |\n| pengajuan_approved_id |  |\n| siswa2_token |  |",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56116397",
-    "_collection_link": "https://go.postman.co/collection/56116397-c059533e-9878-4f99-b2a8-f4f13a4b7eff?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/56116397-09e15b78-08e2-4191-ab61-ceac81d96b19?source=collection_link"
   },
   "item": [
     {
@@ -4783,14 +4783,14 @@
           ]
         },
         {
-          "name": "GET Get Siswa Bimbangan (Sprint 3)",
+          "name": "GET Siswa Bimbingan",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Endpoint tersedia (placeholder)\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 404, 501]);\r\n});"
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Response memiliki data array\", function () { pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.be.an(\"array\"); });"
                 ]
               }
             }
@@ -4824,7 +4824,7 @@
                 "siswa-bimbingan"
               ]
             },
-            "description": "## Deskripsi\n\nPlaceholder untuk Sprint 3 (butuh tabel `lokasi_pkl`)."
+            "description": "## Deskripsi\n\nDaftar siswa bimbingan guru (status active). presensi_hari_ini & jurnal_hari_ini = null (Sprint 4/5)."
           },
           "response": []
         }
@@ -5935,14 +5935,14 @@
           ]
         },
         {
-          "name": "GET Lokasi PKL Siswa (Sprint 3)",
+          "name": "GET Lokasi PKL Siswa",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Endpoint tersedia (placeholder)\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([200, 404, 501]);\r\n});"
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
@@ -5976,7 +5976,742 @@
                 "lokasi-pkl"
               ]
             },
-            "description": "## Deskripsi\n\nPlaceholder untuk Sprint 3 (butuh tabel `lokasi_pkl`)."
+            "description": "## Deskripsi\n\nLokasi PKL milik siswa. Admin/guru semua; siswa hanya miliknya."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11. Pengajuan PKL",
+      "item": [
+        {
+          "name": "GET List Pengajuan PKL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Response memiliki data array + meta\", function () { pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.be.an(\"array\"); pm.expect(json).to.have.property(\"meta\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nList pengajuan PKL. Admin/guru semua; siswa hanya miliknya. Query: status, siswa_id, perusahaan_id, gelombang_id, page."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Get Pengajuan Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Detail pengajuan\", function () { pm.expect(json.data).to.have.property(\"id\"); pm.expect(json.data).to.have.property(\"status\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nDetail pengajuan + relasi siswa/perusahaan/gelombang/verifier."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Ajukan PKL (Siswa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () { pm.response.to.have.status(201); });\nconst json = pm.response.json();\npm.test(\"Response berisi message & data\", function () { pm.expect(json).to.have.property(\"message\"); pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.have.property(\"id\"); });\nif (json.data && json.data.id) { pm.environment.set(\"pengajuan_id\", json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa ajukan PKL. Wajib profil confirmed (gate). Validasi gelombang aktif, jurusan sesuai, kuota, duplicate, placed."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Approve Pengajuan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Status approved\", function () { pm.expect(json.data.status).to.eql(\"approved\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guru_pembimbing_id\": {{guru_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_id}}",
+                "approve"
+              ]
+            },
+            "description": "## Deskripsi\n\nApprove pengajuan + auto-create lokasi_pkl (status active) + notifikasi ke siswa."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Reject Pengajuan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Status rejected\", function () { pm.expect(json.data.status).to.eql(\"rejected\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alasan_penolakan\": \"Kuota sudah penuh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_id}}/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_id}}",
+                "reject"
+              ]
+            },
+            "description": "## Deskripsi\n\nReject pengajuan (hanya status pending). Wajib alasan_penolakan."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Bulk Approve",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [{{pengajuan_id}}],\n  \"guru_pembimbing_id\": {{guru_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/bulk-approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "bulk-approve"
+              ]
+            },
+            "description": "## Deskripsi\n\nBulk approve (array IDs). Route bulk-approve terdaftar sebelum {id}."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Cancel Pengajuan (Siswa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nCancel pengajuan milik sendiri (hanya status pending)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12. Lokasi PKL",
+      "item": [
+        {
+          "name": "GET List Lokasi PKL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Response memiliki data array + meta\", function () { pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.be.an(\"array\"); pm.expect(json).to.have.property(\"meta\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nList lokasi PKL. Query: status, siswa_id, guru_id, perusahaan_id, gelombang_id, search, page."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Get Lokasi PKL Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Detail lokasi PKL\", function () { pm.expect(json.data).to.have.property(\"id\"); pm.expect(json.data).to.have.property(\"status\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl/{{lokasi_pkl_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl",
+                "{{lokasi_pkl_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nDetail lokasi PKL + relasi siswa/guru/perusahaan/gelombang."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Lokasi PKL (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () { pm.response.to.have.status(201); });\nconst json = pm.response.json();\npm.test(\"Response berisi message & data\", function () { pm.expect(json).to.have.property(\"message\"); pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.have.property(\"id\"); });\nif (json.data && json.data.id) { pm.environment.set(\"lokasi_pkl_id\", json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siswa_id\": {{siswa_id}},\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"guru_id\": {{guru_id}},\n  \"gelombang_id\": {{gelombang_id}},\n  \"catatan\": \"Penempatan manual\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nAssign siswa ke perusahaan. Validasi siswa belum punya lokasi active (SISWA_ALREADY_PLACED)."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Lokasi PKL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guru_id\": {{guru_id}},\n  \"catatan\": \"Update catatan\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl/{{lokasi_pkl_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl",
+                "{{lokasi_pkl_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate guru_id, perusahaan_id, gelombang_id, catatan."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Status Lokasi PKL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl/{{lokasi_pkl_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl",
+                "{{lokasi_pkl_id}}",
+                "status"
+              ]
+            },
+            "description": "## Deskripsi\n\nUpdate status. Flow: pending -> active/cancelled; active -> completed/cancelled."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Delete Lokasi PKL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl/{{lokasi_pkl_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl",
+                "{{lokasi_pkl_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nHapus penempatan."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "13. Dashboard",
+      "item": [
+        {
+          "name": "GET Dashboard Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Struktur dashboard\", function () { pm.expect(json).to.have.property(\"total_siswa\"); pm.expect(json).to.have.property(\"siswa_by_status\"); pm.expect(json).to.have.property(\"pengajuan_pending\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "admin"
+              ]
+            },
+            "description": "## Deskripsi\n\nStatistik admin (cache 10 menit). presensi_hari_ini placeholder."
           },
           "response": []
         }
@@ -8027,6 +8762,704 @@
               ]
             },
             "description": "## Deskripsi\n\nValidasi tipe template yang tidak didukung."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] POST Ajukan - Belum Konfirmasi (Gate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });\nconst json = pm.response.json();\npm.test(\"Memiliki code PROFIL_BELUM_KONFIRMASI\", function () { pm.expect(json.code).to.eql(\"PROFIL_BELUM_KONFIRMASI\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa belum konfirmasi profil tidak bisa mengajukan PKL."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] POST Ajukan - Gelombang Tidak Aktif",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code GELOMBANG_NOT_ACTIVE\", function () { pm.expect(json.code).to.eql(\"GELOMBANG_NOT_ACTIVE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"gelombang_id\": {{gelombang_tutup_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nPengajuan saat gelombang tidak dalam periode pendaftaran."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] POST Ajukan - Duplicate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code PENGAJUAN_DUPLICATE\", function () { pm.expect(json.code).to.eql(\"PENGAJUAN_DUPLICATE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa sudah punya pengajuan pending di gelombang yang sama."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] POST Ajukan - Jurusan Tidak Sesuai",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_lain_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nJurusan siswa tidak sesuai dengan perusahaan."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] POST Ajukan - Kuota Penuh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code PERUSAHAAN_KUOTA_PENUH\", function () { pm.expect(json.code).to.eql(\"PERUSAHAAN_KUOTA_PENUH\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_penuh_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nKuota perusahaan sudah penuh."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] POST Ajukan - Siswa Already Placed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code SISWA_ALREADY_PLACED\", function () { pm.expect(json.code).to.eql(\"SISWA_ALREADY_PLACED\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa sudah punya lokasi PKL active."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] DELETE Cancel - Non Pending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_approved_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_approved_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nCancel pengajuan yang sudah approved ditolak."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] DELETE Cancel - Bukan Pemilik",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa2_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa lain tidak bisa cancel pengajuan milik orang lain."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Lokasi] POST Create - Siswa Already Placed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code SISWA_ALREADY_PLACED\", function () { pm.expect(json.code).to.eql(\"SISWA_ALREADY_PLACED\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siswa_id\": {{siswa_placed_id}},\n  \"perusahaan_id\": {{perusahaan_id}},\n  \"gelombang_id\": {{gelombang_id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nAssign siswa yang sudah punya lokasi active."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Lokasi] PUT Status - Transisi Invalid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/lokasi-pkl/{{lokasi_completed_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "lokasi-pkl",
+                "{{lokasi_completed_id}}",
+                "status"
+              ]
+            },
+            "description": "## Deskripsi\n\nTransisi status tidak valid (completed -> active)."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Lokasi] GET Siswa Lokasi - Siswa Lain (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa2_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/siswa/{{siswa_id}}/lokasi-pkl",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "siswa",
+                "{{siswa_id}}",
+                "lokasi-pkl"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa lain tidak bisa melihat lokasi PKL milik siswa lain."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Dashboard] GET Dashboard - Sebagai Guru (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{guru_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard/admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "admin"
+              ]
+            },
+            "description": "## Deskripsi\n\nDashboard admin hanya untuk admin."
+          },
+          "response": []
+        },
+        {
+          "name": "[Sprint3][Pengajuan] PUT Approve - Guru Pembimbing Optional",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/pengajuan-pkl/{{pengajuan_id}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "pengajuan-pkl",
+                "{{pengajuan_id}}",
+                "approve"
+              ]
+            },
+            "description": "## Deskripsi\n\nApprove tanpa guru_pembimbing_id (opsional)."
           },
           "response": []
         }
