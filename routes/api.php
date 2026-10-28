@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GelombangController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\JurusanController;
@@ -95,6 +96,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::post('kompetensi/bulk-upload', [KompetensiController::class, 'bulkUpload']);
         Route::post('perusahaan/bulk-upload', [PerusahaanController::class, 'bulkUpload']);
+    });
+
+    // Dashboard (admin only)
+    Route::middleware('role:admin')->group(function () {
+        Route::get('dashboard/admin', [DashboardController::class, 'admin']);
     });
 
     // Write: admin only
