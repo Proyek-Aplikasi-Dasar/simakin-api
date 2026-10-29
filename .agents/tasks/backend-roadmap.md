@@ -280,49 +280,49 @@
 **Goal:** Siswa bisa check-in dengan foto + GPS, admin bisa koreksi.
 
 ### Task 4.1: Tabel & Endpoint Presensi
-- [ ] Migration: `create_absensi_siswa_table` (UNIQUE siswa_id+tanggal)
-- [ ] Model: `AbsensiSiswa` (relasi: Siswa, User (dikoreksi_oleh))
-- [ ] Seeder: sample presensi beberapa hari
-- [ ] Controller: `AbsensiSiswaController`
-- [ ] Endpoint: GET list (filter), GET/{id}
-- [ ] File upload: foto ke `storage/uploads/presensi/{date}/`
-- [ ] Validation: foto image 5MB, lat/long numeric, keterangan required jika != hadir
+- [x] Migration: `create_absensi_siswa_table` (UNIQUE siswa_id+tanggal)
+- [x] Model: `AbsensiSiswa` (relasi: Siswa, User (dikoreksi_oleh))
+- [x] Seeder: sample presensi beberapa hari
+- [x] Controller: `AbsensiSiswaController`
+- [x] Endpoint: GET list (filter), GET/{id}
+- [x] File upload: foto ke `storage/uploads/presensi/{date}/`
+- [x] Validation: foto image 5MB, lat/long numeric, keterangan required jika != hadir
 
 **Estimasi:** 1 hari
 
 ### Task 4.2: Check-in Logic
-- [ ] `POST /api/absensi` (siswa check-in)
-- [ ] Business rules:
+- [x] `POST /api/absensi` (siswa check-in)
+- [x] Business rules:
   - Validasi gelombang/lokasi PKL aktif (`GELOMBANG_NOT_ACTIVE`)
   - Anti double submit: UNIQUE constraint (`ABSENSI_DUPLICATE`)
   - Server-side jam_masuk timestamp
   - Response: data + `next_action: /jurnal/create`
-- [ ] `POST /api/absensi/upload-foto` (retry foto terpisah)
-- [ ] `PUT /api/absensi/{id}` (edit jika status_submit=failed)
-- [ ] `DELETE /api/absensi/{id}` (batalkan presensi)
-- [ ] Test: check-in success, duplicate, invalid status
+- [x] `POST /api/absensi/upload-foto` (retry foto terpisah)
+- [x] `PUT /api/absensi/{id}` (edit jika status_submit=failed)
+- [x] `DELETE /api/absensi/{id}` (batalkan presensi)
+- [x] Test: check-in success, duplicate, invalid status
 
 **Estimasi:** 1.5 hari
 
 ### Task 4.3: Koreksi Admin/Guru
-- [ ] `POST /api/absensi/{id}/koreksi` (admin/guru)
-- [ ] Logic: update status, catatan, `dikoreksi_oleh` = auth user
-- [ ] Notifikasi ke siswa saat dikoreksi
-- [ ] Test: koreksi + authorization
+- [x] `POST /api/absensi/{id}/koreksi` (admin/guru)
+- [x] Logic: update status, catatan, `dikoreksi_oleh` = auth user
+- [x] Notifikasi ke siswa saat dikoreksi
+- [x] Test: koreksi + authorization
 
 **Estimasi:** 0.5 hari
 
 ### Task 4.4: Rekap Presensi
-- [ ] `GET /api/absensi/rekap` - summary per siswa (hadir/izin/sakit/libur count)
-- [ ] `GET /api/absensi/siswa/{id}/periode` - rekap bulanan per siswa
-- [ ] Query: filter tanggal range, gelombang, jurusan
-- [ ] Test: rekap akurat
+- [x] `GET /api/absensi/rekap` - summary per siswa (hadir/izin/sakit/libur count)
+- [x] `GET /api/absensi/siswa/{id}/periode` - rekap bulanan per siswa
+- [x] Query: filter tanggal range, gelombang, jurusan
+- [x] Test: rekap akurat
 
 **Estimasi:** 1 hari
 
 ### Task 4.5: API Docs + Postman
-- [ ] Update dokumentasi Sprint 4
-- [ ] Update Postman collection
+- [x] Update dokumentasi Sprint 4
+- [x] Update Postman collection
 
 **Estimasi:** 0.5 hari (bisa digabung)
 

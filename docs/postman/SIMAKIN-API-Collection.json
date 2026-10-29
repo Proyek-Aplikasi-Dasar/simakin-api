@@ -6668,7 +6668,494 @@
       ]
     },
     {
-      "name": "13. Dashboard",
+      "name": "13. Presensi",
+      "item": [
+        {
+          "name": "GET List Absensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Response memiliki data array + meta\", function () { pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.be.an(\"array\"); pm.expect(json).to.have.property(\"meta\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nList presensi (admin/guru semua; siswa hanya miliknya). Query: siswa_id, tanggal, tanggal_mulai, tanggal_selesai, status, page."
+          }
+        },
+        {
+          "name": "GET Rekap Absensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Response memiliki data array\", function () { pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/rekap",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "rekap"
+              ]
+            },
+            "description": "## Deskripsi\n\nRekap agregat per siswa (hadir, izin, sakit, libur, tidak_absen). Query: gelombang_id, jurusan_id, tanggal_mulai, tanggal_selesai."
+          }
+        },
+        {
+          "name": "GET Rekap Periode Siswa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Struktur rekap\", function () { pm.expect(json).to.have.property(\"siswa\"); pm.expect(json).to.have.property(\"rekap\"); pm.expect(json).to.have.property(\"data\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/siswa/{{siswa_id}}/periode",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "siswa",
+                "{{siswa_id}}",
+                "periode"
+              ]
+            },
+            "description": "## Deskripsi\n\nRekap bulanan 1 siswa + rincian harian. Query: bulan, tahun. Siswa hanya miliknya."
+          }
+        },
+        {
+          "name": "POST Upload Foto (Retry)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/upload-foto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "upload-foto"
+              ]
+            },
+            "description": "## Deskripsi\n\nRetry upload foto terpisah; set status_submit = success.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "absensi_id",
+                  "value": "{{absensi_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "foto_masuk",
+                  "type": "file",
+                  "src": [
+                    "postman-cloud:///1f1d06b6-db03-4aa0-84cb-1a112ee6415b"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Get Absensi Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\nconst json = pm.response.json();\npm.test(\"Detail absensi\", function () { pm.expect(json.data).to.have.property(\"id\"); pm.expect(json.data).to.have.property(\"status\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nDetail absensi. Siswa hanya miliknya."
+          }
+        },
+        {
+          "name": "POST Check-in (Siswa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () { pm.response.to.have.status(201); });\nconst json = pm.response.json();\npm.test(\"Response berisi success & data\", function () { pm.expect(json).to.have.property(\"success\"); pm.expect(json).to.have.property(\"data\"); pm.expect(json.data).to.have.property(\"id\"); });\nif (json.data && json.data.id) { pm.environment.set(\"absensi_id\", json.data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nCheck-in presensi. Wajib profil confirmed & lokasi PKL active. Response menyertakan next_action: /jurnal/create jika hadir.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "status",
+                  "value": "hadir",
+                  "type": "text"
+                },
+                {
+                  "key": "latitude",
+                  "value": "-7.40123456",
+                  "type": "text"
+                },
+                {
+                  "key": "longitude",
+                  "value": "110.40123456",
+                  "type": "text"
+                },
+                {
+                  "key": "foto_masuk",
+                  "type": "file",
+                  "src": [
+                    "postman-cloud:///1f1d06b6-db03-4aa0-84cb-1a112ee6415b"
+                  ]
+                },
+                {
+                  "key": "keterangan",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "tanggal",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "status_submit",
+                  "value": "success",
+                  "type": "text"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT Edit Absensi (Siswa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nEdit hanya jika status_submit = failed (ABSENSI_EDIT_BLOCKED jika sudah success).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"izin\",\n  \"keterangan\": \"Izin mendadak\",\n  \"status_submit\": \"success\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE Batalkan Presensi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nBatalkan presensi (admin atau siswa pemilik). Hapus file foto jika ada."
+          }
+        },
+        {
+          "name": "POST Koreksi Presensi (Admin/Guru)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}/koreksi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}",
+                "koreksi"
+              ]
+            },
+            "description": "## Deskripsi\n\nKoreksi manual (admin/guru; guru hanya siswa bimbingannya). Set dikoreksi_oleh, kirim notifikasi absensi-corrected.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sakit\",\n  \"keterangan\": \"Dikoreksi oleh admin\",\n  \"jam_masuk\": \"08:30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "17. Dashboard",
       "item": [
         {
           "name": "GET Dashboard Admin",
@@ -9462,6 +9949,697 @@
             "description": "## Deskripsi\n\nApprove tanpa guru_pembimbing_id (opsional)."
           },
           "response": []
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Check-in - Tanpa Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nTanpa token."
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Check-in - Belum Konfirmasi (Gate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });\nconst json = pm.response.json();\npm.test(\"Memiliki code PROFIL_BELUM_KONFIRMASI\", function () { pm.expect(json.code).to.eql(\"PROFIL_BELUM_KONFIRMASI\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa belum konfirmasi profil tidak bisa check-in.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"hadir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Check-in - Tanpa Lokasi PKL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code GELOMBANG_NOT_ACTIVE\", function () { pm.expect(json.code).to.eql(\"GELOMBANG_NOT_ACTIVE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa tanpa lokasi PKL active.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"hadir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Check-in - Duplicate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code ABSENSI_DUPLICATE\", function () { pm.expect(json.code).to.eql(\"ABSENSI_DUPLICATE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nPresensi hari ini sudah dilakukan.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"hadir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Check-in - Hadir Tanpa Foto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nHadir wajib foto.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"hadir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Check-in - Izin Tanpa Keterangan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nIzin wajib keterangan.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"izin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] PUT Edit - Sudah Success (Blocked)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code ABSENSI_EDIT_BLOCKED\", function () { pm.expect(json.code).to.eql(\"ABSENSI_EDIT_BLOCKED\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nEdit presensi yang sudah success ditolak.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"izin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Koreksi - Sebagai Siswa (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}/koreksi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}",
+                "koreksi"
+              ]
+            },
+            "description": "## Deskripsi\n\nKoreksi hanya admin/guru.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sakit\",\n  \"keterangan\": \"Dikoreksi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Koreksi - Guru Bukan Pembimbing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{guru_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}/koreksi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}",
+                "koreksi"
+              ]
+            },
+            "description": "## Deskripsi\n\nGuru bukan pembimbing tidak bisa koreksi.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"sakit\",\n  \"keterangan\": \"Dikoreksi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] DELETE - Bukan Pemilik",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa2_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/{{absensi_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "{{absensi_id}}"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa lain tidak bisa batalkan presensi milik orang lain."
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Upload Foto - absensi_id Invalid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/upload-foto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "upload-foto"
+              ]
+            },
+            "description": "## Deskripsi\n\nabsensi_id tidak valid.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "absensi_id",
+                  "value": "99999",
+                  "type": "text"
+                },
+                {
+                  "key": "foto_masuk",
+                  "type": "file",
+                  "src": [
+                    "postman-cloud:///1f1d06b6-db03-4aa0-84cb-1a112ee6415b"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] GET Rekap - Sebagai Siswa (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/rekap",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "rekap"
+              ]
+            },
+            "description": "## Deskripsi\n\nRekap hanya admin/guru."
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] GET Periode - Siswa Lain (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/siswa/{{siswa_lain_id}}/periode",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "siswa",
+                "{{siswa_lain_id}}",
+                "periode"
+              ]
+            },
+            "description": "## Deskripsi\n\nSiswa lain tidak bisa melihat periode siswa lain."
+          }
         }
       ]
     }

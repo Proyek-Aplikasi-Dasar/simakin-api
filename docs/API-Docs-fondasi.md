@@ -853,6 +853,30 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 
 ---
 
+## F8. Presensi Harian (Sprint 4)
+
+**Auth:** `Authorization: Bearer {token}`.
+
+| Method | Endpoint | Role | Keterangan |
+|---|---|---|---|
+| GET | `/absensi` | admin, guru, siswa | List (query: `siswa_id`, `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `status`, `page`). Siswa hanya miliknya. |
+| GET | `/absensi/rekap` | admin, guru | Rekap agregat per siswa (query: `gelombang_id`, `jurusan_id`, `tanggal_mulai`, `tanggal_selesai`) |
+| GET | `/absensi/siswa/{id}/periode` | admin, guru, siswa | Rekap bulanan 1 siswa (`?bulan=`, `?tahun=`). Siswa hanya miliknya. |
+| POST | `/absensi/upload-foto` | siswa | Retry upload foto (`absensi_id`, `foto_masuk`) |
+| GET | `/absensi/{id}` | admin, guru, siswa | Detail (siswa hanya miliknya) |
+| POST | `/absensi` | siswa (profil confirmed) | Check-in (multipart: `status`, `latitude`, `longitude`, `foto_masuk`, `keterangan`, `tanggal` opsional). Response menyertakan `next_action: /jurnal/create` jika `hadir`. |
+| PUT | `/absensi/{id}` | siswa (profil confirmed) | Edit jika `status_submit = failed` (`ABSENSI_EDIT_BLOCKED` jika sudah success) |
+| DELETE | `/absensi/{id}` | admin, siswa | Batalkan presensi |
+| POST | `/absensi/{id}/koreksi` | admin, guru | Koreksi manual (`status`, `keterangan`, `jam_masuk` opsional) + notifikasi `absensi-corrected` |
+
+**Validasi:** `hadir` wajib foto (kecuali partial save `failed`); `izin/sakit/libur` wajib `keterangan`. `GELOMBANG_NOT_ACTIVE` jika di luar periode praktik; `ABSENSI_DUPLICATE` jika sudah presensi hari ini; `ABSENSI_EDIT_BLOCKED` jika edit presensi yang sudah success.
+
+**Integrasi:**
+- `GET /api/guru/{id}/siswa-bimbingan` mengisi `presensi_hari_ini` (`status`, `jam_masuk`) berdasarkan query `?tanggal=` (default hari ini).
+- `GET /api/dashboard/admin` mengisi `presensi_hari_ini` (`hadir`, `izin`, `sakit`, `tidak_absen`) nyata.
+
+---
+
 ## G. Onboarding Profil Siswa (Mobile)
 
 **Prasyarat:** sudah login mobile (`X-Client: mobile`). Semua request memakai header:

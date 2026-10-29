@@ -504,7 +504,7 @@ Body: { "ids": [1, 2, 3], "guru_pembimbing_id": 3 }
 
 ---
 
-## 13. Presensi / Absensi (9 endpoints) 📋
+## 13. Presensi / Absensi (9 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -798,10 +798,10 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 10. Siswa | 10 | 10 ✅ (lokasi-pkl selesai Sprint 3) |
 | 11. Pengajuan PKL | 7 (incl. bulk) | 7 ✅ |
 | 12. Lokasi PKL | 6 | 6 ✅ |
-| 13. Presensi | 9 | 📋 |
+| 13. Presensi | 9 | 9 ✅ |
 | 14. Jurnal Harian | 10 | 📋 |
 | 15. Penilaian | 12 | 📋 |
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 1 ✅ + 2 Sprint 7 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~115** | **73 done, ~42 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16 — Pengajuan 7, Lokasi 6, Guru siswa-bimbingan 1, Siswa lokasi-pkl 1, Dashboard 1) |
+| **Total** | **~115** | **82 done, ~33 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16; Sprint 4: +9 — Presensi 9) |
