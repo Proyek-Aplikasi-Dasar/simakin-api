@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             SiswaSeeder::class,
             PengajuanPklSeeder::class,
             LokasiPklSeeder::class,
+            AbsensiSiswaSeeder::class,
         ]);
     }
 }

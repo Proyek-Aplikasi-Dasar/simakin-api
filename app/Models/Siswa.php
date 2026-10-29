@@ -106,6 +106,14 @@ class Siswa extends Model
     }
 
     /**
+     * Relasi ke AbsensiSiswa (One-to-Many / HasMany).
+     */
+    public function absensi(): HasMany
+    {
+        return $this->hasMany(AbsensiSiswa::class, 'siswa_id');
+    }
+
+    /**
      * Profil dianggap terkonfirmasi bila timestamp konfirmasi sudah terisi.
      */
     public function isProfilTerkonfirmasi(): bool
@@ -136,7 +144,7 @@ class Siswa extends Model
             'alamat_ortu' => $this->alamat_ortu,
         ];
 
-        return array_keys(array_filter($fields, fn ($nilai): bool => $nilai === null || $nilai === ''));
+        return array_keys(array_filter($fields, fn($nilai): bool => $nilai === null || $nilai === ''));
     }
 
     /**
