@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiSiswaController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', fn(Request $r) => $r->user()->load('role'));
+    Route::get('/user', fn (Request $r) => $r->user()->load('role'));
     Route::post('/logout', [LoginController::class, 'logout']);
 
     Route::post('/register', [RegisterController::class, 'register'])
@@ -53,6 +54,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:siswa', 'profil.confirmed'])->group(function () {
         Route::post('pengajuan-pkl', [PengajuanPklController::class, 'store']);
         Route::delete('pengajuan-pkl/{pengajuan_pkl}', [PengajuanPklController::class, 'destroy']);
+    });
+
+    // Absensi - read (admin, guru, siswa)
+    Route::middleware('role:admin,guru,siswa')->group(function () {
+        Route::get('absensi', [AbsensiSiswaController::class, 'index']);
+        Route::get('absensi/rekap', [AbsensiSiswaController::class, 'rekap']);
+        Route::get('absensi/siswa/{siswa}/periode', [AbsensiSiswaController::class, 'periodeSiswa']);
+        Route::get('absensi/{absensi}', [AbsensiSiswaController::class, 'show']);
+    });
+
+    // Absensi - siswa transaksional (gate profil)
+    Route::middleware(['role:siswa', 'profil.confirmed'])->group(function () {
+        Route::post('absensi', [AbsensiSiswaController::class, 'store']);
+        Route::put('absensi/{absensi}', [AbsensiSiswaController::class, 'update']);
+        Route::post('absensi/upload-foto', [AbsensiSiswaController::class, 'uploadFoto']);
+    });
+
+    // Absensi - delete (admin, siswa)
+    Route::middleware('role:admin,siswa')->group(function () {
+        Route::delete('absensi/{absensi}', [AbsensiSiswaController::class, 'destroy']);
+    });
+
+    // Absensi - koreksi (admin, guru)
+    Route::middleware('role:admin,guru')->group(function () {
+        Route::post('absensi/{absensi}/koreksi', [AbsensiSiswaController::class, 'koreksi']);
     });
 
     Route::middleware('role:admin,guru')->get('siswa/{siswa}', [SiswaController::class, 'show']);
