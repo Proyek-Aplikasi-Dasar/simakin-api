@@ -11,6 +11,7 @@ use App\Models\LokasiPkl;
 use App\Models\Siswa;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -329,7 +330,7 @@ class AbsensiSiswaController extends Controller
     /**
      * Simpan foto ke disk public dan kembalikan path relatif.
      */
-    protected function storeFoto($file, int $userId, string $tanggal): string
+    protected function storeFoto(UploadedFile $file, int $userId, string $tanggal): string
     {
         $ext = $file->getClientOriginalExtension();
         $random = Str::random(8);
