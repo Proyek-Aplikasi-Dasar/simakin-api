@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AbsensiSiswa;
 use App\Models\Guru;
 use App\Models\LokasiPkl;
 use App\Models\PengajuanPkl;
@@ -25,6 +26,22 @@ class DashboardController extends Controller
             $totalSiswa = Siswa::count();
             $siswaByStatus['pending'] += max(0, $totalSiswa - $placedSiswa);
 
+            $today = now()->toDateString();
+            $presensiCounts = AbsensiSiswa::whereDate('tanggal', $today)
+                ->selectRaw('status, count(*) as total')
+                ->groupBy('status')
+                ->pluck('total', 'status');
+
+            $hadir = (int) ($presensiCounts['hadir'] ?? 0);
+            $izin = (int) ($presensiCounts['izin'] ?? 0);
+            $sakit = (int) ($presensiCounts['sakit'] ?? 0);
+            $libur = (int) ($presensiCounts['libur'] ?? 0);
+
+            // Siswa aktif yang belum absen hari ini.
+            $activeSiswa = LokasiPkl::where('status', 'active')->distinct('siswa_id')->count('siswa_id');
+            $sudahAbsen = $hadir + $izin + $sakit + $libur;
+            $tidakAbsen = max(0, $activeSiswa - $sudahAbsen);
+
             return [
                 'total_siswa' => $totalSiswa,
                 'total_guru' => Guru::count(),
@@ -32,10 +49,10 @@ class DashboardController extends Controller
                 'siswa_by_status' => $siswaByStatus,
                 'pengajuan_pending' => PengajuanPkl::where('status', 'pending')->count(),
                 'presensi_hari_ini' => [
-                    'hadir' => 0,
-                    'izin' => 0,
-                    'sakit' => 0,
-                    'tidak_absen' => 0,
+                    'hadir' => $hadir,
+                    'izin' => $izin,
+                    'sakit' => $sakit,
+                    'tidak_absen' => $tidakAbsen,
                 ],
             ];
         });

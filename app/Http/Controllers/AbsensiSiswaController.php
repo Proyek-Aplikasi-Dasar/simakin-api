@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Absensi\KoreksiAbsensiRequest;
 use App\Http\Requests\Absensi\StoreAbsensiRequest;
 use App\Http\Requests\Absensi\UpdateAbsensiRequest;
 use App\Http\Requests\Absensi\UploadFotoAbsensiRequest;
@@ -9,6 +10,7 @@ use App\Http\Resources\AbsensiSiswaResource;
 use App\Models\AbsensiSiswa;
 use App\Models\LokasiPkl;
 use App\Models\Siswa;
+use App\Notifications\AbsensiCorrectedNotification;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -53,10 +55,10 @@ class AbsensiSiswaController extends Controller
         $query = AbsensiSiswa::query();
 
         if ($request->filled('gelombang_id')) {
-            $query->whereHas('siswa.lokasiPkl', fn ($q) => $q->where('gelombang_id', $request->integer('gelombang_id')));
+            $query->whereHas('siswa.lokasiPkl', fn($q) => $q->where('gelombang_id', $request->integer('gelombang_id')));
         }
         if ($request->filled('jurusan_id')) {
-            $query->whereHas('siswa', fn ($q) => $q->where('jurusan_id', $request->integer('jurusan_id')));
+            $query->whereHas('siswa', fn($q) => $q->where('jurusan_id', $request->integer('jurusan_id')));
         }
         if ($request->filled('tanggal_mulai')) {
             $query->whereDate('tanggal', '>=', $request->string('tanggal_mulai')->toString());
@@ -324,6 +326,42 @@ class AbsensiSiswaController extends Controller
 
         return response()->json([
             'message' => 'Presensi berhasil dibatalkan.',
+        ]);
+    }
+
+    public function koreksi(KoreksiAbsensiRequest $request, AbsensiSiswa $absensi)
+    {
+        $user = $request->user();
+
+        // Guru hanya boleh koreksi siswa bimbingannya.
+        if ($user?->isGuru()) {
+            $guru = $user->guru;
+            $isBimbingan = $guru && LokasiPkl::where('guru_id', $guru->id)
+                ->where('siswa_id', $absensi->siswa_id)
+                ->where('status', 'active')
+                ->exists();
+
+            if (! $isBimbingan) {
+                return response()->json(['message' => 'Tidak diizinkan.'], 403);
+            }
+        }
+
+        $absensi->update([
+            'status' => $request->status,
+            'keterangan' => $request->keterangan,
+            'jam_masuk' => $request->jam_masuk ?: $absensi->jam_masuk,
+            'dikoreksi_oleh' => $user->id,
+            'status_submit' => 'success',
+        ]);
+
+        $siswaUser = $absensi->siswa?->user;
+        if ($siswaUser) {
+            $siswaUser->notify(new AbsensiCorrectedNotification($absensi->fresh()));
+        }
+
+        return response()->json([
+            'message' => 'Presensi berhasil dikoreksi.',
+            'data' => new AbsensiSiswaResource($absensi->fresh()->load(['siswa.user', 'korektor'])),
         ]);
     }
 
