@@ -6,6 +6,7 @@ use App\Http\Requests\User\StoreGuruRequest;
 use App\Http\Requests\User\UpdateGuruRequest;
 use App\Http\Resources\GuruResource;
 use App\Imports\GuruImport;
+use App\Models\AbsensiSiswa;
 use App\Models\Guru;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class GuruController extends Controller
                 $search = $request->string('search')->toString();
                 $query->where(function ($w) use ($search) {
                     $w->where('nip', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
+                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
                 });
             })
             ->orderBy('nip')
@@ -144,9 +145,15 @@ class GuruController extends Controller
      */
     public function siswaBimbingan(Guru $guru)
     {
+        $tanggal = request()->input('tanggal', now()->toDateString());
+
         $lokasiList = $guru->lokasiPkl()->where('status', 'active')->with(['siswa.user', 'siswa.jurusan', 'perusahaan', 'gelombang'])->get();
 
-        $data = $lokasiList->map(function ($lokasi) {
+        $data = $lokasiList->map(function ($lokasi) use ($tanggal) {
+            $absensi = AbsensiSiswa::where('siswa_id', $lokasi->siswa->id)
+                ->whereDate('tanggal', $tanggal)
+                ->first();
+
             return [
                 'siswa' => [
                     'id' => $lokasi->siswa->id,
@@ -154,7 +161,10 @@ class GuruController extends Controller
                     'nama' => $lokasi->siswa->user?->name,
                 ],
                 'perusahaan' => $lokasi->perusahaan?->nama,
-                'presensi_hari_ini' => null,
+                'presensi_hari_ini' => $absensi ? [
+                    'status' => $absensi->status,
+                    'jam_masuk' => $absensi->jam_masuk,
+                ] : null,
                 'jurnal_hari_ini' => null,
             ];
         });
