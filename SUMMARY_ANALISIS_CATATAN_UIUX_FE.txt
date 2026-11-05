@@ -1,0 +1,296 @@
+﻿================================================================================
+SUMMARY: ANALISIS CATATAN UI/UX & FRONT-END - TINDAK LANJUT SPRINT 4-5
+================================================================================
+
+Branch: rev/catatan-uiux-fe-1
+Date: 5 November 2026, 14:53 WIB
+Status: ✅ COMPLETE - Ready for Team Review
+
+================================================================================
+DELIVERABLES
+================================================================================
+
+📁 Dokumen yang Telah Dibuat (4 files, 1,325 lines):
+
+1. .agents/Analisis_Catatan_UIUX_FE_Sprint_4-5.md (418 lines)
+   ✅ Analisis lengkap 4 catatan UI/UX
+   ✅ Analisis 16+ poin gap dari Front-End Web
+   ✅ Priority action items untuk Sprint 5-6
+   ✅ Risk & mitigation matrix
+   ✅ Decision log
+   ✅ Mockup review & mapping
+
+2. .agents/Action_Plan_Catatan_UIUX_FE.md (517 lines)
+   ✅ Phase 1-6 eksekusi detail
+   ✅ Migration plan lengkap dengan code
+   ✅ Model & seeder structure
+   ✅ Checklist progress (25 items)
+   ✅ Command & syntax siap eksekusi
+
+3. .agents/Ringkasan_Eksekutif_Catatan_UIUX_FE.md (280 lines)
+   ✅ Executive summary 1 halaman
+   ✅ Status table 4 catatan UI/UX
+   ✅ Timeline 13 hari (immediate + Sprint 5 + Sprint 6)
+   ✅ 2 decision points untuk tim
+   ✅ Next steps jelas
+
+4. docs/Update_Dokumentasi_Sprint_5-6.md (110 lines)
+   ✅ Petunjuk update backend roadmap
+   ✅ Petunjuk update database schema
+   ✅ Petunjuk update API endpoints
+   ✅ Copy-paste ready content
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+📊 Catatan UI/UX (4 items):
+   ✅ Bulk approve pengajuan      → SUDAH ADA (Sprint 3)
+   ✅ Reset sandi ke NIP/NIS      → SUDAH ADA (Sprint 2)
+   ⚠️  Penilaian: metadata GPS     → PERLU UPDATE (Sprint 6)
+   ⚠️  Hapus approval jurnal       → PERLU REVISI (Sprint 5)
+
+📊 Catatan Front-End (16+ items):
+   🔴 Kritis (4 items):
+      - Tabel jurnal_harian belum ada
+      - Tabel penilaian_bulanan belum ada
+      - Field radius_presensi di perusahaan belum ada
+      - Token verifikasi 6 digit belum ada
+   
+   🟡 Medium (12+ items):
+      - Beberapa field UI belum di BE (is_active, bidang_keahlian, dll)
+      - Penamaan berbeda tapi sudah nyambung
+      - Gap dokumentasi field
+
+================================================================================
+MAJOR CHANGES
+================================================================================
+
+🔥 Perubahan Requirement #1: HAPUS APPROVAL JURNAL
+
+   Before:
+   - Siswa input → Guru approve/revise → Lock jurnal
+   - Endpoint: PUT /api/jurnal/{id}/approve, /api/jurnal/{id}/revise
+   - Field: status_review, catatan_guru, reviewed_by, reviewed_at, is_editable
+   
+   After:
+   - Siswa input → Bisa edit kapan saja
+   - Admin bisa edit semua jurnal
+   - Guru hanya view (read-only)
+   - Field: edited_by, edited_at (tracking saja)
+   
+   Impact:
+   - Hapus 2 endpoint
+   - Hapus 5 field database
+   - Hemat 1 hari Sprint 5 (dari 5 → 4 hari)
+
+🔥 Perubahan Requirement #2: METADATA GPS + TOKEN VERIFIKASI
+
+   Tambah di penilaian_bulanan:
+   - verifikasi_waktu (timestamp)
+   - jarak_dari_pkl (decimal, Haversine calculation)
+   - dalam_radius (boolean flag)
+   - token_verifikasi (varchar 6 digit, UNIQUE)
+   - token_generated_at (timestamp)
+   - token_used_at (timestamp)
+   
+   Tambah di perusahaan:
+   - radius_presensi (int, default 100 meter)
+   - pembimbing_industri (varchar)
+   - bidang_usaha (varchar)
+   
+   Impact:
+   - Tambah 1 endpoint: POST /api/penilaian/{id}/generate-token
+   - Update endpoint: POST /api/penilaian/{id}/verifikasi (validasi token + GPS)
+   - Implementasi Haversine formula
+   - Tambah 1 hari Sprint 6 (dari 5 → 6 hari)
+
+================================================================================
+DATABASE CHANGES
+================================================================================
+
+🗄️  Alter Table (1 table):
+   - perusahaan: ADD radius_presensi, pembimbing_industri, bidang_usaha
+
+🗄️  Create Table (1 table untuk Sprint 5):
+   - jurnal_harian: 11 kolom (siswa_id, tanggal, kompetensi_id, deskripsi, 
+     foto, edited_by, edited_at, timestamps)
+   - UNIQUE(siswa_id, tanggal)
+   - INDEX(tanggal)
+
+🗄️  Create Table (4 tables untuk Sprint 6):
+   - aktivasi_penilaian
+   - penilaian_bulanan (dengan 6 field tambahan)
+   - penilaian_kompetensi
+   - penilaian_sikap
+
+================================================================================
+API CHANGES
+================================================================================
+
+📡 Jurnal Harian (Sprint 5):
+   REMOVE:
+   - PUT /api/jurnal/{id}/approve
+   - PUT /api/jurnal/{id}/revise
+   
+   KEEP (8 endpoints):
+   - GET /api/jurnal
+   - GET /api/jurnal/{id}
+   - POST /api/jurnal
+   - PUT /api/jurnal/{id} (siswa owner + admin)
+   - DELETE /api/jurnal/{id} (siswa owner + admin)
+   - GET /api/jurnal/rekap (tanpa breakdown status)
+   - GET /api/jurnal/riwayat
+   - POST /api/jurnal/upload-foto
+
+📡 Penilaian Bulanan (Sprint 6):
+   ADD:
+   - POST /api/penilaian/{id}/generate-token (guru/admin)
+   
+   UPDATE:
+   - POST /api/penilaian/{id}/verifikasi
+     Request: + token (required), latitude (required), longitude (required)
+     Logic: validate token, calculate distance, set flag, save metadata
+     Response: + jarak_dari_pkl, dalam_radius, pesan
+     Error: TOKEN_INVALID, TOKEN_EXPIRED, TOKEN_USED
+
+================================================================================
+TIMELINE
+================================================================================
+
+📅 Immediate (Hari 1-2): 5-6 November 2026
+   ✅ Buat dokumen analisis & action plan (DONE)
+   ⏳ Review dengan PM, UI/UX, FE (0.5 hari)
+   ⏳ Update dokumentasi (backend-roadmap, database schema, API endpoints, PRD)
+
+📅 Database Preparation (Hari 3): 7 November 2026
+   ⏳ Migration: alter perusahaan, create jurnal_harian
+   ⏳ Seeder: update & create
+   ⏳ Test & commit
+
+📅 Sprint 5: Jurnal Harian (Hari 4-7): 8-11 November 2026
+   ⏳ Task 5.1: Tabel & endpoint (1 hari)
+   ⏳ Task 5.2: CRUD tanpa approval (1.5 hari)
+   ⏳ Task 5.3: Riwayat & rekap (1 hari)
+   ⏳ Task 5.4: API docs (0.5 hari)
+   Total: 4 hari (buffer 1 hari)
+
+📅 Sprint 6: Penilaian Bulanan (Hari 8-13): 12-17 November 2026
+   ⏳ Task 6.1: 4 tabel + alter (1.5 hari)
+   ⏳ Task 6.2: Aktivasi (0.5 hari)
+   ⏳ Task 6.3: Input penilaian (1 hari)
+   ⏳ Task 6.3a: Token verifikasi (0.5 hari) NEW
+   ⏳ Task 6.4: Verifikasi GPS + token (1.5 hari) UPDATE
+   ⏳ Task 6.5: Nilai akhir (0.5 hari)
+   ⏳ Task 6.6: API docs (0.5 hari)
+   Total: 6 hari (exceed 1 hari)
+
+================================================================================
+DECISION POINTS (BUTUH KONFIRMASI TIM)
+================================================================================
+
+❓ Decision #1: Approval Jurnal - HAPUS atau KEEP?
+   Rekomendasi: HAPUS (sesuai mockup)
+   Alasan:
+   - Mockup mobile tidak ada status review
+   - Mockup web admin ada tombol "Edit" bukan approve/reject
+   - Workflow lebih sederhana
+   
+   Jika KEEP:
+   - Tambah 2 endpoint + 5 field
+   - Tambah 1 hari Sprint 5
+   - Mockup perlu revisi
+   
+   ➡️ Mohon konfirmasi dari PM & UI/UX
+
+❓ Decision #2: Token Verifikasi - WAJIB atau OPSIONAL?
+   Rekomendasi: OPSIONAL (dengan fallback)
+   Alasan:
+   - Mockup jelas menunjukkan input token
+   - Pengiriman token ke pembimbing industri di luar sistem (manual)
+   - Bisa jadi blocker jika pembimbing tidak dapat dihubungi
+   
+   Proposal:
+   - Implementasi penuh (generate + validasi)
+   - Admin bisa bypass token jika ada kendala
+   
+   ➡️ Mohon konfirmasi dari PM & UI/UX
+
+================================================================================
+RISK & MITIGATION
+================================================================================
+
+⚠️  Sprint 6 melebihi estimasi (6 hari vs 5 hari)
+   Mitigation: Defer comprehensive testing ke Sprint 8, fokus happy path
+
+⚠️  Token verifikasi menambah kompleksitas
+   Mitigation: Token opsional, bisa dibypass jika ada kendala
+
+⚠️  Haversine distance tidak akurat indoor
+   Mitigation: Simpan sebagai info saja, tidak memblokir verifikasi
+
+================================================================================
+GIT STATUS
+================================================================================
+
+Branch: rev/catatan-uiux-fe-1
+Commits: 3 commits
+   ed8cbbb [DOCS] Ringkasan eksekutif untuk review tim
+   22c6f1b [DOCS] Analisis & action plan tindak lanjut catatan UI/UX & FE
+   e0a9f89 [BE] docs: catatan dari uiux dan fe
+
+Files Changed: 4 files, 1,325 lines
+   .agents/Action_Plan_Catatan_UIUX_FE.md         | 517 ++++++
+   .agents/Analisis_Catatan_UIUX_FE_Sprint_4-5.md | 418 ++++++
+   .agents/Ringkasan_Eksekutif_Catatan_UIUX_FE.md | 280 ++++++
+   docs/Update_Dokumentasi_Sprint_5-6.md          | 110 ++++++
+
+Status: Clean working tree, ready to push
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+📋 Hari Ini (5 Nov, Sore):
+   1. Review dokumen dengan PM, UI/UX, FE Web
+   2. Konfirmasi 2 decision points
+   3. Bagi tugas update dokumentasi (bisa paralel)
+
+📋 Besok (6 Nov):
+   1. Update 4 file dokumentasi utama
+   2. Commit perubahan dokumentasi
+   3. Tag milestone: "Ready for Sprint 5"
+
+📋 Lusa (7 Nov):
+   1. Buat migration & seeder
+   2. Test migration
+   3. Commit & push
+
+📋 8 Nov - Mulai Sprint 5 Implementation
+
+================================================================================
+CONTACT & REFERENCES
+================================================================================
+
+📄 Dokumen Referensi:
+   - Analisis lengkap: .agents/Analisis_Catatan_UIUX_FE_Sprint_4-5.md
+   - Action plan: .agents/Action_Plan_Catatan_UIUX_FE.md
+   - Executive summary: .agents/Ringkasan_Eksekutif_Catatan_UIUX_FE.md
+   - Update instructions: docs/Update_Dokumentasi_Sprint_5-6.md
+   - Catatan FE: .agents/Catatan_FE_untuk_BE_Simakin.md
+
+📂 Mockup Referensi:
+   - Jurnal: docs/mockups/mobile/presensi-dan-jurnal/
+   - Penilaian: docs/mockups/mobile/penilaian-bulanan/
+   - Admin: docs/mockups/web/admin/
+
+================================================================================
+PREPARED BY
+================================================================================
+
+Backend Developer + AI Assistant (Kiro)
+Date: 5 November 2026, 14:53 WIB
+Branch: rev/catatan-uiux-fe-1
+Status: ✅ COMPLETE
+
+================================================================================
