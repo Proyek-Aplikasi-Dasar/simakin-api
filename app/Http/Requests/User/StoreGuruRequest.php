@@ -36,6 +36,11 @@ class StoreGuruRequest extends FormRequest
                 // NIP dipakai sebagai username login, jadi harus unik di users juga.
                 Rule::unique('users', 'username'),
             ],
+            'telp' => ['nullable', 'string', 'max:20'],
+            'jurusan_id' => ['nullable', 'exists:jurusan,id'],
+            'kuota_bimbingan' => ['nullable', 'integer', 'min:0'],
+            'alamat' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

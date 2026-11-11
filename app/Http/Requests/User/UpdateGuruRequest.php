@@ -40,6 +40,11 @@ class UpdateGuruRequest extends FormRequest
                 Rule::unique('guru', 'nip')->ignore($guruId),
                 Rule::unique('users', 'username')->ignore($userId),
             ],
+            'telp' => ['nullable', 'string', 'max:20'],
+            'jurusan_id' => ['nullable', 'exists:jurusan,id'],
+            'kuota_bimbingan' => ['nullable', 'integer', 'min:0'],
+            'alamat' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

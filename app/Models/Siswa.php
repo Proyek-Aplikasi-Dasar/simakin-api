@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'jurusan_id',
     'gelombang_id',
     'nis',
+    'nisn',
+    'tempat_lahir',
+    'tanggal_lahir',
     'jenis_kelamin',
     'kelas',
     'telp',
@@ -21,6 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'telp_ortu',
     'alamat_ortu',
     'profil_confirmed_at',
+    'is_active',
 ])]
 class Siswa extends Model
 {
@@ -43,6 +47,9 @@ class Siswa extends Model
         'jurusan_id',
         'gelombang_id',
         'nis',
+        'nisn',
+        'tempat_lahir',
+        'tanggal_lahir',
         'jenis_kelamin',
         'kelas',
         'telp',
@@ -51,6 +58,7 @@ class Siswa extends Model
         'telp_ortu',
         'alamat_ortu',
         'profil_confirmed_at',
+        'is_active',
     ];
 
     /**
@@ -62,6 +70,8 @@ class Siswa extends Model
     {
         return [
             'profil_confirmed_at' => 'datetime',
+            'tanggal_lahir' => 'date',
+            'is_active' => 'boolean',
         ];
     }
 

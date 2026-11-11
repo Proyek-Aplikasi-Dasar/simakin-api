@@ -268,11 +268,17 @@
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | user_id | bigint unsigned | NO | - | FK, UNIQUE | → users.id |
 | nip | varchar(30) | YES | NULL | UNIQUE | Nomor Induk Pegawai |
+| telp | varchar(20) | YES | NULL | - | Nomor telepon guru |
+| jurusan_id | bigint unsigned | YES | NULL | FK | → jurusan.id (jurusan yang diampu) |
+| kuota_bimbingan | int unsigned | YES | NULL | - | Maksimal siswa bimbingan |
+| alamat | text | YES | NULL | - | Alamat domisili guru |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Foreign Keys:**
 - `user_id` → `users(id)` ON DELETE CASCADE
+- `jurusan_id` → `jurusan(id)` ON DELETE SET NULL
 
 **Business Rules:**
 - Create guru otomatis create `users` record (role_id = 2)
@@ -281,8 +287,10 @@
 - NIP unique jika diisi; NIP juga harus unik di `users.username`
 - Delete = **hard delete** transaksional: hapus `guru` + `users` (token mobile dicabut) sehingga NIP/username bisa dipakai ulang
 - Relasi `hasMany(LokasiPkl)` ditambahkan pada Sprint 3 saat tabel `lokasi_pkl` tersedia
+- `is_active` untuk toggle aktif/nonaktif (UI punya toggle)
 
-**Status:** Sudah ada (migration + model + seeder + endpoint CRUD + bulk upload)
+**Status:** Sudah ada (migration + model + seeder + endpoint CRUD + bulk upload)  
+**Update Sprint 2 (11 Nov 2026):** Tambah `telp`, `jurusan_id`, `kuota_bimbingan`, `alamat`, `is_active`
 
 ---
 
@@ -297,6 +305,9 @@
 | jurusan_id | bigint unsigned | YES | NULL | FK | → jurusan.id (diisi saat onboarding) |
 | gelombang_id | bigint unsigned | YES | NULL | FK | → gelombang.id (1 siswa = 1 gelombang; diisi saat onboarding) |
 | nis | varchar(20) | NO | - | UNIQUE | Nomor Induk Siswa (read-only dari `users.username`) |
+| nisn | varchar(20) | YES | NULL | - | Nomor Induk Siswa Nasional (diisi saat onboarding) |
+| tempat_lahir | varchar(100) | YES | NULL | - | Tempat lahir (diisi saat onboarding) |
+| tanggal_lahir | date | YES | NULL | - | Tanggal lahir (diisi saat onboarding) |
 | jenis_kelamin | enum('L','P') | YES | NULL | - | Laki-laki / Perempuan (diisi saat onboarding) |
 | kelas | varchar(20) | YES | NULL | - | Kelas, mis. `XII TJKT 1` (diisi saat onboarding) |
 | telp | varchar(20) | YES | NULL | - | No HP/WA siswa |
@@ -305,6 +316,7 @@
 | telp_ortu | varchar(20) | YES | NULL | - | No HP/WA orang tua/wali |
 | alamat_ortu | text | YES | NULL | - | Alamat domisili orang tua/wali |
 | profil_confirmed_at | timestamp | YES | NULL | INDEX | Waktu siswa mengonfirmasi profil |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 | deleted_at | timestamp | YES | NULL | - | Soft delete |

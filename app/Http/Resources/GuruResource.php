@@ -18,6 +18,18 @@ class GuruResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'nip' => $this->nip,
+            'telp' => $this->telp,
+            'jurusan_id' => $this->jurusan_id,
+            'kuota_bimbingan' => $this->kuota_bimbingan,
+            'alamat' => $this->alamat,
+            'is_active' => $this->is_active,
+            'jurusan' => $this->whenLoaded('jurusan', function () {
+                return [
+                    'id' => $this->jurusan->id,
+                    'nama' => $this->jurusan->nama,
+                    'kode' => $this->jurusan->kode,
+                ];
+            }),
             'user' => $this->whenLoaded('user', function () {
                 return [
                     'id' => $this->user->id,

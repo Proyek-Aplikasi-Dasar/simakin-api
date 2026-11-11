@@ -422,8 +422,8 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 - [x] Task 1.11: Field tambahan perusahaan: `radius_presensi`, `pembimbing_industri`, `bidang_usaha` (migration ✅, model ✅, form request ✅, resource ✅, seeder ⏳, test ⏳)
 
 ### Sprint 2
-- [ ] Task 2.6: Field tambahan guru (telp, jurusan_id, kuota_bimbingan, alamat, is_active)
-- [ ] Task 2.7: Field tambahan siswa (nisn, tempat_lahir, tanggal_lahir, is_active)
+- [x] Task 2.6: Field tambahan guru (telp, jurusan_id, kuota_bimbingan, alamat, is_active) — migration ✅, model ✅, form request ✅, resource ✅, controller ✅, test ⏳
+- [x] Task 2.7: Field tambahan siswa (nisn, tempat_lahir, tanggal_lahir, is_active) — migration ✅, model ✅, form request ✅, resource ✅, controller ✅, test ⏳
 - [ ] Task 2.8: Update bulk upload template Excel
 
 ### Sprint 3

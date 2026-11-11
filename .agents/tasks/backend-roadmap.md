@@ -204,7 +204,7 @@
 
 ### Task 2.1: Guru CRUD
 - [x] Migration: `create_guru_table` (FK: users, UNIQUE nip)
-- [x] Model: `Guru` (relasi: belongsTo User)
+- [x] Model: `Guru` (relasi: belongsTo User, belongsTo Jurusan)
 - [x] Model: relasi `hasMany(LokasiPkl)` → **Sprint 3** (selesai Sprint 3)
 - [x] Seeder: 5 guru sample
 - [x] Controller: `GuruController`
@@ -212,6 +212,7 @@
 - [x] Bulk upload: `POST /api/guru/bulk-upload` (Excel)
 - [x] Endpoint: `GET /api/guru/{id}/siswa-bimbingan` → **Sprint 3** (selesai Sprint 3)
 - [x] Test: CRUD guru + bulk upload + auto-create user
+- [x] **Update Sprint 2 (11 Nov 2026):** Tambah field `telp`, `jurusan_id`, `kuota_bimbingan`, `alamat`, `is_active` (migration + model + form request + resource + controller)
 
 **Estimasi:** 1.5 hari
 
@@ -226,6 +227,7 @@
 - [x] Endpoint: `GET /api/siswa/{id}/lokasi-pkl` → **Sprint 3** (selesai Sprint 3)
 - [x] Validation: NIS unique, username unique (= NIS), gelombang/jurusan exists jika diisi
 - [x] Test: CRUD siswa + bulk upload + validation NIS duplikat
+- [x] **Update Sprint 2 (11 Nov 2026):** Tambah field `nisn`, `tempat_lahir`, `tanggal_lahir`, `is_active` (migration + model + form request + resource + controller)
 
 **Estimasi:** 2 hari
 
@@ -258,7 +260,34 @@
 
 **Estimasi:** 0.5 hari
 
-**Sprint 2 Total: 6.5 hari** (melebihi window 5 hari — opsi: defer Task 2.5 Excel Template ke Sprint 3, atau extend 1–1.5 hari)
+### Task 2.6: Field Tambahan Guru (dari catatan FE)
+- [x] Migration: `add_fields_to_guru_siswa_tables` (telp, jurusan_id, kuota_bimbingan, alamat, is_active)
+- [x] Model: `Guru` (relasi belongsTo Jurusan, fillable + casts)
+- [x] Form Request: StoreGuruRequest & UpdateGuruRequest
+- [x] Resource: GuruResource
+- [x] Controller: GuruController (store & update)
+- [ ] Test: CRUD dengan field baru
+
+**Estimasi:** 1 hari
+
+### Task 2.7: Field Tambahan Siswa (dari catatan FE)
+- [x] Migration: `add_fields_to_guru_siswa_tables` (nisn, tempat_lahir, tanggal_lahir, is_active)
+- [x] Model: `Siswa` (fillable + casts)
+- [x] Form Request: StoreSiswaRequest & UpdateSiswaRequest
+- [x] Resource: SiswaResource
+- [x] Controller: SiswaController (store & update, PROFIL_FIELDS)
+- [ ] Test: CRUD dengan field baru
+
+**Estimasi:** 1 hari
+
+### Task 2.8: Update Bulk Upload Template Excel
+- [ ] Tambah kolom di template Excel: `nisn`, `tempat_lahir`, `tanggal_lahir` (siswa)
+- [ ] Tambah kolom di template Excel: `telp`, `jurusan`, `kuota_bimbingan`, `alamat` (guru)
+- [ ] Update dokumentasi format kolom
+
+**Estimasi:** 0.5 hari
+
+**Sprint 2 Total: 6.5 hari** (melebihi window 5 hari — opsi: defer Task 2.5 Excel Template ke Sprint 3, atau extend 1–1.5 hari) + 2.5 hari (update) = **9 hari total**
 
 ---
 

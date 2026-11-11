@@ -48,6 +48,11 @@ class GuruController extends Controller
             return Guru::create([
                 'user_id' => $user->id,
                 'nip' => $data['nip'],
+                'telp' => $data['telp'] ?? null,
+                'jurusan_id' => $data['jurusan_id'] ?? null,
+                'kuota_bimbingan' => $data['kuota_bimbingan'] ?? null,
+                'alamat' => $data['alamat'] ?? null,
+                'is_active' => $data['is_active'] ?? true,
             ])->load('user');
         });
 
@@ -91,6 +96,26 @@ class GuruController extends Controller
 
             if (array_key_exists('nip', $data)) {
                 $guruData['nip'] = $data['nip'];
+            }
+
+            if (array_key_exists('telp', $data)) {
+                $guruData['telp'] = $data['telp'];
+            }
+
+            if (array_key_exists('jurusan_id', $data)) {
+                $guruData['jurusan_id'] = $data['jurusan_id'];
+            }
+
+            if (array_key_exists('kuota_bimbingan', $data)) {
+                $guruData['kuota_bimbingan'] = $data['kuota_bimbingan'];
+            }
+
+            if (array_key_exists('alamat', $data)) {
+                $guruData['alamat'] = $data['alamat'];
+            }
+
+            if (array_key_exists('is_active', $data)) {
+                $guruData['is_active'] = $data['is_active'];
             }
 
             if (! empty($guruData)) {
