@@ -20,6 +20,10 @@ class PerusahaanResource extends JsonResource
             'email' => $this->email,
             'deskripsi' => $this->deskripsi,
             'kuota' => $this->kuota,
+            'is_active' => $this->is_active,
+            'radius_presensi' => $this->radius_presensi,
+            'pembimbing_industri' => $this->pembimbing_industri,
+            'bidang_usaha' => $this->bidang_usaha,
             'jurusan' => $this->whenLoaded('jurusan', fn () => $this->jurusan->map(fn ($jurusan) => [
                 'id' => $jurusan->id,
                 'nama' => $jurusan->nama,

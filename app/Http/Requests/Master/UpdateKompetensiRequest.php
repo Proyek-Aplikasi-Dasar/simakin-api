@@ -17,7 +17,8 @@ class UpdateKompetensiRequest extends FormRequest
         return [
             'jurusan_id' => ['required', Rule::exists('jurusan', 'id')],
             'nama' => ['required', 'string', 'max:255'],
-            'kode' => ['nullable', 'string', 'max:50'],
+            'kode' => ['nullable', 'string', 'max:50', Rule::unique('kompetensi', 'kode')->ignore($this->route('kompetensi'))],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }

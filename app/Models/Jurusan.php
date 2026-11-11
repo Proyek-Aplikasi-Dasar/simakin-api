@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['nama', 'kode'])]
+#[Fillable(['nama', 'kode', 'bidang_keahlian', 'is_active'])]
 class Jurusan extends Model
 {
     /**
@@ -25,6 +25,17 @@ class Jurusan extends Model
     protected $fillable = [
         'nama',
         'kode',
+        'bidang_keahlian',
+        'is_active',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     /**

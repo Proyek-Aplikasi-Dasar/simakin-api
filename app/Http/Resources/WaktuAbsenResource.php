@@ -15,6 +15,7 @@ class WaktuAbsenResource extends JsonResource
             'mulai' => substr((string) $this->mulai, 0, 5),
             'selesai' => substr((string) $this->selesai, 0, 5),
             'keterangan' => $this->keterangan,
+            'is_active' => $this->is_active,
         ];
     }
 }

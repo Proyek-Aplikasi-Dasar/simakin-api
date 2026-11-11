@@ -15,7 +15,9 @@ class StoreJurusanRequest extends FormRequest
     {
         return [
             'nama' => ['required', 'string', 'max:100'],
-            'kode' => ['nullable', 'string', 'max:20'],
+            'kode' => ['nullable', 'string', 'max:20', 'unique:jurusan,kode'],
+            'bidang_keahlian' => ['nullable', 'string', 'max:100'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }

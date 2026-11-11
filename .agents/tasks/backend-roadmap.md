@@ -157,7 +157,44 @@
 
 **Estimasi:** 1 hari (fondasi, dipakai di Sprint 2)
 
-**Sprint 1 Total: 4.5 hari** (selesai; bulk upload endpoint menyusul Sprint 2)
+### Task 1.8: `is_active` di Master Tables
+- [x] Migration: `add_fields_to_master_tables` (is_active di jurusan, kompetensi, sikap, gelombang, perusahaan, waktu_absen)
+- [x] Model: update fillable + casts (Jurusan, Kompetensi, Sikap, Gelombang, Perusahaan, WaktuAbsen)
+- [x] Form Request: tambah `is_active` di Store & Update (semua master)
+- [x] Resource: tambah `is_active` di semua master resources
+- [ ] Controller: filter `?is_active=true/false` di list endpoints
+- [ ] Test: toggle is_active + filter
+
+**Estimasi:** 1 hari
+
+### Task 1.9: `bidang_keahlian` di Jurusan
+- [x] Migration: `add_fields_to_master_tables` (bidang_keahlian di jurusan)
+- [x] Model: update fillable (Jurusan)
+- [x] Form Request: tambah `bidang_keahlian` di Store & Update Jurusan
+- [x] Resource: tambah `bidang_keahlian` di JurusanResource
+- [ ] Seeder: isi bidang_keahlian untuk 10 jurusan
+- [ ] Test: CRUD dengan bidang_keahlian
+
+**Estimasi:** 0.5 hari
+
+### Task 1.10: `kode` Unique Validation
+- [x] Migration: `add_unique_kode_to_jurusan_kompetensi` (UNIQUE constraint)
+- [x] Form Request: tambah `unique:jurusan,kode` dan `unique:kompetensi,kode`
+- [ ] Test: duplicate kode ditolak
+
+**Estimasi:** 0.5 hari
+
+### Task 1.11: Field Tambahan Perusahaan (dipindahkan dari Sprint 6)
+- [x] Migration: `add_fields_to_master_tables` (radius_presensi, pembimbing_industri, bidang_usaha)
+- [x] Model: update fillable + casts (Perusahaan)
+- [x] Form Request: tambah field di Store & Update Perusahaan
+- [x] Resource: tambah field di PerusahaanResource
+- [ ] Seeder: isi radius_presensi, pembimbing_industri, bidang_usaha
+- [ ] Test: CRUD dengan field baru
+
+**Estimasi:** 0.5 hari
+
+**Sprint 1 Total: 4.5 hari** (selesai; bulk upload endpoint menyusul Sprint 2) + 2.5 hari (update) = **7 hari total**
 
 ---
 

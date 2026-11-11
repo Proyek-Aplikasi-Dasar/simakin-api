@@ -83,14 +83,20 @@
 |---|---|---|---|---|---|
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | nama | varchar(100) | NO | - | - | Nama jurusan (e.g., "Teknik Otomotif") |
-| kode | varchar(20) | YES | NULL | - | Kode jurusan (e.g., "TKR") |
+| kode | varchar(20) | YES | NULL | UNIQUE | Kode jurusan (e.g., "TKR") — harus unik |
+| bidang_keahlian | varchar(100) | YES | NULL | - | Bidang keahlian jurusan |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
 - Admin full CRUD
 - Guru/siswa read-only
+- `kode` harus unik (UNIQUE constraint)
+- `is_active` untuk toggle aktif/nonaktif (UI punya toggle)
 - Data seeder: 10 jurusan resmi SMKN 1 Magelang
+
+**Update Sprint 1 (11 Nov 2026):** Tambah `bidang_keahlian`, `is_active`, UNIQUE `kode`
 
 **Status:** ✅ Sudah ada (migration + model + seeder + endpoint)
 
@@ -109,11 +115,15 @@
 | daftar_selesai | date | NO | - | - | Akhir pendaftaran |
 | praktik_mulai | date | NO | - | - | Awal masa PKL |
 | praktik_selesai | date | NO | - | - | Akhir masa PKL |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
 - Satu siswa hanya bisa ikut **1 gelombang** (unique `siswa_id` di tabel siswa)
+- `is_active` untuk toggle aktif/nonaktif
+
+**Update Sprint 1 (11 Nov 2026):** Tambah `is_active`
 - Pendaftaran hanya terbuka saat `daftar_mulai <= today <= daftar_selesai`
 - Data seeder: 2 gelombang tahun ajaran 2026/2027
 
@@ -130,7 +140,8 @@
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | jurusan_id | bigint unsigned | NO | - | FK | → jurusan.id |
 | nama | varchar(255) | NO | - | - | Nama kompetensi |
-| kode | varchar(50) | YES | NULL | - | Kode kompetensi (opsional) |
+| kode | varchar(50) | YES | NULL | UNIQUE | Kode kompetensi (opsional) — harus unik jika diisi |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
@@ -209,12 +220,16 @@
 | id | bigint unsigned | NO | auto | PK | Primary key |
 | nama | varchar(100) | NO | - | - | Nama sikap (e.g., "Disiplin", "Tanggung Jawab") |
 | deskripsi | text | YES | NULL | - | Deskripsi sikap |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
 - Admin CRUD, guru/siswa read-only
+- `is_active` untuk toggle aktif/nonaktif
 - Data seeder: 10 sikap penilaian PKL
+
+**Update Sprint 1 (11 Nov 2026):** Tambah `is_active`
 
 **Status:** ✅ Sudah ada (migration + model + seeder + endpoint)
 
@@ -230,6 +245,7 @@
 | mulai | time | NO | - | - | Jam masuk (e.g., "06:00:00") |
 | selesai | time | NO | - | - | Jam selesai (e.g., "22:00:00") |
 | keterangan | varchar(255) | YES | NULL | - | Keterangan (e.g., "Jam kerja normal") |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 

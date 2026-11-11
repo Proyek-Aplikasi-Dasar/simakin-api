@@ -24,6 +24,10 @@ class UpdatePerusahaanRequest extends FormRequest
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'deskripsi' => ['nullable', 'string'],
             'kuota' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
+            'radius_presensi' => ['nullable', 'integer', 'min:0'],
+            'pembimbing_industri' => ['nullable', 'string', 'max:255'],
+            'bidang_usaha' => ['nullable', 'string', 'max:100'],
             'jurusan_ids' => ['nullable', 'array'],
             'jurusan_ids.*' => [Rule::exists('jurusan', 'id')],
         ];

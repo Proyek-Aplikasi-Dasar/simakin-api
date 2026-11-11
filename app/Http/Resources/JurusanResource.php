@@ -13,6 +13,8 @@ class JurusanResource extends JsonResource
             'id' => $this->id,
             'nama' => $this->nama,
             'kode' => $this->kode,
+            'bidang_keahlian' => $this->bidang_keahlian,
+            'is_active' => $this->is_active,
         ];
     }
 }

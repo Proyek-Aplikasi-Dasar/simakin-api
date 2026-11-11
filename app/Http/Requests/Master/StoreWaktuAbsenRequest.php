@@ -17,6 +17,7 @@ class StoreWaktuAbsenRequest extends FormRequest
             'mulai' => ['required', 'date_format:H:i'],
             'selesai' => ['required', 'date_format:H:i', 'after:mulai'],
             'keterangan' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }
