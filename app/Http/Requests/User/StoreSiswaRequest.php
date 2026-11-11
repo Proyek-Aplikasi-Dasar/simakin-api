@@ -36,6 +36,9 @@ class StoreSiswaRequest extends FormRequest
                 // NIS dipakai sebagai username login, jadi harus unik di users juga.
                 Rule::unique('users', 'username'),
             ],
+            'nisn' => ['nullable', 'string', 'max:20'],
+            'tempat_lahir' => ['nullable', 'string', 'max:100'],
+            'tanggal_lahir' => ['nullable', 'date'],
             'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')],
             'jurusan_id' => ['nullable', 'integer', Rule::exists('jurusan', 'id')],
             'gelombang_id' => ['nullable', 'integer', Rule::exists('gelombang', 'id')],
@@ -46,6 +49,7 @@ class StoreSiswaRequest extends FormRequest
             'nama_ortu' => ['nullable', 'string', 'max:255'],
             'telp_ortu' => ['nullable', 'string', 'max:20'],
             'alamat_ortu' => ['nullable', 'string', 'max:1000'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

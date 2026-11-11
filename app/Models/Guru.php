@@ -23,7 +23,25 @@ class Guru extends Model
     protected $fillable = [
         'user_id',
         'nip',
+        'telp',
+        'jurusan_id',
+        'kuota_bimbingan',
+        'alamat',
+        'is_active',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'kuota_bimbingan' => 'integer',
+        ];
+    }
 
     /**
      * Relasi ke User (Many-to-One / BelongsTo).
@@ -31,6 +49,14 @@ class Guru extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke Jurusan (Many-to-One / BelongsTo).
+     */
+    public function jurusan(): BelongsTo
+    {
+        return $this->belongsTo(Jurusan::class, 'jurusan_id');
     }
 
     /**

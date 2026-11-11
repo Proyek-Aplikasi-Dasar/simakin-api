@@ -31,6 +31,9 @@ class SiswaImport implements Import, WithHeadingRow
                 Rule::unique('users', 'username'),
             ],
             'nama' => ['required', 'string', 'max:255'],
+            'nisn' => ['nullable', 'string', 'max:20'],
+            'tempat_lahir' => ['nullable', 'string', 'max:100'],
+            'tanggal_lahir' => ['nullable', 'date'],
             'jenis_kelamin' => ['nullable', Rule::in(['L', 'P'])],
             'kelas' => ['nullable', 'string', 'max:20'],
             'jurusan' => [
@@ -103,6 +106,9 @@ class SiswaImport implements Import, WithHeadingRow
                     ? Gelombang::where('nama', $data['gelombang'])->value('id')
                     : null,
                 'nis' => $nis,
+                'nisn' => $data['nisn'] ?? null,
+                'tempat_lahir' => $data['tempat_lahir'] ?? null,
+                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
                 'jenis_kelamin' => $data['jenis_kelamin'] ?? null,
                 'kelas' => $data['kelas'] ?? null,
                 'telp' => $data['telp'] ?? null,

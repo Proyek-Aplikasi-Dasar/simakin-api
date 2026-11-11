@@ -24,6 +24,9 @@ class SiswaController extends Controller
     private const PROFIL_FIELDS = [
         'jurusan_id',
         'gelombang_id',
+        'nisn',
+        'tempat_lahir',
+        'tanggal_lahir',
         'jenis_kelamin',
         'kelas',
         'telp',
@@ -70,6 +73,7 @@ class SiswaController extends Controller
             return Siswa::create([
                 'user_id' => $user->id,
                 'nis' => $data['nis'],
+                'is_active' => $data['is_active'] ?? true,
                 ...Arr::only($data, self::PROFIL_FIELDS),
             ])->load(['user', 'jurusan', 'gelombang']);
         });
@@ -224,6 +228,10 @@ class SiswaController extends Controller
 
             if (array_key_exists('nis', $data)) {
                 $siswaData['nis'] = $data['nis'];
+            }
+
+            if (array_key_exists('is_active', $data)) {
+                $siswaData['is_active'] = $data['is_active'];
             }
 
             if (! empty($siswaData)) {

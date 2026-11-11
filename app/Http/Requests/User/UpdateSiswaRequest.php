@@ -40,6 +40,9 @@ class UpdateSiswaRequest extends FormRequest
                 Rule::unique('siswa', 'nis')->ignore($siswaId),
                 Rule::unique('users', 'username')->ignore($userId),
             ],
+            'nisn' => ['sometimes', 'nullable', 'string', 'max:20'],
+            'tempat_lahir' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'tanggal_lahir' => ['sometimes', 'nullable', 'date'],
             'email' => [
                 'sometimes',
                 'nullable',
@@ -56,6 +59,7 @@ class UpdateSiswaRequest extends FormRequest
             'nama_ortu' => ['sometimes', 'nullable', 'string', 'max:255'],
             'telp_ortu' => ['sometimes', 'nullable', 'string', 'max:20'],
             'alamat_ortu' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'is_active' => ['sometimes', 'nullable', 'boolean'],
         ];
     }
 
