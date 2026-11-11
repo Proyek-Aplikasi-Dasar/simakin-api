@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
     'daftar_selesai',
     'praktik_mulai',
     'praktik_selesai',
+    'is_active',
 ])]
 class Gelombang extends Model
 {
@@ -34,6 +35,7 @@ class Gelombang extends Model
         'daftar_selesai',
         'praktik_mulai',
         'praktik_selesai',
+        'is_active',
     ];
 
     /**
@@ -48,6 +50,7 @@ class Gelombang extends Model
             'daftar_selesai' => 'date',
             'praktik_mulai' => 'date',
             'praktik_selesai' => 'date',
+            'is_active' => 'boolean',
         ];
     }
 }

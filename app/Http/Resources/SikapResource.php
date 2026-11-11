@@ -13,6 +13,7 @@ class SikapResource extends JsonResource
             'id' => $this->id,
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
+            'is_active' => $this->is_active,
         ];
     }
 }

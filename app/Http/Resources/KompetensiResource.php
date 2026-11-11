@@ -14,6 +14,7 @@ class KompetensiResource extends JsonResource
             'jurusan_id' => $this->jurusan_id,
             'nama' => $this->nama,
             'kode' => $this->kode,
+            'is_active' => $this->is_active,
             'jurusan' => $this->whenLoaded('jurusan', fn () => [
                 'id' => $this->jurusan->id,
                 'nama' => $this->jurusan->nama,

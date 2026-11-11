@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['nama', 'deskripsi'])]
+#[Fillable(['nama', 'deskripsi', 'is_active'])]
 class Sikap extends Model
 {
     /**
@@ -23,5 +23,15 @@ class Sikap extends Model
     protected $fillable = [
         'nama',
         'deskripsi',
+        'is_active',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }

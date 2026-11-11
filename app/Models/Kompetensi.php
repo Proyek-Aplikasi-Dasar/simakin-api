@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['jurusan_id', 'nama', 'kode'])]
+#[Fillable(['jurusan_id', 'nama', 'kode', 'is_active'])]
 class Kompetensi extends Model
 {
     /**
@@ -25,6 +25,16 @@ class Kompetensi extends Model
         'jurusan_id',
         'nama',
         'kode',
+        'is_active',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     /**

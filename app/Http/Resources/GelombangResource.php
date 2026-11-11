@@ -17,6 +17,7 @@ class GelombangResource extends JsonResource
             'daftar_selesai' => $this->daftar_selesai->toDateString(),
             'praktik_mulai' => $this->praktik_mulai->toDateString(),
             'praktik_selesai' => $this->praktik_selesai->toDateString(),
+            'is_active' => $this->is_active,
         ];
     }
 }

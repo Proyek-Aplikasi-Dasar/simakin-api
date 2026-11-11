@@ -16,6 +16,7 @@ class StoreSikapRequest extends FormRequest
         return [
             'nama' => ['required', 'string', 'max:100'],
             'deskripsi' => ['nullable', 'string'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }

@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
     'email',
     'deskripsi',
     'kuota',
+    'is_active',
+    'radius_presensi',
+    'pembimbing_industri',
+    'bidang_usaha',
 ])]
 class Perusahaan extends Model
 {
@@ -41,6 +45,10 @@ class Perusahaan extends Model
         'email',
         'deskripsi',
         'kuota',
+        'is_active',
+        'radius_presensi',
+        'pembimbing_industri',
+        'bidang_usaha',
     ];
 
     /**
@@ -54,6 +62,8 @@ class Perusahaan extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'kuota' => 'integer',
+            'is_active' => 'boolean',
+            'radius_presensi' => 'integer',
         ];
     }
 

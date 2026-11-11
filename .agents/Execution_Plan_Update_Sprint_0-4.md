@@ -416,10 +416,10 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 
 ### Sprint 1
 - [ ] Task 1.7: Template Excel (defer atau buat statis)
-- [ ] Task 1.8: `is_active` di master tables (migration + controller + test)
-- [ ] Task 1.9: `bidang_keahlian` di jurusan (migration + seeder + controller)
-- [ ] Task 1.10: `kode` unique validation (migration + form request)
-- [ ] Task 1.11: Field tambahan perusahaan: `radius_presensi`, `pembimbing_industri`, `bidang_usaha` (migration + seeder + controller)
+- [x] Task 1.8: `is_active` di master tables (migration ✅, model ✅, form request ✅, resource ✅, controller filter ⏳, test ⏳)
+- [x] Task 1.9: `bidang_keahlian` di jurusan (migration ✅, model ✅, form request ✅, resource ✅, seeder ⏳, test ⏳)
+- [x] Task 1.10: `kode` unique validation (migration ✅, form request ✅, test ⏳)
+- [x] Task 1.11: Field tambahan perusahaan: `radius_presensi`, `pembimbing_industri`, `bidang_usaha` (migration ✅, model ✅, form request ✅, resource ✅, seeder ⏳, test ⏳)
 
 ### Sprint 2
 - [ ] Task 2.6: Field tambahan guru (telp, jurusan_id, kuota_bimbingan, alamat, is_active)

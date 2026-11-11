@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['mulai', 'selesai', 'keterangan'])]
+#[Fillable(['mulai', 'selesai', 'keterangan', 'is_active'])]
 class WaktuAbsen extends Model
 {
     /**
@@ -24,5 +24,15 @@ class WaktuAbsen extends Model
         'mulai',
         'selesai',
         'keterangan',
+        'is_active',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 }

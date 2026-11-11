@@ -17,7 +17,8 @@ class StoreKompetensiRequest extends FormRequest
         return [
             'jurusan_id' => ['required', Rule::exists('jurusan', 'id')],
             'nama' => ['required', 'string', 'max:255'],
-            'kode' => ['nullable', 'string', 'max:50'],
+            'kode' => ['nullable', 'string', 'max:50', 'unique:kompetensi,kode'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }

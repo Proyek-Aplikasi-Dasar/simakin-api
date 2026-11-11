@@ -20,6 +20,7 @@ class UpdateGelombangRequest extends FormRequest
             'daftar_selesai' => ['required', 'date', 'after_or_equal:daftar_mulai'],
             'praktik_mulai' => ['required', 'date'],
             'praktik_selesai' => ['required', 'date', 'after_or_equal:praktik_mulai'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }
