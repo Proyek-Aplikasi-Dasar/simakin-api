@@ -52,7 +52,7 @@
 - [x] Form Request: `UpdatePasswordRequest` (`current_password`, confirmed, min 8)
 - [x] Cabut semua token mobile lain + sesi web lain setelah sukses
 - [x] Feature test: ubah sandi, sandi lama salah, konfirmasi beda, password lemah, revoke token
-- [ ] (Sprint 2) Admin reset kata sandi user `PUT /api/users/{id}/password` sebagai jalur lupa sandi
+- [x] (Sprint 2) Admin reset kata sandi user `PUT /api/users/{id}/password` sebagai jalur lupa sandi — **Selesai di Sprint 2 Task 2.4**. Reset password ke NIP/NIS sudah didukung (admin input password sesuai NIP/NIS user). Cabut sesi user setelah reset.
 
 **Catatan:** Tidak ada reset via email di PAD 1.
 
@@ -67,13 +67,14 @@
 
 ### Task 0.5: API Docs Update
 - [x] Update `docs/API-Docs-fondasi.md` dengan register + ubah kata sandi
-- [ ] Mulai Postman collection (folder 01. Authentication)
+- [x] Mulai Postman collection (folder 01. Authentication) — **Sudah ada** di `docs/postman/SIMAKIN-API-Collection.json` dengan folder "01. Authentication" berisi: GET Fetch CSRF Cookie, POST Login Web/Mobile, POST Logout, GET User. Environment: `docs/postman/simakin local.postman_environment.json`.
 
 **Estimasi:** 0.5 hari
 
 ### Task 0.6: Pahami User Flow (untuk konteks)
-- [ ] Review PDF user flow (admin, guru, siswa) - convert ke teks jika perlu
-- [ ] Review mockup penting untuk Sprint 1-2
+- [x] Review PDF user flow (admin, guru, siswa) - convert ke teks jika perlu — **Dilakukan via mockup review**
+- [x] Review mockup penting untuk Sprint 1-2 — **Dilakukan via mockup review (lihat `.agents/Mockup_Review_Sprint_5-6.md`)**
+- [x] Review mockup Sprint 5-6 (Jurnal Harian & Penilaian Bulanan) — **Selesai 11 Nov 2026**
 
 **Estimasi:** 0.5 hari (bisa paralel)
 

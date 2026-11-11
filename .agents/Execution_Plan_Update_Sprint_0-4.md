@@ -410,9 +410,9 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 ## Phase E: Checklist Progress
 
 ### Sprint 0
-- [ ] Task 0.3: Update checklist (selesai di Sprint 2)
-- [ ] Task 0.5: Buat Postman collection folder auth
-- [ ] Task 0.6: Review mockup untuk konteks Sprint 5-6
+- [x] Task 0.3: Update checklist (selesai di Sprint 2) — ✅ Done
+- [x] Task 0.5: Buat Postman collection folder auth — ✅ Sudah ada di docs/postman/
+- [x] Task 0.6: Review mockup untuk konteks Sprint 5-6 — ✅ Done (lihat .agents/Mockup_Review_Sprint_5-6.md)
 
 ### Sprint 1
 - [ ] Task 1.7: Template Excel (defer atau buat statis)
