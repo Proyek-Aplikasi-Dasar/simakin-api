@@ -8,7 +8,7 @@
 > 3. Tambahan tabel `pengajuan_pkl` (alur pengajuan PKL siswa)
 > 4. Tambahan tabel `aktivasi_penilaian` (kontrol periode penilaian 1-10)
 > 5. Struktur penilaian dipecah: `penilaian_bulanan` (master) + `penilaian_kompetensi` + `penilaian_sikap` (detail)
-> 6. Tabel `jurnal_harian`: tambah `deskripsi`, `foto`, `status_review`, `catatan_guru`, `reviewed_by`, `reviewed_at`, `is_editable`
+> 6. Tabel `jurnal_harian`: tambah `deskripsi`, `foto`, `edited_by`, `edited_at` (approval fields dihapus per catatan UI/UX 5 Nov 2026)
 
 ## Convention
 
@@ -162,16 +162,22 @@
 | email | varchar(255) | YES | NULL | - | Email perusahaan |
 | deskripsi | text | YES | NULL | - | Deskripsi/visi perusahaan |
 | kuota | int unsigned | YES | NULL | - | Maksimal siswa diterima |
+| radius_presensi | int unsigned | YES | 100 | - | Radius presensi dalam meter (default 100m) untuk validasi verifikasi penilaian |
+| pembimbing_industri | varchar(255) | YES | NULL | - | Nama pembimbing dari pihak industri |
+| bidang_usaha | varchar(100) | YES | NULL | - | Sektor bisnis perusahaan |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Business Rules:**
 - Admin CRUD + bulk upload (bulk upload menyusul di Sprint 2)
 - `kuota` digunakan untuk validasi pengajuan PKL
+- `radius_presensi` digunakan untuk validasi flag `dalam_radius` saat verifikasi penilaian
+- Default `radius_presensi` = 100 meter jika tidak diisi
 - Guru/siswa read-only (filter by jurusan)
 - Data seeder: 12 perusahaan + relasi jurusan (pivot)
 
-**Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD + attach/detach jurusan)
+**Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD + attach/detach jurusan)  
+**Update:** ⚠️ **Sprint 6** - Tambah field `radius_presensi`, `pembimbing_industri`, `bidang_usaha` untuk validasi penilaian
 
 ---
 
@@ -415,28 +421,27 @@
 
 ## 15. Tabel `jurnal_harian`
 
-**Deskripsi:** Jurnal kegiatan harian siswa PKL.
+**Deskripsi:** Jurnal kegiatan harian siswa PKL. **TIDAK ADA approval guru**, siswa dan admin bisa edit.
+
+**⚠️ PERUBAHAN dari requirement awal (5 Nov 2026):** Berdasarkan catatan UI/UX, approval jurnal dihapus. Siswa bisa edit jurnal milik sendiri kapan saja, admin bisa edit semua jurnal, guru hanya bisa view (read-only). Field `status_review`, `catatan_guru`, `reviewed_by`, `reviewed_at`, `is_editable` dihapus; diganti dengan `edited_by` dan `edited_at` untuk tracking.
 
 | Column | Type | Nullable | Default | Index | Description |
 |---|---|---|---|---|---|
 | id | bigint unsigned | NO | auto | PK | Primary key |
-| siswa_id | bigint unsigned | NO | - | FK | → siswa.id |
+| siswa_id | bigint unsigned | NO | - | FK, INDEX | → siswa.id |
 | kompetensi_id | bigint unsigned | NO | - | FK | → kompetensi.id |
-| tanggal | date | NO | - | UNIQUE composite | Tanggal jurnal |
+| tanggal | date | NO | - | INDEX | Tanggal jurnal |
 | deskripsi | text | NO | - | - | Deskripsi kegiatan (unlimited) |
 | foto | varchar(500) | YES | NULL | - | Path foto dokumentasi (opsional) |
-| status_review | enum('pending','approved','need_revision') | NO | 'pending' | - | Status review guru |
-| catatan_guru | text | YES | NULL | - | Feedback/catatan dari guru |
-| reviewed_by | bigint unsigned | YES | NULL | FK | → users.id (guru pembimbing) |
-| reviewed_at | timestamp | YES | NULL | - | Waktu direview |
-| is_editable | boolean | NO | true | - | Siswa bisa edit (false setelah approved) |
+| edited_by | bigint unsigned | YES | NULL | FK | → users.id (siapa yang terakhir edit) |
+| edited_at | timestamp | YES | NULL | - | Kapan terakhir diedit |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 
 **Foreign Keys:**
 - `siswa_id` → `siswa(id)` ON DELETE CASCADE
 - `kompetensi_id` → `kompetensi(id)` ON DELETE RESTRICT
-- `reviewed_by` → `users(id)` ON DELETE SET NULL
+- `edited_by` → `users(id)` ON DELETE SET NULL
 
 **Constraints:**
 - UNIQUE(`siswa_id`, `tanggal`) - 1 jurnal per siswa per hari
@@ -444,13 +449,14 @@
 **Business Rules:**
 - Siswa input setelah presensi `hadir`
 - `deskripsi` = `text` type (unlimited characters - pain point #7)
-- Guru review: approve (`is_editable = false`) atau need_revision (`is_editable = true`)
-- Siswa bisa edit hanya jika `is_editable = true`
+- Siswa bisa edit/delete jurnal milik sendiri kapan saja
+- Admin bisa edit/delete semua jurnal
+- Guru bisa view jurnal siswa bimbingan (read-only)
 - Riwayat jurnal urut kronologis per tanggal
-- Bulk review guru (opsional): terima array
 
 **Perubahan dari ERD asli:**
-- Tambah: `deskripsi`, `foto`, `status_review`, `catatan_guru`, `reviewed_by`, `reviewed_at`, `is_editable`
+- Tambah: `deskripsi`, `foto`, `edited_by`, `edited_at`
+- Hapus (dari versi sebelumnya): `status_review`, `catatan_guru`, `reviewed_by`, `reviewed_at`, `is_editable` (approval jurnal dihapus)
 - ERD asli hanya: `id`, `siswa_id`, `kompetensi_id`, `tanggal`, `pekerjaan`
 
 ---
@@ -504,6 +510,12 @@
 | foto_verifikasi | varchar(500) | YES | NULL | - | Foto verifikasi (swafoto + watermark) |
 | verifikasi_lat | decimal(10,8) | YES | NULL | - | GPS saat verifikasi |
 | verifikasi_long | decimal(11,8) | YES | NULL | - | GPS saat verifikasi |
+| verifikasi_waktu | timestamp | YES | NULL | - | Waktu saat siswa upload foto (dari EXIF atau server time) |
+| jarak_dari_pkl | decimal(8,2) | YES | NULL | - | Jarak dalam meter dari koordinat perusahaan (Haversine) |
+| dalam_radius | boolean | YES | NULL | - | Flag apakah verifikasi dalam radius perusahaan |
+| token_verifikasi | varchar(6) | YES | NULL | UNIQUE | Token 6 digit untuk verifikasi siswa |
+| token_generated_at | timestamp | YES | NULL | - | Kapan token di-generate |
+| token_used_at | timestamp | YES | NULL | - | Kapan token digunakan |
 | verified_at | timestamp | YES | NULL | - | Waktu verifikasi |
 | notified_guru_at | timestamp | YES | NULL | - | Notifikasi ke guru terkirim |
 | created_at | timestamp | YES | NULL | - | - |
@@ -520,13 +532,18 @@
 **Business Rules:**
 - Input oleh guru/industri (via akun siswa)
 - `nilai_akhir` = rata-rata kompetensi + sikap (dihitung otomatis)
-- Verifikasi: siswa upload foto dengan watermark GPS+timestamp (di mobile)
+- Verifikasi: siswa input token 6 digit + upload foto dengan watermark GPS+timestamp (di mobile)
+- Sistem hitung `jarak_dari_pkl` otomatis (server-side, Haversine formula)
+- Sistem set `dalam_radius` otomatis (compare jarak dengan `perusahaan.radius_presensi`)
+- Token expire 24 jam setelah `token_generated_at`
+- Token hanya bisa dipakai sekali (`token_used_at` terisi)
 - Saat penilaian diinput → notifikasi ke guru pembimbing
-- Anti-kecurangan: `foto_verifikasi` wajib, `verifikasi_lat/long` dari GPS device
+- Anti-kecurangan: `foto_verifikasi` wajib, `verifikasi_lat/long` dari GPS device, token verifikasi wajib
 
 **Perubahan dari ERD asli:**
 - ERD punya `penilaian_gelombang` (per bulan, tanpa relasi siswa) → dipecah jadi `penilaian_bulanan` per siswa
-- Tambah: `input_by`, `foto_verifikasi`, `verifikasi_lat/long`, `verified_at`, `notified_guru_at`
+- Tambah: `input_by`, `foto_verifikasi`, `verifikasi_lat/long`, `verifikasi_waktu`, `jarak_dari_pkl`, `dalam_radius`, `token_verifikasi`, `token_generated_at`, `token_used_at`, `verified_at`, `notified_guru_at`
+- **Update Sprint 6 (5 Nov 2026):** Tambah metadata GPS lengkap + token verifikasi 6 digit untuk anti-kecurangan
 
 ---
 
@@ -605,9 +622,9 @@ Menggunakan tabel default Laravel. Tidak perlu migration custom.
 | 12 | `pengajuan_pkl` | ✅ Sudah ada | Tambahan (belum ada di ERD) |
 | 13 | `lokasi_pkl` | ✅ Sudah ada | ERD (status enum revisi) |
 | 14 | `absensi_siswa` | ✅ Sudah ada | ERD (revisi: tanpa jam_keluar/foto_keluar) |
-| 15 | `jurnal_harian` | ❌ Belum | ERD (tambah review fields) |
+| 15 | `jurnal_harian` | ⚠️ Revisi | ERD (hapus approval fields, tambah edited_by/edited_at) |
 | 16 | `aktivasi_penilaian` | ❌ Baru | Tambahan (belum ada di ERD) |
-| 17 | `penilaian_bulanan` | ❌ Baru | Revisi dari `penilaian_gelombang` |
+| 17 | `penilaian_bulanan` | ❌ Baru | Revisi dari `penilaian_gelombang` (+ metadata GPS & token) |
 | 18 | `penilaian_kompetensi` | ❌ Baru | Revisi dari ERD |
 | 19 | `penilaian_sikap` | ❌ Baru | Revisi dari ERD |
 | 20 | `notifications` | ✅ Sudah ada | Laravel default |

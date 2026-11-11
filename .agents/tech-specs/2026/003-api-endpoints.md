@@ -573,22 +573,27 @@ Response: rekap presensi bulanan 1 siswa.
 
 ---
 
-## 14. Jurnal Harian (10 endpoints) 📋
+## 14. Jurnal Harian (8 endpoints) 📋
+
+**PERUBAHAN PENTING:** Tidak ada approval/review oleh guru. Siswa bisa edit kapan saja, admin bisa edit semua.
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
 | GET | /api/jurnal | Required | admin, guru, siswa | List jurnal |
 | GET | /api/jurnal/{id} | Required | admin, guru, siswa | Detail jurnal |
 | POST | /api/jurnal | Required | siswa | Create jurnal |
-| PUT | /api/jurnal/{id} | Required | siswa | Edit jurnal (jika editable) |
-| DELETE | /api/jurnal/{id} | Required | siswa, admin | Delete jurnal (jika pending) |
-| PUT | /api/jurnal/{id}/approve | Required | guru | Approve jurnal |
-| PUT | /api/jurnal/{id}/revise | Required | guru | Minta revisi |
+| PUT | /api/jurnal/{id} | Required | siswa, admin | Edit jurnal |
+| DELETE | /api/jurnal/{id} | Required | siswa, admin | Delete jurnal |
 | GET | /api/jurnal/rekap | Required | admin, guru | Rekap jurnal |
 | GET | /api/jurnal/riwayat | Required | admin, guru, siswa | Riwayat kronologis |
 | POST | /api/jurnal/upload-foto | Required | siswa | Upload foto terpisah (retry) |
 
-**GET /api/jurnal** - Query: `siswa_id`, `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `status_review` (pending/approved/need_revision), `kompetensi_id`, `page`
+**Authorization:**
+- Siswa: CRUD hanya untuk jurnal milik sendiri
+- Admin: CRUD semua jurnal
+- Guru: Read-only jurnal siswa bimbingan
+
+**GET /api/jurnal** - Query: `siswa_id`, `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `kompetensi_id`, `page`
 
 **POST /api/jurnal** - Body:
 ```json
@@ -602,22 +607,19 @@ Response: rekap presensi bulanan 1 siswa.
 
 **Logic:** Validasi presensi `hadir` hari ini (code: `ABSENSI_REQUIRED`) → create.
 
-**PUT /{id}** - Logic: siswa owner + `is_editable = true`. Error: `JURNAL_NOT_EDITABLE`
+**PUT /{id}** - Logic: siswa owner (milik sendiri) + admin (semua). Set `edited_by = auth id`, `edited_at = now()`. Error: `UNAUTHORIZED` jika bukan owner/admin.
 
-**PUT /{id}/approve** (guru) - Logic: set `status_review = approved`, `is_editable = false`, `reviewed_by = auth id`, `reviewed_at = now()`. Kirim notifikasi ke siswa.
-
-**PUT /{id}/revise** (guru) - Body: `{ "catatan_guru": "Tolong tambahkan detail..." }`
-Logic: set `status_review = need_revision`, `is_editable = true`, `reviewed_by = auth id`. Kirim notifikasi ke siswa.
+**DELETE /{id}** - Logic: siswa owner (milik sendiri) + admin (semua).
 
 **GET /api/jurnal/riwayat** - Query: `siswa_id`, `tanggal_mulai`, `tanggal_selesai`, `sort` (asc/desc)
 Untuk riwayat terurut kronologis per tanggal (pain point #15).
 
 **GET /api/jurnal/rekap** - Query: `gelombang_id`, `siswa_id`, `tanggal_mulai`, `tanggal_selesai`
-Response: total jurnal, approved, pending, need_revision per siswa.
+Response: total jurnal per siswa (tanpa breakdown status review).
 
 ---
 
-## 15. Penilaian Bulanan (10 endpoints) 📋
+## 15. Penilaian Bulanan (12 endpoints) 📋
 
 ### Aktivasi Penilaian (Admin)
 
@@ -646,7 +648,8 @@ Response: total jurnal, approved, pending, need_revision per siswa.
 | POST | /api/penilaian | Required | guru | Input nilai bulanan |
 | PUT | /api/penilaian/{id} | Required | guru | Edit nilai |
 | DELETE | /api/penilaian/{id} | Required | admin | Hapus penilaian |
-| POST | /api/penilaian/{id}/verifikasi | Required | siswa | Upload foto verifikasi |
+| POST | /api/penilaian/{id}/generate-token | Required | guru, admin | Generate token 6 digit |
+| POST | /api/penilaian/{id}/verifikasi | Required | siswa | Upload foto verifikasi + token |
 | GET | /api/penilaian/nilai-akhir/{siswaId} | Required | admin, guru, siswa | Rekap nilai akhir |
 
 **GET /api/penilaian** - Query: `siswa_id`, `bulan`, `tahun`, `gelombang_id`, `jurusan_id`, `page`
@@ -669,13 +672,48 @@ Response: total jurnal, approved, pending, need_revision per siswa.
 ```
 **Logic:** Validasi periode `is_active` (error: `PERIODE_CLOSED`) → create `penilaian_bulanan` + bulk insert details → hitung `nilai_akhir` (rata-rata) → kirim notifikasi ke guru pembimbing (`notified_guru_at`).
 
+**POST /api/penilaian/{id}/generate-token** (guru/admin):
+Response:
+```json
+{
+  "penilaian_id": 1,
+  "token": "482916",
+  "expires_at": "2026-11-06T10:00:00Z"
+}
+```
+Logic: Generate random 6 digit, simpan ke `token_verifikasi`, set `token_generated_at`.
+
 **POST /{id}/verifikasi** (siswa) - Multipart:
 ```
-foto_verifikasi: (file - swafoto dengan watermark GPS+time)
-latitude: -7.xxx (opsional, dari GPS device)
-longitude: 110.xxx (opsional)
+token: "482916"  (required)
+foto_verifikasi: (file - required)
+latitude: -7.xxx (required)
+longitude: 110.xxx (required)
 ```
-**Logic:** Update `foto_verifikasi`, `verifikasi_lat`, `verifikasi_long`, `verified_at`.
+**Logic UPDATE:**
+1. Validasi token (exists, not expired, not used)
+2. Upload foto
+3. Hitung `jarak_dari_pkl` (Haversine dari lat/long siswa ke `perusahaan` via `lokasi_pkl`)
+4. Set `dalam_radius` = (jarak <= `perusahaan.radius_presensi`)
+5. Simpan `verifikasi_waktu` (dari EXIF atau now())
+6. Mark `token_used_at` = now()
+7. Set `verified_at` = now()
+
+Response:
+```json
+{
+  "id": 1,
+  "verified_at": "2026-11-05T10:30:00Z",
+  "jarak_dari_pkl": 45.8,
+  "dalam_radius": true,
+  "pesan": "Verifikasi berhasil. Anda berada dalam radius lokasi PKL."
+}
+```
+
+Error:
+- 422 `TOKEN_INVALID` (token salah/tidak ditemukan)
+- 422 `TOKEN_EXPIRED` (token sudah expire >24 jam)
+- 422 `TOKEN_USED` (token sudah dipakai)
 
 **GET /api/penilaian/nilai-akhir/{siswaId}** - Response:
 ```json
