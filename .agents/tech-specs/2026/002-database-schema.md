@@ -177,7 +177,7 @@
 - Data seeder: 12 perusahaan + relasi jurusan (pivot)
 
 **Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD + attach/detach jurusan)  
-**Update:** ⚠️ **Sprint 6** - Tambah field `radius_presensi`, `pembimbing_industri`, `bidang_usaha` untuk validasi penilaian
+**Update:** ✅ **Sprint 1** - Field `radius_presensi`, `pembimbing_industri`, `bidang_usaha` ditambahkan (dipindahkan dari Sprint 6)
 
 ---
 
