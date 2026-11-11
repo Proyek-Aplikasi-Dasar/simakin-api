@@ -119,9 +119,10 @@
 
 ### Task 1.4: Perusahaan + Pivot
 - [x] Migration: `create_perusahaan_table`
+  - Field tambahan (dipindahkan dari Sprint 6): `radius_presensi` (default 100), `pembimbing_industri`, `bidang_usaha`
 - [x] Migration: `create_perusahaan_jurusan_table`
 - [x] Model: `Perusahaan` (relasi: belongsToMany Jurusan)
-- [x] Seeder: 12 perusahaan sample + relasi jurusan
+- [x] Seeder: 12 perusahaan sample + relasi jurusan (isi radius_presensi, pembimbing_industri, bidang_usaha)
 - [x] Controller + Request + Resource
 - [x] Endpoint: `POST /api/perusahaan/{id}/jurusan`, `DELETE .../{jurusanId}`
 - [x] Query: `GET /api/perusahaan?jurusan_id=X` (filter jurusan)
@@ -386,7 +387,7 @@
   - Field token: `token_verifikasi`, `token_generated_at`, `token_used_at`
 - [ ] Migration: `create_penilaian_kompetensi_table`
 - [ ] Migration: `create_penilaian_sikap_table`
-- [ ] Migration: alter `perusahaan` tambah `radius_presensi`, `pembimbing_industri`, `bidang_usaha`
+- [ ] **Catatan:** Field `radius_presensi`, `pembimbing_industri`, `bidang_usaha` sudah ditambahkan di Sprint 1 (Task 1.4)
 - [ ] Models + relasi (HasMany detail)
 - [ ] Seeder: sample data penilaian
 
