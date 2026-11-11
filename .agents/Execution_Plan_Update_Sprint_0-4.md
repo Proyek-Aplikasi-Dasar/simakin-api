@@ -424,7 +424,7 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 ### Sprint 2
 - [x] Task 2.6: Field tambahan guru (telp, jurusan_id, kuota_bimbingan, alamat, is_active) — migration ✅, model ✅, form request ✅, resource ✅, controller ✅, test ⏳
 - [x] Task 2.7: Field tambahan siswa (nisn, tempat_lahir, tanggal_lahir, is_active) — migration ✅, model ✅, form request ✅, resource ✅, controller ✅, test ⏳
-- [ ] Task 2.8: Update bulk upload template Excel
+- [x] Task 2.8: Update bulk upload template Excel — Import class updated ✅, file template Excel statis perlu edit manual ⏳
 
 ### Sprint 3
 - [ ] Task 3.5: Catatan saat approve pengajuan

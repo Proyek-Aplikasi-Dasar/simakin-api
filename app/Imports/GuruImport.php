@@ -29,6 +29,10 @@ class GuruImport implements Import, WithHeadingRow
                 Rule::unique('users', 'username'),
             ],
             'nama' => ['required', 'string', 'max:255'],
+            'telp' => ['nullable', 'string', 'max:20'],
+            'jurusan' => ['nullable', 'string', 'max:100'],
+            'kuota_bimbingan' => ['nullable', 'integer', 'min:0'],
+            'alamat' => ['nullable', 'string'],
         ];
     }
 
@@ -57,7 +61,7 @@ class GuruImport implements Import, WithHeadingRow
         $nip = (string) $data['nip'];
         $nama = (string) $data['nama'];
 
-        DB::transaction(function () use ($nip, $nama) {
+        DB::transaction(function () use ($data, $nip, $nama) {
             $user = User::create([
                 'name' => $nama,
                 'username' => $nip,
@@ -66,9 +70,22 @@ class GuruImport implements Import, WithHeadingRow
                 'role_id' => 2,
             ]);
 
+            $jurusanId = null;
+            if (isset($data['jurusan']) && $data['jurusan'] !== null && $data['jurusan'] !== '') {
+                $jurusan = \App\Models\Jurusan::query()
+                    ->whereRaw('LOWER(kode) = ?', [strtolower(trim($data['jurusan']))])
+                    ->orWhereRaw('LOWER(nama) = ?', [strtolower(trim($data['jurusan']))])
+                    ->first();
+                $jurusanId = $jurusan?->id;
+            }
+
             Guru::create([
                 'user_id' => $user->id,
                 'nip' => $nip,
+                'telp' => $data['telp'] ?? null,
+                'jurusan_id' => $jurusanId,
+                'kuota_bimbingan' => $data['kuota_bimbingan'] ?? null,
+                'alamat' => $data['alamat'] ?? null,
             ]);
         });
     }

@@ -281,11 +281,12 @@
 **Estimasi:** 1 hari
 
 ### Task 2.8: Update Bulk Upload Template Excel
-- [ ] Tambah kolom di template Excel: `nisn`, `tempat_lahir`, `tanggal_lahir` (siswa)
-- [ ] Tambah kolom di template Excel: `telp`, `jurusan`, `kuota_bimbingan`, `alamat` (guru)
+- [x] Update Import class: SiswaImport (nisn, tempat_lahir, tanggal_lahir)
+- [x] Update Import class: GuruImport (telp, jurusan, kuota_bimbingan, alamat)
+- [ ] Update file template Excel statis (`public/templates/template-siswa.xlsx`, `template-guru.xlsx`) — perlu edit manual (tambah kolom header)
 - [ ] Update dokumentasi format kolom
 
-**Estimasi:** 0.5 hari
+**Estimasi:** 0.5 hari (import done, template Excel file perlu edit manual)
 
 **Sprint 2 Total: 6.5 hari** (melebihi window 5 hari — opsi: defer Task 2.5 Excel Template ke Sprint 3, atau extend 1–1.5 hari) + 2.5 hari (update) = **9 hari total**
 
