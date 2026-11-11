@@ -332,11 +332,15 @@
 
 ## Sprint 5: Jurnal Harian (11-17 Nov)
 
-**Goal:** Siswa input jurnal, guru review (approve/revise).
+**Goal:** Siswa input jurnal, **TIDAK ADA approval guru**, admin bisa edit semua jurnal.
+
+**⚠️ PERUBAHAN dari requirement awal:** Berdasarkan catatan UI/UX tanggal 5 Nov 2026, approval jurnal dihapus untuk menyederhanakan workflow. Siswa bisa edit jurnal kapan saja, admin bisa edit semua jurnal, guru hanya bisa view (read-only).
 
 ### Task 5.1: Tabel & Endpoint Jurnal
 - [ ] Migration: `create_jurnal_harian_table` (UNIQUE siswa_id+tanggal)
-- [ ] Model: `JurnalHarian` (relasi: Siswa, Kompetensi, User (reviewed_by))
+- [ ] Model: `JurnalHarian` (relasi: Siswa, Kompetensi, User (edited_by))
+- [ ] Field: `edited_by`, `edited_at` (tracking siapa & kapan terakhir edit)
+- [ ] **HAPUS field:** `status_review`, `catatan_guru`, `reviewed_by`, `reviewed_at`, `is_editable`
 - [ ] Seeder: sample jurnal
 - [ ] Controller: `JurnalHarianController`
 - [ ] Endpoint: GET list (filter), GET/{id}
@@ -344,55 +348,49 @@
 
 **Estimasi:** 1 hari
 
-### Task 5.2: CRUD Jurnal (Siswa)
-- [ ] `POST /api/jurnal` - create
+### Task 5.2: CRUD Jurnal (Siswa & Admin)
+- [ ] `POST /api/jurnal` - create (siswa)
 - [ ] Business: validasi presensi `hadir` hari ini (`ABSENSI_REQUIRED`)
-- [ ] `PUT /api/jurnal/{id}` - edit (jika `is_editable = true`)
-- [ ] Business: `JURNAL_NOT_EDITABLE` jika sudah approved
-- [ ] `DELETE /api/jurnal/{id}` - delete (jika pending)
+- [ ] `PUT /api/jurnal/{id}` - Siswa edit milik sendiri kapan saja, Admin edit semua jurnal
+- [ ] `DELETE /api/jurnal/{id}` - Siswa delete milik sendiri, Admin delete semua
 - [ ] `POST /api/jurnal/upload-foto` (retry foto)
-- [ ] Test: create + edit + delete + validation
+- [ ] Authorization: Policy `update` & `delete` (owner atau admin)
+- [ ] Test: create + edit + delete + authorization
 
 **Estimasi:** 1.5 hari
 
-### Task 5.3: Review Jurnal (Guru)
-- [ ] `PUT /api/jurnal/{id}/approve` - set approved, is_editable=false
-- [ ] `PUT /api/jurnal/{id}/revise` - set need_revision, catatan_guru
-- [ ] Notifikasi ke siswa untuk kedua aksi
-- [ ] Authorization: hanya guru (pembimbing siswa tsb) atau admin
-- [ ] Test: approve flow + revise flow + notifikasi
-
-**Estimasi:** 1 hari
-
-### Task 5.4: Riwayat & Rekap
+### Task 5.3: Riwayat & Rekap (TANPA status review)
 - [ ] `GET /api/jurnal/riwayat` - kronologis per tanggal (asc/desc)
-- [ ] `GET /api/jurnal/rekap` - total/approved/pending/need_revision per siswa
+- [ ] `GET /api/jurnal/rekap` - total jurnal per siswa (tanpa breakdown approved/pending)
 - [ ] Test
 
 **Estimasi:** 1 hari
 
-### Task 5.5: API Docs + Postman
+### Task 5.4: API Docs + Postman
 - [ ] Update dokumentasi Sprint 5
 
 **Estimasi:** 0.5 hari
 
-**Sprint 5 Total: 5 hari**
+**Sprint 5 Total: 4 hari** (buffer 1 hari)
 
 ---
 
 ## Sprint 6: Penilaian Bulanan (18-24 Nov)
 
-**Goal:** Input nilai kompetensi + sikap, verifikasi foto, anti-kecurangan.
+**Goal:** Input nilai kompetensi + sikap, verifikasi foto dengan **token 6 digit** + **metadata GPS lengkap**.
 
-### Task 6.1: Tabel Penilaian
+### Task 6.1: Tabel Penilaian (dengan field tambahan)
 - [ ] Migration: `create_aktivasi_penilaian_table`
 - [ ] Migration: `create_penilaian_bulanan_table`
+  - Field tambahan: `verifikasi_waktu`, `jarak_dari_pkl`, `dalam_radius`
+  - Field token: `token_verifikasi`, `token_generated_at`, `token_used_at`
 - [ ] Migration: `create_penilaian_kompetensi_table`
 - [ ] Migration: `create_penilaian_sikap_table`
+- [ ] Migration: alter `perusahaan` tambah `radius_presensi`, `pembimbing_industri`, `bidang_usaha`
 - [ ] Models + relasi (HasMany detail)
 - [ ] Seeder: sample data penilaian
 
-**Estimasi:** 1 hari
+**Estimasi:** 1.5 hari
 
 ### Task 6.2: Aktivasi Periode (Admin)
 - [ ] CRUD `aktivasi_penilaian` (buka/tutup periode)
@@ -416,13 +414,30 @@
 
 **Estimasi:** 1.5 hari
 
-### Task 6.4: Verifikasi Foto (Siswa)
-- [ ] `POST /api/penilaian/{id}/verifikasi` - upload foto + GPS metadata
-- [ ] Logic: update foto_verifikasi, verifikasi_lat/long, verified_at
-- [ ] File upload validation
-- [ ] Test
+### Task 6.3a: Token Verifikasi Penilaian
+- [ ] `POST /api/penilaian/{id}/generate-token` (guru/admin) - generate token 6 digit
+- [ ] Logic: random 6 digit, simpan `token_verifikasi`, set `token_generated_at`
+- [ ] Token expire 24 jam
+- [ ] Test: generate token + validation
 
 **Estimasi:** 0.5 hari
+
+### Task 6.4: Verifikasi Foto (Siswa) dengan Token + GPS Metadata
+- [ ] `POST /api/penilaian/{id}/verifikasi` - upload foto + validasi token + GPS metadata
+- [ ] Logic:
+  - Validasi token (exists, not expired, not used)
+  - Upload foto verifikasi
+  - Hitung `jarak_dari_pkl` menggunakan Haversine formula (dari GPS siswa ke perusahaan PKL)
+  - Set `dalam_radius` berdasarkan `perusahaan.radius_presensi`
+  - Simpan `verifikasi_waktu` dari EXIF foto atau timestamp upload
+  - Mark `token_used_at` = now()
+  - Set `verified_at` = now()
+- [ ] Response: id, verified_at, jarak_dari_pkl, dalam_radius, pesan
+- [ ] Error: `TOKEN_INVALID`, `TOKEN_EXPIRED`, `TOKEN_USED`
+- [ ] File upload validation
+- [ ] Test: verifikasi flow lengkap + token validation
+
+**Estimasi:** 1.5 hari
 
 ### Task 6.5: Nilai Akhir
 - [ ] `GET /api/penilaian/nilai-akhir/{siswaId}` - rekap semua bulan + rata-rata
@@ -435,7 +450,7 @@
 
 **Estimasi:** 0.5 hari
 
-**Sprint 6 Total: 4.5 hari** (buffer 0.5 hari)
+**Sprint 6 Total: 6 hari** (melebihi window 5 hari, perlu extend 1 hari atau defer test ke Sprint 8)
 
 ---
 

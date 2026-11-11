@@ -54,9 +54,9 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 1. **Manajemen Data Master** - Siswa, industri, guru, kompetensi + bulk upload Excel
 2. **Pengajuan & ACC Lokasi PKL** - Pendaftaran siswa, approval sekolah, kuota industri
 3. **Presensi Harian** - Swafoto + koordinat GPS, status jelas, edit/batal jika salah
-4. **Jurnal Harian** - Terintegrasi kompetensi kurikulum, review guru
-5. **Penilaian Bulanan** - Input nilai kompetensi + sikap, verifikasi (anti-kecurangan)
-6. **Monitoring Guru** - Dashboard ringkasan siswa bimbingan, review jurnal
+4. **Jurnal Harian** - Terintegrasi kompetensi kurikulum, **TANPA approval guru**, admin bisa edit
+5. **Penilaian Bulanan** - Input nilai kompetensi + sikap, verifikasi dengan **token 6 digit + metadata GPS lengkap** (waktu, koordinat, jarak, flag radius)
+6. **Monitoring Guru** - Dashboard ringkasan siswa bimbingan, view jurnal
 7. **Role & Akses** - RBAC admin/guru/siswa
 8. **Autentikasi Lengkap** - Login multi-platform, registrasi (admin), ubah kata sandi
 9. **Rekap Excel** (basic) - Export data presensi/jurnal/penilaian
@@ -91,7 +91,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | 8 | Pilihan kompetensi tidak cukup | CRUD kompetensi admin, banyak pilihan per jurusan |
 | 9 | Input data 700 siswa satu per satu | Bulk upload Excel |
 | 10 | ACC lokasi PKL satu per satu | Bulk approve pengajuan |
-| 11 | Kecurangan penilaian bulanan | Watermark GPS+waktu, notifikasi ke guru saat nilai diinput |
+| 11 | Kecurangan penilaian bulanan | Token 6 digit + watermark GPS + validasi jarak/radius + notifikasi ke guru |
 | 12 | Rekap otomatis belum ada | Rekap Excel endpoint |
 | 13 | Monitoring guru susah, harus pindah halaman | Dashboard guru: sekali pandang status siswa |
 | 14 | Belum ada reminder presensi/jurnal | Notifikasi database |
@@ -109,7 +109,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 | Pengajuan PKL | Approve/Reject | Approve/Reject | Create/Cancel |
 | Penempatan (lokasi PKL) | Full CRUD + bulk approve | Read (siswa bimbingan) | Read (milik sendiri) |
 | Presensi | Koreksi manual | View + Koreksi | Create/Update/Delete |
-| Jurnal harian | View semua | Review (approve/revise) | CRUD (milik sendiri) |
+| Jurnal harian | CRUD semua | View (read-only) | CRUD (milik sendiri) |
 | Penilaian bulanan | View semua | Input/Edit nilai | Verifikasi (foto) |
 | Dashboard | Stats keseluruhan | Siswa bimbingan | Status diri sendiri |
 | Notifikasi | Read/Write | Read/Write | Read/Write |
@@ -140,8 +140,8 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 - [ ] CRUD data master: siswa, guru, perusahaan, jurusan, kompetensi, gelombang, sikap + bulk upload Excel
 - [ ] Pengajuan PKL: siswa apply → admin/guru approve/reject → penempatan
 - [ ] Presensi: check-in dengan foto + GPS, status jelas, edit/batal, koreksi admin
-- [ ] Jurnal harian: input terintegrasi kompetensi, review guru (approve/revise)
-- [ ] Penilaian bulanan: input nilai, verifikasi foto + watermark, notifikasi ke guru
+- [ ] Jurnal harian: input terintegrasi kompetensi, TANPA approval guru, admin bisa edit
+- [ ] Penilaian bulanan: input nilai, verifikasi foto + token 6 digit + metadata GPS (jarak, radius), notifikasi ke guru
 - [ ] Dashboard guru: ringkasan siswa bimbingan (sudah/belum absen/lapor)
 - [ ] Rekap Excel: export presensi/jurnal/penilaian
 - [ ] Postman collection lengkap untuk semua endpoint
