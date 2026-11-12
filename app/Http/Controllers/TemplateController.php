@@ -13,6 +13,7 @@ class TemplateController extends Controller
         'siswa' => 'template-siswa.xlsx',
         'perusahaan' => 'template-perusahaan.xlsx',
         'kompetensi' => 'template-kompetensi.xlsx',
+        'akun' => 'template-akun.xlsx',
     ];
 
     public function download(string $type): BinaryFileResponse|JsonResponse
@@ -22,7 +23,7 @@ class TemplateController extends Controller
         }
 
         $filename = self::TEMPLATES[$type];
-        $path = public_path('templates/'.$filename);
+        $path = public_path('templates/' . $filename);
 
         if (! File::exists($path)) {
             return response()->json(['message' => 'File template tidak ditemukan.'], 404);
