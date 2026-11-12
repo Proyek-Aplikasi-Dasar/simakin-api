@@ -318,6 +318,14 @@ Response resource: `{ "id": 1, "mulai": "06:00", "selesai": "22:00", "keterangan
 
 ---
 
+**Catatan Umum - Filter `is_active` (Sprint 1 Update, 11 Nov 2026):**
+
+Semua endpoint list master (jurusan, kompetensi, sikap, gelombang, perusahaan, waktu_absen) mendukung query parameter `?is_active=true/false` untuk filter berdasarkan status aktif/nonaktif. Jika tidak diisi, semua data ditampilkan (aktif + nonaktif).
+
+Contoh: `GET /api/jurusan?is_active=true` (hanya jurusan aktif), `GET /api/sikap?is_active=false` (hanya sikap nonaktif).
+
+---
+
 ## 9. Data Master - Guru (7 endpoints) — ✅ 6 selesai, 1 Sprint 3
 
 | Method | Endpoint | Auth | Role | Description |
