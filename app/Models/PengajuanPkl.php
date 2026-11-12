@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'gelombang_id',
     'status',
     'alasan_penolakan',
+    'catatan',
     'verified_by',
     'verified_at',
 ])]
@@ -35,6 +36,7 @@ class PengajuanPkl extends Model
         'gelombang_id',
         'status',
         'alasan_penolakan',
+        'catatan',
         'verified_by',
         'verified_at',
     ];

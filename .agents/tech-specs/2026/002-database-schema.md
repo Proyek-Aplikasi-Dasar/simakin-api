@@ -351,6 +351,7 @@
 | gelombang_id | bigint unsigned | NO | - | FK | → gelombang.id |
 | status | enum('pending','approved','rejected') | NO | 'pending' | - | Status pengajuan |
 | alasan_penolakan | text | YES | NULL | - | Alasan ditolak (jika rejected) |
+| catatan | text | YES | NULL | - | Catatan saat approve/reject pengajuan |
 | verified_by | bigint unsigned | YES | NULL | FK | → users.id (admin/guru yang verifikasi) |
 | verified_at | timestamp | YES | NULL | - | Waktu verifikasi |
 | created_at | timestamp | YES | NULL | - | - |
@@ -384,6 +385,8 @@
 | gelombang_id | bigint unsigned | NO | - | FK | → gelombang.id |
 | status | enum('pending','active','completed','cancelled') | NO | 'pending' | - | Status penempatan |
 | catatan | text | YES | NULL | - | Catatan admin/guru |
+| tanggal_mulai | date | YES | NULL | - | Tanggal mulai PKL (opsional, default dari gelombang) |
+| tanggal_selesai | date | YES | NULL | - | Tanggal selesai PKL (opsional, default dari gelombang) |
 | created_at | timestamp | YES | NULL | - | - |
 | updated_at | timestamp | YES | NULL | - | - |
 

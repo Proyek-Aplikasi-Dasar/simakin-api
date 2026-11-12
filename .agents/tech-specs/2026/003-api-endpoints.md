@@ -502,6 +502,43 @@ Body: { "ids": [1, 2, 3], "guru_pembimbing_id": 3 }
 **PUT /status** - Body: `{ "status": "active" }`
 **Flow:** `pending` → `active` → `completed` | `cancelled`
 
+**Status Mapping (BE ↔ UI):**
+| BE Status | UI Label |
+|---|---|
+| `pending` | Menunggu |
+| `active` | Aktif PKL |
+| `completed` | Selesai |
+| `cancelled` | Dibatalkan |
+
+**POST /api/lokasi-pkl** - Body (tambahan field opsional):
+```json
+{
+  "siswa_id": 1, "perusahaan_id": 5, "guru_id": 3, "gelombang_id": 1,
+  "catatan": "Penempatan manual oleh admin",
+  "tanggal_mulai": "2026-11-01",
+  "tanggal_selesai": "2027-03-31"
+}
+```
+Catatan: `tanggal_mulai` dan `tanggal_selesai` opsional. Jika tidak diisi, ambil dari `gelombang.praktik_mulai` dan `gelombang.praktik_selesai`.
+
+**PUT /api/lokasi-pkl/{id}** - Body (tambahan field opsional):
+```json
+{
+  "catatan": "Update catatan",
+  "tanggal_mulai": "2026-11-01",
+  "tanggal_selesai": "2027-03-31"
+}
+```
+
+**PUT /api/pengajuan-pkl/{id}/approve** - Body (tambahan field opsional):
+```json
+{
+  "guru_pembimbing_id": 5,
+  "catatan": "Pengajuan diterima. Mulai presensi..."
+}
+```
+Catatan: `catatan` opsional, untuk catatan saat approve (bukan hanya saat reject).
+
 ---
 
 ## 13. Presensi / Absensi (9 endpoints) ✅ Done

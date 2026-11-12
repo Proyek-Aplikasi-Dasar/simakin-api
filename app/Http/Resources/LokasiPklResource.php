@@ -40,6 +40,8 @@ class LokasiPklResource extends JsonResource
             }),
             'status' => $this->status,
             'catatan' => $this->catatan,
+            'tanggal_mulai' => $this->tanggal_mulai?->toDateString(),
+            'tanggal_selesai' => $this->tanggal_selesai?->toDateString(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

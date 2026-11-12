@@ -20,6 +20,8 @@ class UpdateLokasiPklRequest extends FormRequest
             'guru_id' => ['sometimes', 'nullable', 'integer', Rule::exists('guru', 'id')],
             'gelombang_id' => ['sometimes', 'integer', Rule::exists('gelombang', 'id')],
             'catatan' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'tanggal_mulai' => ['sometimes', 'nullable', 'date'],
+            'tanggal_selesai' => ['sometimes', 'nullable', 'date', 'after_or_equal:tanggal_mulai'],
         ];
     }
 }
