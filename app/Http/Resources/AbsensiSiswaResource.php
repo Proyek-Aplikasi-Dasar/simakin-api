@@ -26,7 +26,10 @@ class AbsensiSiswaResource extends JsonResource
             'longitude' => $this->longitude,
             'foto_masuk' => $this->foto_masuk ? Storage::url($this->foto_masuk) : null,
             'jam_masuk' => $this->jam_masuk,
+            'jam_shift_mulai' => $this->jam_shift_mulai,
+            'jam_shift_selesai' => $this->jam_shift_selesai,
             'keterangan' => $this->keterangan,
+            'berkas_pendukung' => $this->berkas_pendukung ? Storage::url($this->berkas_pendukung) : null,
             'status_submit' => $this->status_submit,
             'dikoreksi_oleh' => $this->dikoreksi_oleh,
             'korektor' => $this->whenLoaded('korektor', function () {

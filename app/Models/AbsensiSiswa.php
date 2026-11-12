@@ -14,7 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'longitude',
     'foto_masuk',
     'jam_masuk',
+    'jam_shift_mulai',
+    'jam_shift_selesai',
     'keterangan',
+    'berkas_pendukung',
     'status_submit',
     'dikoreksi_oleh',
 ])]
@@ -40,7 +43,10 @@ class AbsensiSiswa extends Model
         'longitude',
         'foto_masuk',
         'jam_masuk',
+        'jam_shift_mulai',
+        'jam_shift_selesai',
         'keterangan',
+        'berkas_pendukung',
         'status_submit',
         'dikoreksi_oleh',
     ];
@@ -57,6 +63,8 @@ class AbsensiSiswa extends Model
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'jam_masuk' => 'string',
+            'jam_shift_mulai' => 'string',
+            'jam_shift_selesai' => 'string',
         ];
     }
 

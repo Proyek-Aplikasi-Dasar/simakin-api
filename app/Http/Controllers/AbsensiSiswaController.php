@@ -221,6 +221,12 @@ class AbsensiSiswaController extends Controller
             $fotoPath = $this->storeFoto($request->file('foto_masuk'), $user->id, $today);
         }
 
+        // Upload berkas pendukung izin (opsional).
+        $berkasPath = null;
+        if ($request->hasFile('berkas_pendukung')) {
+            $berkasPath = $this->storeBerkas($request->file('berkas_pendukung'), $user->id, $today);
+        }
+
         if ($status === 'hadir' && ! $fotoPath && $statusSubmit === 'success') {
             return response()->json([
                 'message' => 'Foto wajib diunggah untuk status hadir.',
@@ -252,7 +258,10 @@ class AbsensiSiswaController extends Controller
                 'longitude' => $request->input('longitude'),
                 'foto_masuk' => $fotoPath,
                 'jam_masuk' => now()->format('H:i:s'),
+                'jam_shift_mulai' => $request->input('jam_shift_mulai'),
+                'jam_shift_selesai' => $request->input('jam_shift_selesai'),
                 'keterangan' => $request->input('keterangan'),
+                'berkas_pendukung' => $berkasPath,
                 'status_submit' => $statusSubmit,
             ]);
         } catch (QueryException $e) {
@@ -297,6 +306,13 @@ class AbsensiSiswaController extends Controller
                 Storage::disk('public')->delete($absensi->foto_masuk);
             }
             $data['foto_masuk'] = $this->storeFoto($request->file('foto_masuk'), $user->id, $absensi->tanggal->toDateString());
+        }
+
+        if (isset($data['berkas_pendukung']) && $request->hasFile('berkas_pendukung')) {
+            if ($absensi->berkas_pendukung) {
+                Storage::disk('public')->delete($absensi->berkas_pendukung);
+            }
+            $data['berkas_pendukung'] = $this->storeBerkas($request->file('berkas_pendukung'), $user->id, $absensi->tanggal->toDateString());
         }
 
         // jam_masuk server-side tetap; status_submit jadi success jika update berhasil
@@ -376,6 +392,21 @@ class AbsensiSiswaController extends Controller
         $path = "uploads/presensi/{$tanggal}/{$userId}_{$timestamp}_{$random}.{$ext}";
 
         Storage::disk('public')->putFileAs("uploads/presensi/{$tanggal}", $file, "{$userId}_{$timestamp}_{$random}.{$ext}");
+
+        return $path;
+    }
+
+    /**
+     * Simpan berkas pendukung izin ke disk public dan kembalikan path relatif.
+     */
+    protected function storeBerkas(UploadedFile $file, int $userId, string $tanggal): string
+    {
+        $ext = $file->getClientOriginalExtension();
+        $random = Str::random(8);
+        $timestamp = now()->timestamp;
+        $path = "uploads/presensi/{$tanggal}/berkas_{$userId}_{$timestamp}_{$random}.{$ext}";
+
+        Storage::disk('public')->putFileAs("uploads/presensi/{$tanggal}", $file, "berkas_{$userId}_{$timestamp}_{$random}.{$ext}");
 
         return $path;
     }

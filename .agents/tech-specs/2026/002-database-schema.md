@@ -422,7 +422,10 @@
 | longitude | decimal(11,8) | YES | NULL | - | GPS longitude saat check-in |
 | foto_masuk | varchar(500) | YES | NULL | - | Path foto selfie (relatif storage) |
 | jam_masuk | time | YES | NULL | - | Waktu check-in (server timestamp) |
+| jam_shift_mulai | time | YES | NULL | - | Jam shift mulai (diisi siswa, opsional) |
+| jam_shift_selesai | time | YES | NULL | - | Jam shift selesai (diisi siswa, opsional) |
 | keterangan | text | YES | NULL | - | Keterangan untuk izin/sakit/libur |
+| berkas_pendukung | varchar(500) | YES | NULL | - | Path berkas pendukung izin (PDF/image) |
 | status_submit | enum('success','failed') | NO | 'success' | - | Status pengiriman |
 | dikoreksi_oleh | bigint unsigned | YES | NULL | FK | → users.id (admin/guru yang koreksi) |
 | created_at | timestamp | YES | NULL | - | - |

@@ -19,7 +19,10 @@ class StoreAbsensiRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'foto_masuk' => ['nullable', 'file', 'image', 'mimes:jpeg,jpg,png', 'max:5120'],
+            'jam_shift_mulai' => ['nullable', 'date_format:H:i'],
+            'jam_shift_selesai' => ['nullable', 'date_format:H:i', 'after:jam_shift_mulai'],
             'keterangan' => ['nullable', 'string', 'max:1000'],
+            'berkas_pendukung' => ['nullable', 'file', 'mimes:pdf,jpeg,jpg,png', 'max:5120'],
             'status_submit' => ['nullable', 'string', 'in:success,failed'],
         ];
     }
