@@ -11,17 +11,17 @@
 | Sprint | Periode | Fokus | Estimasi |
 |---|---|---|---|
 | 0 | 9-13 Okt | Auth lengkap + Fondasi | 5 hari |
-| 1 | 14-20 Okt | Data Master (7 tabel) | 5 hari |
-| 2 | 21-27 Okt | Data Master User (Guru + Siswa + Onboarding + Excel) | 6.5 hari |
-| 3 | 28 Okt - 3 Nov | Pengajuan & Penempatan PKL | 5 hari |
-| 4 | 4-10 Nov | Presensi Harian | 5 hari |
-| 5 | 11-17 Nov | Jurnal Harian | 5 hari |
-| 6 | 18-24 Nov | Penilaian Bulanan | 5 hari |
+| 1 | 14-20 Okt | Data Master (7 tabel) + field tambahan (is_active, bidang_keahlian, kode unique, perusahaan) | 5 + 2.5 hari |
+| 2 | 21-27 Okt | Data Master User (Guru + Siswa + Onboarding + Excel) + field tambahan | 6.5 + 2.5 hari |
+| 3 | 28 Okt - 3 Nov | Pengajuan & Penempatan PKL + catatan approve, tanggal mulai/selesai | 5 + 1.25 hari |
+| 4 | 4-10 Nov | Presensi Harian + jam shift, berkas pendukung | 5 + 1.25 hari |
+| 5 | 11-17 Nov | Jurnal Harian (TANPA approval guru) | 4 hari |
+| 6 | 18-24 Nov | Penilaian Bulanan (token 6 digit + metadata GPS) | 6 hari |
 | 7 | 25 Nov - 1 Des | Notifikasi + Dashboard + Rekap | 5 hari |
 | 8 | 2-8 Des | Integration Test + Bug Fixing | 5 hari |
 | 9 | 9-12 Des | Final Polish + Demo Prep | 4 hari |
 
-**Total: 44 hari kerja, buffer ~4 hari** (beberapa task bisa overlap/diparalel)
+**Total: 44 + 7.5 hari (update Sprint 0-4) + 1 hari (Sprint 5 hemat) + 1 hari (Sprint 6 tambah) = ~53.5 hari kerja** (beberapa task bisa overlap/diparalel). Buffer ~4 hari.
 
 ---
 
