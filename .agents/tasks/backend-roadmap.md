@@ -340,7 +340,31 @@
 
 **Estimasi:** 0.5 hari
 
-**Sprint 3 Total: 5 hari**
+### Task 3.5: Catatan saat approve pengajuan (dari catatan FE)
+- [x] Migration: `add_fields_to_pengajuan_lokasi_pkl` (catatan di pengajuan_pkl)
+- [x] Model: `PengajuanPkl` (fillable catatan)
+- [x] Form Request: `ApprovePengajuanPklRequest` & `BulkApprovePengajuanPklRequest` (catatan nullable)
+- [x] Controller: `PengajuanPklController` (approve & bulkApprove save catatan)
+- [x] Resource: `PengajuanPklResource` (catatan di response)
+- [ ] Test: approve dengan catatan
+
+**Estimasi:** 0.5 hari
+
+### Task 3.6: Tanggal mulai/selesai di lokasi_pkl (dari catatan FE)
+- [x] Migration: `add_fields_to_pengajuan_lokasi_pkl` (tanggal_mulai, tanggal_selesai di lokasi_pkl)
+- [x] Model: `LokasiPkl` (fillable + casts)
+- [x] Form Request: `StoreLokasiPklRequest` & `UpdateLokasiPklRequest`
+- [x] Resource: `LokasiPklResource`
+- [ ] Test: CRUD dengan tanggal mulai/selesai
+
+**Estimasi:** 0.5 hari
+
+### Task 3.7: Status mapping dokumentasi (dari catatan FE)
+- [x] Dokumentasi mapping status lokasi_pkl di `003-api-endpoints.md`
+
+**Estimasi:** 0.25 hari
+
+**Sprint 3 Total: 5 hari** + 1.25 hari (update) = **6.25 hari total**
 
 ---
 

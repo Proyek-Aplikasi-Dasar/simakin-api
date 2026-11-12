@@ -18,6 +18,7 @@ class BulkApprovePengajuanPklRequest extends FormRequest
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['required', 'integer', Rule::exists('pengajuan_pkl', 'id')],
             'guru_pembimbing_id' => ['nullable', 'integer', Rule::exists('guru', 'id')],
+            'catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

@@ -16,6 +16,7 @@ class ApprovePengajuanPklRequest extends FormRequest
     {
         return [
             'guru_pembimbing_id' => ['nullable', 'integer', Rule::exists('guru', 'id')],
+            'catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

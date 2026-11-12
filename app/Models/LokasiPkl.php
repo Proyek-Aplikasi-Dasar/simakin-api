@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'gelombang_id',
     'status',
     'catatan',
+    'tanggal_mulai',
+    'tanggal_selesai',
 ])]
 class LokasiPkl extends Model
 {
@@ -35,7 +37,22 @@ class LokasiPkl extends Model
         'gelombang_id',
         'status',
         'catatan',
+        'tanggal_mulai',
+        'tanggal_selesai',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'tanggal_mulai' => 'date',
+            'tanggal_selesai' => 'date',
+        ];
+    }
 
     /**
      * Relasi ke Siswa (Many-to-One / BelongsTo).

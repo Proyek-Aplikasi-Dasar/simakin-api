@@ -38,6 +38,7 @@ class PengajuanPklResource extends JsonResource
             }),
             'status' => $this->status,
             'alasan_penolakan' => $this->alasan_penolakan,
+            'catatan' => $this->catatan,
             'verified_by' => $this->verified_by,
             'verified_at' => $this->verified_at,
             'created_at' => $this->created_at,

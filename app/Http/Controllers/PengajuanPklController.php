@@ -144,6 +144,7 @@ class PengajuanPklController extends Controller
         $pengajuan = DB::transaction(function () use ($request, $pengajuanPkl) {
             $pengajuanPkl->update([
                 'status' => 'approved',
+                'catatan' => $request->catatan,
                 'verified_by' => $request->user()->id,
                 'verified_at' => now(),
             ]);
@@ -203,10 +204,11 @@ class PengajuanPklController extends Controller
     {
         $ids = $request->ids;
         $guruId = $request->guru_pembimbing_id;
+        $catatan = $request->catatan;
         $approved = [];
         $failed = [];
 
-        DB::transaction(function () use ($ids, $guruId, &$approved, &$failed) {
+        DB::transaction(function () use ($ids, $guruId, $catatan, &$approved, &$failed) {
             foreach ($ids as $id) {
                 $pengajuan = PengajuanPkl::find($id);
 
@@ -225,6 +227,7 @@ class PengajuanPklController extends Controller
 
                 $pengajuan->update([
                     'status' => 'approved',
+                    'catatan' => $catatan,
                     'verified_by' => request()->user()->id,
                     'verified_at' => now(),
                 ]);

@@ -427,9 +427,9 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 - [x] Task 2.8: Update bulk upload template Excel — Import class updated ✅, file template Excel statis perlu edit manual ⏳
 
 ### Sprint 3
-- [ ] Task 3.5: Catatan saat approve pengajuan
-- [ ] Task 3.6: Tanggal mulai/selesai di lokasi_pkl
-- [ ] Task 3.7: Status mapping dokumentasi
+- [x] Task 3.5: Catatan saat approve pengajuan — migration ✅, model ✅, form request ✅, controller ✅, resource ✅, test ⏳
+- [x] Task 3.6: Tanggal mulai/selesai di lokasi_pkl — migration ✅, model ✅, form request ✅, resource ✅, test ⏳
+- [x] Task 3.7: Status mapping dokumentasi — ✅ done in 003-api-endpoints.md
 
 ### Sprint 4
 - [ ] Task 4.6: Jam shift di absensi

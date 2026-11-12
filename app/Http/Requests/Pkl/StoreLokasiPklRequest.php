@@ -20,6 +20,8 @@ class StoreLokasiPklRequest extends FormRequest
             'guru_id' => ['nullable', 'integer', Rule::exists('guru', 'id')],
             'gelombang_id' => ['required', 'integer', Rule::exists('gelombang', 'id')],
             'catatan' => ['nullable', 'string', 'max:1000'],
+            'tanggal_mulai' => ['nullable', 'date'],
+            'tanggal_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
         ];
     }
 }
