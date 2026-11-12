@@ -565,7 +565,10 @@ status: hadir|izin|sakit|libur
 latitude: -7.40123456
 longitude: 110.40123456
 foto_masuk: (file, required jika status=hadir)
+jam_shift_mulai: 07:00 (opsional, diisi siswa)
+jam_shift_selesai: 15:00 (opsional, diisi siswa)
 keterangan: (required jika status != hadir)
+berkas_pendukung: (file, opsional, untuk izin/sakit - PDF/image max 5MB)
 ```
 Response 201:
 ```json
@@ -575,12 +578,20 @@ Response 201:
   "data": {
     "id": 1, "tanggal": "2026-10-15", "status": "hadir",
     "jam_masuk": "07:58:23", "latitude": -7.40..., "longitude": 110.40...,
-    "foto_masuk": "/storage/uploads/presensi/2026-10-15/..."
+    "jam_shift_mulai": "07:00", "jam_shift_selesai": "15:00",
+    "foto_masuk": "/storage/uploads/presensi/2026-10-15/...",
+    "berkas_pendukung": null
   },
   "next_action": "/jurnal/create"
 }
 ```
 **Error:** 422 `ABSENSI_DUPLICATE` (sudah presensi hari ini), 422 `GELOMBANG_NOT_ACTIVE`
+
+**Konsep Jam Shift:**
+- Master `waktu_absen` (jam kerja normal) tetap ada sebagai referensi
+- Siswa bisa input `jam_shift_mulai` dan `jam_shift_selesai` saat presensi (opsional)
+- Jika tidak diisi, sistem menggunakan jam kerja dari master `waktu_absen`
+- `jam_shift_mulai`/`jam_shift_selesai` diisi siswa sesuai jadwal PKL di perusahaan
 
 **POST /api/absensi/upload-foto** - Multipart:
 ```

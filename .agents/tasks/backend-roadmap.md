@@ -419,7 +419,32 @@
 
 **Estimasi:** 0.5 hari (bisa digabung)
 
-**Sprint 4 Total: 4.5 hari** (buffer 0.5 hari)
+### Task 4.6: Jam Shift di Absensi (dari catatan FE)
+- [x] Migration: `add_fields_to_absensi_siswa` (jam_shift_mulai, jam_shift_selesai)
+- [x] Model: `AbsensiSiswa` (fillable + casts)
+- [x] Form Request: `StoreAbsensiRequest` & `UpdateAbsensiRequest`
+- [x] Resource: `AbsensiSiswaResource`
+- [x] Controller: `AbsensiSiswaController` (store & update)
+- [ ] Test: presensi dengan jam shift
+
+**Estimasi:** 0.5 hari
+
+### Task 4.7: Berkas Pendukung Izin (dari catatan FE)
+- [x] Migration: `add_fields_to_absensi_siswa` (berkas_pendukung)
+- [x] Model: `AbsensiSiswa` (fillable)
+- [x] Form Request: `StoreAbsensiRequest` & `UpdateAbsensiRequest`
+- [x] Resource: `AbsensiSiswaResource`
+- [x] Controller: `AbsensiSiswaController` (store & update, storeBerkas)
+- [ ] Test: presensi izin dengan berkas
+
+**Estimasi:** 0.5 hari
+
+### Task 4.8: Dokumentasi Konsep Jam Shift (dari catatan FE)
+- [x] Dokumentasi konsep jam shift di `002-database-schema.md` dan `003-api-endpoints.md`
+
+**Estimasi:** 0.25 hari
+
+**Sprint 4 Total: 4.5 hari** (buffer 0.5 hari) + 1.25 hari (update) = **5.75 hari total**
 
 ---
 

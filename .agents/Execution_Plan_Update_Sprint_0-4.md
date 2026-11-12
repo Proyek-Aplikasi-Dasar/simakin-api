@@ -432,9 +432,9 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 - [x] Task 3.7: Status mapping dokumentasi — ✅ done in 003-api-endpoints.md
 
 ### Sprint 4
-- [ ] Task 4.6: Jam shift di absensi
-- [ ] Task 4.7: Berkas pendukung izin
-- [ ] Task 4.8: Dokumentasi konsep jam shift
+- [x] Task 4.6: Jam shift di absensi — migration ✅, model ✅, form request ✅, resource ✅, controller ✅, test ⏳
+- [x] Task 4.7: Berkas pendukung izin — migration ✅, model ✅, form request ✅, resource ✅, controller ✅, test ⏳
+- [x] Task 4.8: Dokumentasi konsep jam shift — ✅ done in 002-database-schema.md & 003-api-endpoints.md
 
 ### Dokumentasi
 - [ ] Update `002-database-schema.md` (semua field baru)
