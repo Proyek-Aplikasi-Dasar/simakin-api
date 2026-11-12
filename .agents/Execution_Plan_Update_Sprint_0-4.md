@@ -308,31 +308,38 @@ Dari `.agents/Catatan_FE_untuk_BE_Simakin.md`, ditemukan gap berikut yang mempen
 
 ### B.2 Update Backend Roadmap Sprints 0-4
 
+**Status:** ✅ Selesai (12 Nov 2026)
+
+Semua task di bawah ini sudah ditambahkan ke `backend-roadmap.md` selama Phases A.2-A.5:
+
 **Sprint 0:**
-- Task 0.3: Ubah `[ ]` → `[x]` (selesai di Sprint 2)
-- Task 0.5: Tambah catatan "Postman collection folder auth - pending"
-- Task 0.6: Tambah catatan "Review mockup - pending"
+- [x] Task 0.3: Ubah `[ ]` → `[x]` (selesai di Sprint 2)
+- [x] Task 0.5: Tambah catatan "Postman collection folder auth - pending"
+- [x] Task 0.6: Tambah catatan "Review mockup - pending"
 
 **Sprint 1:**
-- Tambah Task 1.8: `is_active` di master tables (1 hari)
-- Tambah Task 1.9: `bidang_keahlian` di jurusan (0.5 hari)
-- Tambah Task 1.10: `kode` unique validation (0.5 hari)
-- Task 1.7: Update status (opsional → defer ke Sprint 7)
+- [x] Tambah Task 1.8: `is_active` di master tables (1 hari)
+- [x] Tambah Task 1.9: `bidang_keahlian` di jurusan (0.5 hari)
+- [x] Tambah Task 1.10: `kode` unique validation (0.5 hari)
+- [x] Tambah Task 1.11: Field tambahan perusahaan (0.5 hari)
+- [x] Task 1.7: Update status (opsional → defer ke Sprint 7)
 
 **Sprint 2:**
-- Tambah Task 2.6: Field tambahan guru (telp, jurusan, kuota_bimbingan, alamat, is_active) (1 hari)
-- Tambah Task 2.7: Field tambahan siswa (nisn, tempat_lahir, tanggal_lahir, is_active) (1 hari)
-- Tambah Task 2.8: Update bulk upload template (0.5 hari)
+- [x] Tambah Task 2.6: Field tambahan guru (telp, jurusan, kuota_bimbingan, alamat, is_active) (1 hari)
+- [x] Tambah Task 2.7: Field tambahan siswa (nisn, tempat_lahir, tanggal_lahir, is_active) (1 hari)
+- [x] Tambah Task 2.8: Update bulk upload template (0.5 hari)
 
 **Sprint 3:**
-- Tambah Task 3.5: Catatan saat approve pengajuan (0.5 hari)
-- Tambah Task 3.6: Tanggal mulai/selesai di lokasi_pkl (0.5 hari)
-- Tambah Task 3.7: Status mapping dokumentasi (0.25 hari)
+- [x] Tambah Task 3.5: Catatan saat approve pengajuan (0.5 hari)
+- [x] Tambah Task 3.6: Tanggal mulai/selesai di lokasi_pkl (0.5 hari)
+- [x] Tambah Task 3.7: Status mapping dokumentasi (0.25 hari)
 
 **Sprint 4:**
-- Tambah Task 4.6: Jam shift di absensi (0.5 hari)
-- Tambah Task 4.7: Berkas pendukung izin (0.5 hari)
-- Tambah Task 4.8: Dokumentasi konsep jam shift (0.25 hari)
+- [x] Tambah Task 4.6: Jam shift di absensi (0.5 hari)
+- [x] Tambah Task 4.7: Berkas pendukung izin (0.5 hari)
+- [x] Tambah Task 4.8: Dokumentasi konsep jam shift (0.25 hari)
+
+**Sprint Overview table:** Updated dengan estimasi revisi (Sprint 1-6)
 
 ---
 
