@@ -437,10 +437,10 @@ Jika tim memutuskan untuk fokus Sprint 5-6 dulu, update Sprints 0-4 bisa dilakuk
 - [x] Task 4.8: Dokumentasi konsep jam shift — ✅ done in 002-database-schema.md & 003-api-endpoints.md
 
 ### Dokumentasi
-- [ ] Update `002-database-schema.md` (semua field baru)
-- [ ] Update `003-api-endpoints.md` (semua endpoint update)
-- [ ] Update `PRD.md` (role matrix, scope)
-- [ ] Update `backend-roadmap.md` (tambah task baru)
+- [x] Update `002-database-schema.md` (semua field baru) — ✅ Done
+- [x] Update `003-api-endpoints.md` (semua endpoint update) — ✅ Done
+- [x] Update `PRD.md` (role matrix, scope) — ✅ Done
+- [x] Update `backend-roadmap.md` (tambah task baru) — ✅ Done
 
 ---
 

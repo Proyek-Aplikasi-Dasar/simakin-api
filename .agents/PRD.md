@@ -51,7 +51,7 @@ Sistem PKL sebelumnya (aplikasi + website) mengalami masalah:
 
 Sesuai `docs/to-do-backend-pad-1.txt`:
 
-1. **Manajemen Data Master** - Siswa, industri, guru, kompetensi + bulk upload Excel
+1. **Manajemen Data Master** - Siswa, industri, guru, kompetensi + bulk upload Excel + toggle aktif/nonaktif + field tambahan (bidang_keahlian, radius_presensi, nisn, tempat_lahir, dll.)
 2. **Pengajuan & ACC Lokasi PKL** - Pendaftaran siswa, approval sekolah, kuota industri
 3. **Presensi Harian** - Swafoto + koordinat GPS, status jelas, edit/batal jika salah
 4. **Jurnal Harian** - Terintegrasi kompetensi kurikulum, **TANPA approval guru**, admin bisa edit
@@ -103,7 +103,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 |---|---|---|---|
 | Login | Web | Web | Mobile |
 | Register user | CRUD (guru/admin) | - | - (admin only create) |
-| Kelola data master | Full CRUD | Read only | - |
+| Kelola data master | Full CRUD + toggle aktif/nonaktif | Read only | - |
 | Profil siswa (onboarding) | Lihat semua + ubah (setelah konfirmasi) | Lihat (siswa bimbingan) | Isi & konfirmasi milik sendiri (sekali); ubah kata sandi |
 | Bulk upload Excel | Full | - | - |
 | Pengajuan PKL | Approve/Reject | Approve/Reject | Create/Cancel |

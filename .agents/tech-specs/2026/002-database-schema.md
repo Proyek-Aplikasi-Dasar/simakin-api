@@ -151,7 +151,10 @@
 **Business Rules:**
 - Admin CRUD + bulk upload (bulk upload menyusul di Sprint 2)
 - Siswa pilih kompetensi saat input jurnal harian
+- `is_active` untuk toggle aktif/nonaktif
 - Data seeder: 5 kompetensi per jurusan
+
+**Update Sprint 1 (11 Nov 2026):** Tambah `is_active`, UNIQUE `kode`
 
 **Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD)
 
@@ -173,6 +176,7 @@
 | email | varchar(255) | YES | NULL | - | Email perusahaan |
 | deskripsi | text | YES | NULL | - | Deskripsi/visi perusahaan |
 | kuota | int unsigned | YES | NULL | - | Maksimal siswa diterima |
+| is_active | boolean | NO | true | - | Status aktif/nonaktif |
 | radius_presensi | int unsigned | YES | 100 | - | Radius presensi dalam meter (default 100m) untuk validasi verifikasi penilaian |
 | pembimbing_industri | varchar(255) | YES | NULL | - | Nama pembimbing dari pihak industri |
 | bidang_usaha | varchar(100) | YES | NULL | - | Sektor bisnis perusahaan |
@@ -182,13 +186,14 @@
 **Business Rules:**
 - Admin CRUD + bulk upload (bulk upload menyusul di Sprint 2)
 - `kuota` digunakan untuk validasi pengajuan PKL
+- `is_active` untuk toggle aktif/nonaktif (UI punya toggle)
 - `radius_presensi` digunakan untuk validasi flag `dalam_radius` saat verifikasi penilaian
 - Default `radius_presensi` = 100 meter jika tidak diisi
 - Guru/siswa read-only (filter by jurusan)
 - Data seeder: 12 perusahaan + relasi jurusan (pivot)
 
 **Status:** ✅ Sudah ada (migration + model + seeder + endpoint CRUD + attach/detach jurusan)  
-**Update:** ✅ **Sprint 1** - Field `radius_presensi`, `pembimbing_industri`, `bidang_usaha` ditambahkan (dipindahkan dari Sprint 6)
+**Update:** ✅ **Sprint 1** - Field `is_active`, `radius_presensi`, `pembimbing_industri`, `bidang_usaha` ditambahkan (dipindahkan dari Sprint 6)
 
 ---
 
