@@ -155,6 +155,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('users/{user}', [UserController::class, 'update']);
         Route::put('users/{user}/password', [UserController::class, 'resetPassword']);
         Route::delete('users/{user}', [UserController::class, 'destroy']);
+        Route::post('users/bulk-upload', [UserController::class, 'bulkUpload']);
 
         // Template Excel untuk bulk upload
         Route::get('templates/{type}', [TemplateController::class, 'download']);

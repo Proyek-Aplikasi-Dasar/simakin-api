@@ -137,7 +137,7 @@ Sesuai `docs/to-do-backend-pad-1.txt`:
 - [ ] Autentikasi lengkap: login, logout, register (admin), ubah kata sandi (web + mobile)
 - [ ] Onboarding siswa: data diri, akademik, orang tua/wali terisi & terkonfirmasi; profil terkunci untuk siswa setelah konfirmasi (perubahan via admin)
 - [ ] RBAC berjalan: admin/guru/siswa dengan akses berbeda
-- [ ] CRUD data master: siswa, guru, perusahaan, jurusan, kompetensi, gelombang, sikap + bulk upload Excel
+- [ ] CRUD data master: siswa, guru, perusahaan, jurusan, kompetensi, gelombang, sikap + bulk upload Excel (termasuk akun/users)
 - [ ] Pengajuan PKL: siswa apply → admin/guru approve/reject → penempatan
 - [ ] Presensi: check-in dengan foto + GPS, status jelas, edit/batal, koreksi admin
 - [ ] Jurnal harian: input terintegrasi kompetensi, TANPA approval guru, admin bisa edit

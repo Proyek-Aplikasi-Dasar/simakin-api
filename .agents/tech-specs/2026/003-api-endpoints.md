@@ -189,6 +189,21 @@ Reset password user oleh admin. **Request:** `{ "password": "...", "password_con
 
 Soft delete user. Response 200: `{ "message": "User berhasil dihapus." }`
 
+### 2.6 POST /api/users/bulk-upload
+
+| | |
+|---|---|
+| Auth | Required |
+| Role | admin |
+
+Bulk upload akun (users) via Excel. **Multipart:** `file` (xlsx/csv).
+
+**Kolom Excel:** `nama` (wajib), `nip_nis` (wajib, jadi username & password awal), `email` (opsional), `telp` (opsional), `role` (wajib: admin/guru/siswa).
+
+**Logic:** Create `users` (role_id dari role, username = nip_nis, password = nip_nis). Tidak membuat profil guru/siswa (gunakan GuruImport/SiswaImport untuk itu).
+
+**Response:** `{ "imported": 5, "failed": 0, "errors": [] }`
+
 ---
 
 ## 3. Data Master - Jurusan (6 endpoints) ✅ Done

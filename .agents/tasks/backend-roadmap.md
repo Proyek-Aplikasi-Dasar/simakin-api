@@ -250,6 +250,19 @@
 - [x] `DELETE /api/users/{id}` (soft delete)
 - [x] Test: CRUD user + reset password + authorization
 
+### Task 2.9: Bulk Upload Akun (Users)
+- [x] Import class: `UserImport` (app/Imports/UserImport.php)
+- [x] Controller: `bulkUpload` method di UserController
+- [x] Route: `POST /api/users/bulk-upload`
+- [x] Template: `public/templates/template-akun.xlsx`
+- [x] TemplateController: tambah `'akun' => 'template-akun.xlsx'`
+- [ ] Test: bulk upload valid + invalid rows
+- [ ] Dokumentasi API endpoints
+
+**Estimasi:** 1 hari
+
+**Catatan:** UserImport hanya membuat akun `users` (tidak membuat profil guru/siswa). NIP/NIS otomatis menjadi username dan password awal. Kolom Excel: `nama`, `nip_nis`, `email`, `telp`, `role`.
+
 **Estimasi:** 1 hari
 
 ### Task 2.5: Excel Template

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\ResetPasswordRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Imports\UserImport;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,6 +68,17 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Kata sandi berhasil direset.',
         ]);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $result = (new UserImport)->import($request->file('file')->getRealPath());
+
+        return response()->json($result->toArray());
     }
 
     public function destroy(Request $request, User $user)
