@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AbsensiExport;
 use App\Http\Requests\Absensi\KoreksiAbsensiRequest;
 use App\Http\Requests\Absensi\StoreAbsensiRequest;
+use App\Http\Requests\Absensi\StoreManualAbsensiRequest;
 use App\Http\Requests\Absensi\UpdateAbsensiRequest;
 use App\Http\Requests\Absensi\UploadFotoAbsensiRequest;
 use App\Http\Resources\AbsensiSiswaResource;
@@ -16,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Excel;
 
 class AbsensiSiswaController extends Controller
 {
@@ -30,6 +33,18 @@ class AbsensiSiswaController extends Controller
             $query->where('siswa_id', $user->siswa?->id ?? 0);
         } elseif ($request->filled('siswa_id')) {
             $query->where('siswa_id', $request->integer('siswa_id'));
+        }
+
+        if ($request->filled('jurusan_id')) {
+            $query->whereHas('siswa', fn ($q) => $q->where('jurusan_id', $request->integer('jurusan_id')));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->string('search')->toString();
+            $query->whereHas('siswa', function ($q) use ($search) {
+                $q->where('nis', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+            });
         }
 
         if ($request->filled('tanggal')) {
@@ -55,10 +70,10 @@ class AbsensiSiswaController extends Controller
         $query = AbsensiSiswa::query();
 
         if ($request->filled('gelombang_id')) {
-            $query->whereHas('siswa.lokasiPkl', fn($q) => $q->where('gelombang_id', $request->integer('gelombang_id')));
+            $query->whereHas('siswa.lokasiPkl', fn ($q) => $q->where('gelombang_id', $request->integer('gelombang_id')));
         }
         if ($request->filled('jurusan_id')) {
-            $query->whereHas('siswa', fn($q) => $q->where('jurusan_id', $request->integer('jurusan_id')));
+            $query->whereHas('siswa', fn ($q) => $q->where('jurusan_id', $request->integer('jurusan_id')));
         }
         if ($request->filled('tanggal_mulai')) {
             $query->whereDate('tanggal', '>=', $request->string('tanggal_mulai')->toString());
@@ -366,6 +381,8 @@ class AbsensiSiswaController extends Controller
             'status' => $request->status,
             'keterangan' => $request->keterangan,
             'jam_masuk' => $request->jam_masuk ?: $absensi->jam_masuk,
+            'jam_shift_mulai' => $request->has('jam_shift_mulai') ? $request->jam_shift_mulai : $absensi->jam_shift_mulai,
+            'jam_shift_selesai' => $request->has('jam_shift_selesai') ? $request->jam_shift_selesai : $absensi->jam_shift_selesai,
             'dikoreksi_oleh' => $user->id,
             'status_submit' => 'success',
         ]);
@@ -409,5 +426,153 @@ class AbsensiSiswaController extends Controller
         Storage::disk('public')->putFileAs("uploads/presensi/{$tanggal}", $file, "berkas_{$userId}_{$timestamp}_{$random}.{$ext}");
 
         return $path;
+    }
+
+    public function storeManual(StoreManualAbsensiRequest $request)
+    {
+        $user = $request->user();
+        $siswa = Siswa::findOrFail($request->siswa_id);
+
+        // Guru hanya boleh untuk siswa bimbingannya.
+        if ($user?->isGuru()) {
+            $guru = $user->guru;
+            $isBimbingan = $guru && LokasiPkl::where('guru_id', $guru->id)
+                ->where('siswa_id', $siswa->id)
+                ->where('status', 'active')
+                ->exists();
+
+            if (! $isBimbingan) {
+                return response()->json(['message' => 'Tidak diizinkan.'], 403);
+            }
+        }
+
+        // Validasi lokasi PKL active & periode praktik.
+        $lokasi = LokasiPkl::where('siswa_id', $siswa->id)->where('status', 'active')->first();
+        if (! $lokasi) {
+            return response()->json([
+                'message' => 'Siswa belum memiliki penempatan PKL aktif.',
+                'code' => 'GELOMBANG_NOT_ACTIVE',
+            ], 422);
+        }
+
+        $gelombang = $lokasi->gelombang;
+        $tanggal = $request->tanggal;
+        $today = now()->toDateString();
+
+        if ($gelombang && ($tanggal < $gelombang->praktik_mulai->toDateString() || $tanggal > $gelombang->praktik_selesai->toDateString())) {
+            return response()->json([
+                'message' => 'Periode praktik gelombang tidak aktif.',
+                'code' => 'GELOMBANG_NOT_ACTIVE',
+            ], 422);
+        }
+
+        // Anti-double submit.
+        if (AbsensiSiswa::where('siswa_id', $siswa->id)->whereDate('tanggal', $tanggal)->exists()) {
+            return response()->json([
+                'message' => 'Presensi hari ini sudah dilakukan.',
+                'code' => 'ABSENSI_DUPLICATE',
+            ], 422);
+        }
+
+        $status = $request->status;
+        $jamMasuk = $request->jam_masuk ?: ($status === 'hadir' ? now()->format('H:i:s') : null);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto_masuk')) {
+            $fotoPath = $this->storeFoto($request->file('foto_masuk'), $siswa->user_id, $tanggal);
+        }
+
+        $berkasPath = null;
+        if ($request->hasFile('berkas_pendukung')) {
+            $berkasPath = $this->storeBerkas($request->file('berkas_pendukung'), $siswa->user_id, $tanggal);
+        }
+
+        if (in_array($status, ['izin', 'sakit', 'libur'], true) && empty($request->input('keterangan'))) {
+            return response()->json([
+                'message' => 'Keterangan wajib diisi untuk status izin/sakit/libur.',
+            ], 422);
+        }
+
+        try {
+            $absensi = AbsensiSiswa::create([
+                'siswa_id' => $siswa->id,
+                'tanggal' => $tanggal,
+                'status' => $status,
+                'latitude' => $request->input('latitude'),
+                'longitude' => $request->input('longitude'),
+                'foto_masuk' => $fotoPath,
+                'jam_masuk' => $jamMasuk,
+                'jam_shift_mulai' => $request->input('jam_shift_mulai'),
+                'jam_shift_selesai' => $request->input('jam_shift_selesai'),
+                'keterangan' => $request->input('keterangan'),
+                'berkas_pendukung' => $berkasPath,
+                'status_submit' => 'success',
+                'dikoreksi_oleh' => $user->id,
+            ]);
+        } catch (QueryException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062) {
+                return response()->json([
+                    'message' => 'Presensi hari ini sudah dilakukan.',
+                    'code' => 'ABSENSI_DUPLICATE',
+                ], 422);
+            }
+            throw $e;
+        }
+
+        $siswaUser = $siswa->user;
+        if ($siswaUser) {
+            $siswaUser->notify(new AbsensiCorrectedNotification($absensi->fresh()));
+        }
+
+        return response()->json([
+            'message' => 'Presensi berhasil ditambahkan.',
+            'data' => new AbsensiSiswaResource($absensi->load(['siswa.user', 'korektor'])),
+        ], 201);
+    }
+
+    public function export(Request $request)
+    {
+        $query = AbsensiSiswa::query()
+            ->with(['siswa.user', 'siswa.jurusan', 'siswa.lokasiPkl.perusahaan', 'korektor']);
+
+        if ($request->filled('siswa_id')) {
+            $query->where('siswa_id', $request->integer('siswa_id'));
+        }
+        if ($request->filled('jurusan_id')) {
+            $query->whereHas('siswa', fn ($q) => $q->where('jurusan_id', $request->integer('jurusan_id')));
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->string('status')->toString());
+        }
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->string('tanggal')->toString());
+        }
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate('tanggal', '>=', $request->string('tanggal_mulai')->toString());
+        }
+        if ($request->filled('tanggal_selesai')) {
+            $query->whereDate('tanggal', '<=', $request->string('tanggal_selesai')->toString());
+        }
+        if ($request->filled('search')) {
+            $search = $request->string('search')->toString();
+            $query->whereHas('siswa', function ($q) use ($search) {
+                $q->where('nis', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+            });
+        }
+        if ($request->filled('gelombang_id')) {
+            $query->whereHas('siswa.lokasiPkl', fn ($q) => $q->where('gelombang_id', $request->integer('gelombang_id')));
+        }
+
+        $items = $query->orderBy('tanggal')->orderBy('siswa_id')->get();
+
+        $filename = 'presensi-siswa-'.now()->format('Y-m-d').'.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new AbsensiExport($items),
+            $filename,
+            Excel::XLSX,
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        );
     }
 }

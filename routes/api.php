@@ -61,7 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('absensi', [AbsensiSiswaController::class, 'index']);
         Route::get('absensi/rekap', [AbsensiSiswaController::class, 'rekap']);
         Route::get('absensi/siswa/{siswa}/periode', [AbsensiSiswaController::class, 'periodeSiswa']);
-        Route::get('absensi/{absensi}', [AbsensiSiswaController::class, 'show']);
+        Route::get('absensi/{absensi}', [AbsensiSiswaController::class, 'show'])->whereNumber('absensi');
     });
 
     // Absensi - siswa transaksional (gate profil)
@@ -76,8 +76,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('absensi/{absensi}', [AbsensiSiswaController::class, 'destroy']);
     });
 
-    // Absensi - koreksi (admin, guru)
+    // Absensi - koreksi, manual, export (admin, guru)
     Route::middleware('role:admin,guru')->group(function () {
+        Route::get('absensi/export', [AbsensiSiswaController::class, 'export']);
+        Route::post('absensi/manual', [AbsensiSiswaController::class, 'storeManual']);
         Route::post('absensi/{absensi}/koreksi', [AbsensiSiswaController::class, 'koreksi']);
     });
 

@@ -14,10 +14,19 @@ class AbsensiSiswaResource extends JsonResource
             'id' => $this->id,
             'siswa_id' => $this->siswa_id,
             'siswa' => $this->whenLoaded('siswa', function () {
+                $lokasiAktif = $this->siswa->lokasiPkl?->where('status', 'active')->first();
+
                 return [
                     'id' => $this->siswa->id,
                     'nis' => $this->siswa->nis,
                     'nama' => $this->siswa->user?->name,
+                    'kelas' => $this->siswa->kelas,
+                    'jurusan' => $this->siswa->jurusan ? [
+                        'id' => $this->siswa->jurusan->id,
+                        'nama' => $this->siswa->jurusan->nama,
+                        'kode' => $this->siswa->jurusan->kode,
+                    ] : null,
+                    'perusahaan' => $lokasiAktif?->perusahaan?->nama,
                 ];
             }),
             'tanggal' => $this->tanggal?->toDateString(),
