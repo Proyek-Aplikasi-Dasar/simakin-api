@@ -7151,6 +7151,107 @@
               }
             }
           }
+        },
+        {
+          "name": "POST Tambah Presensi Manual (Admin/Guru)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () { pm.response.to.have.status(201); });\nconst json = pm.response.json();\npm.test(\"Response berisi message & data\", function () { pm.expect(json).to.have.property(\"message\"); pm.expect(json).to.have.property(\"data\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/manual",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "manual"
+              ]
+            },
+            "description": "## Deskripsi\n\nTambah presensi manual (admin/guru). Validasi lokasi PKL active & periode. Cek duplikat. Kirim notifikasi ke siswa.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siswa_id\": {{siswa_id}},\n  \"tanggal\": \"2026-10-15\",\n  \"status\": \"hadir\",\n  \"jam_masuk\": \"08:00\",\n  \"jam_shift_mulai\": \"07:00\",\n  \"jam_shift_selesai\": \"15:00\",\n  \"keterangan\": \"Keterangan (opsional jika hadir)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET Export Excel Presensi (Admin/Guru)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });\npm.test(\"Content-Type adalah xlsx\", function () { const ct = pm.response.headers.get(\"Content-Type\"); pm.expect(ct).to.include(\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/export",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "export"
+              ]
+            },
+            "description": "## Deskripsi\n\nExport daftar presensi ke .xlsx (filter: tanggal, tanggal_mulai, tanggal_selesai, jurusan_id, gelombang_id, status, siswa_id, search)."
+          }
         }
       ]
     },
@@ -10639,6 +10740,207 @@
               ]
             },
             "description": "## Deskripsi\n\nSiswa lain tidak bisa melihat periode siswa lain."
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Manual - Sebagai Siswa (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/manual",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "manual"
+              ]
+            },
+            "description": "## Deskripsi\n\nTambah manual hanya admin/guru.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siswa_id\": {{siswa_id}},\n  \"tanggal\": \"2026-10-15\",\n  \"status\": \"hadir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] POST Manual - Duplicate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", function () { pm.response.to.have.status(422); });\nconst json = pm.response.json();\npm.test(\"Memiliki code ABSENSI_DUPLICATE\", function () { pm.expect(json.code).to.eql(\"ABSENSI_DUPLICATE\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/manual",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "manual"
+              ]
+            },
+            "description": "## Deskripsi\n\nDuplikat presensi pada tanggal yang sama.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"siswa_id\": {{siswa_id}},\n  \"tanggal\": \"2026-10-15\",\n  \"status\": \"hadir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] GET Export - Sebagai Siswa (Forbidden)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{siswa_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi/export",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi",
+                "export"
+              ]
+            },
+            "description": "## Deskripsi\n\nExport hanya admin/guru."
+          }
+        },
+        {
+          "name": "[Sprint4][Absensi] GET List - Filter Search & Jurusan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/absensi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "absensi"
+              ]
+            },
+            "description": "## Deskripsi\n\nFilter search (nama/NIS) dan jurusan_id pada list absensi."
           }
         }
       ]

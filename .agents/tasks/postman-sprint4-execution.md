@@ -155,11 +155,47 @@ Buat request **sesuai urutan di bawah**.
   {
     "status": "sakit",
     "keterangan": "Dikoreksi oleh admin",
-    "jam_masuk": "08:30"
+    "jam_masuk": "08:30",
+    "jam_shift_mulai": "07:00",
+    "jam_shift_selesai": "15:00"
   }
   ```
 - **Tests:** `T-OK`
 - **Documentation:** Koreksi manual (admin/guru; guru hanya siswa bimbingannya). Set `dikoreksi_oleh`, kirim notifikasi `absensi-corrected`.
+
+### 1.10 `POST Tambah Presensi Manual (Admin/Guru)`
+
+- **Method/URL:** `POST {{base_url}}/absensi/manual`
+- **Headers:** standar admin/guru
+- **Body (raw → JSON):**
+  ```json
+  {
+    "siswa_id": {{siswa_id}},
+    "tanggal": "2026-10-15",
+    "status": "hadir",
+    "jam_masuk": "08:00",
+    "jam_shift_mulai": "07:00",
+    "jam_shift_selesai": "15:00",
+    "keterangan": "Keterangan (opsional jika hadir)"
+  }
+  ```
+- **Tests:** `T-Create` (simpan ke `absensi_id`)
+- **Documentation:** Tambah presensi manual (admin/guru). Validasi lokasi PKL active & periode. Cek duplikat. Kirim notifikasi ke siswa.
+
+### 1.11 `GET Export Excel Presensi (Admin/Guru)`
+
+- **Method/URL:** `GET {{base_url}}/absensi/export`
+- **Headers:** standar admin/guru
+- **Query Params (opsional):** `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `jurusan_id`, `gelombang_id`, `status`, `siswa_id`, `search`
+- **Tests:**
+  ```javascript
+  pm.test("Status 200 OK", function () { pm.response.to.have.status(200); });
+  pm.test("Content-Type adalah xlsx", function () {
+      const ct = pm.response.headers.get("Content-Type");
+      pm.expect(ct).to.include("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  });
+  ```
+- **Documentation:** Export daftar presensi ke `.xlsx`.
 
 ---
 
