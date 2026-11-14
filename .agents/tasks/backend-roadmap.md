@@ -438,7 +438,7 @@
 - [x] Form Request: `StoreAbsensiRequest` & `UpdateAbsensiRequest`
 - [x] Resource: `AbsensiSiswaResource`
 - [x] Controller: `AbsensiSiswaController` (store & update)
-- [ ] Test: presensi dengan jam shift
+- [x] Test: presensi dengan jam shift
 
 **Estimasi:** 0.5 hari
 
@@ -448,9 +448,19 @@
 - [x] Form Request: `StoreAbsensiRequest` & `UpdateAbsensiRequest`
 - [x] Resource: `AbsensiSiswaResource`
 - [x] Controller: `AbsensiSiswaController` (store & update, storeBerkas)
-- [ ] Test: presensi izin dengan berkas
+- [x] Test: presensi izin dengan berkas
 
 **Estimasi:** 0.5 hari
+
+### Task 4.9: Tambah Presensi Manual & Export Excel (dari review mockup admin)
+- [x] Request: `StoreManualAbsensiRequest` (admin/guru)
+- [x] Controller: `AbsensiSiswaController@storeManual` (tambah presensi manual, `dikoreksi_oleh`, notifikasi)
+- [x] Controller: `AbsensiSiswaController@export` (export `.xlsx` dengan filter)
+- [x] Controller: `AbsensiSiswaController@index` (filter `search`, `jurusan_id`)
+- [x] Resource: `AbsensiSiswaResource` (tambah `kelas`, `jurusan`, `perusahaan`)
+- [x] Export class: `app/Exports/AbsensiExport.php`
+- [x] Update `KoreksiAbsensiRequest` (dukungan `jam_shift_mulai`, `jam_shift_selesai`)
+- [x] Test: `AbsensiAdminExportTest` (tambah manual, export, filter, koreksi jam shift)
 
 ### Task 4.8: Dokumentasi Konsep Jam Shift (dari catatan FE)
 - [x] Dokumentasi konsep jam shift di `002-database-schema.md` dan `003-api-endpoints.md`

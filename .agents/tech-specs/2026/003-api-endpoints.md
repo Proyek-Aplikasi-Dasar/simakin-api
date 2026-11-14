@@ -564,11 +564,11 @@ Catatan: `catatan` opsional, untuk catatan saat approve (bukan hanya saat reject
 
 ---
 
-## 13. Presensi / Absensi (9 endpoints) ✅ Done
+## 13. Presensi / Absensi (11 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
-| GET | /api/absensi | Required | admin, guru, siswa | List absensi |
+| GET | /api/absensi | Required | admin, guru, siswa | List absensi (filter `siswa_id`, `jurusan_id`, `search`, `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `status`, `page`) |
 | GET | /api/absensi/{id} | Required | admin, guru, siswa | Detail absensi |
 | POST | /api/absensi | Required | siswa | Check-in |
 | PUT | /api/absensi/{id} | Required | siswa | Edit (jika status_submit=failed) |
@@ -577,8 +577,10 @@ Catatan: `catatan` opsional, untuk catatan saat approve (bukan hanya saat reject
 | GET | /api/absensi/rekap | Required | admin, guru | Rekap presensi |
 | GET | /api/absensi/siswa/{id}/periode | Required | admin, guru, siswa | Rekap bulanan per siswa |
 | POST | /api/absensi/upload-foto | Required | siswa | Upload foto terpisah (retry) |
+| POST | /api/absensi/manual | Required | admin, guru | Tambah presensi manual (oleh admin/guru) |
+| GET | /api/absensi/export | Required | admin, guru | Export presensi ke `.xlsx` |
 
-**GET /api/absensi** - Query: `siswa_id`, `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `status` (hadir/izin/sakit/libur), `page`
+**GET /api/absensi** - Query: `siswa_id`, `jurusan_id`, `search` (nama/NIS siswa), `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `status` (hadir/izin/sakit/libur), `page`
 
 **POST /api/absensi** (check-in) - Multipart:
 ```
@@ -641,6 +643,25 @@ Response:
 
 **GET /api/absensi/siswa/{id}/periode** - Query: `bulan`, `tahun`
 Response: rekap presensi bulanan 1 siswa.
+
+**POST /api/absensi/manual** (admin/guru) - Body:
+```json
+{
+  "siswa_id": 1,
+  "tanggal": "2026-10-15",
+  "status": "hadir",
+  "jam_masuk": "08:00",
+  "jam_shift_mulai": "07:00",
+  "jam_shift_selesai": "15:00",
+  "keterangan": "Keterangan (wajib jika status != hadir)"
+}
+```
+**Logic:** Validasi siswa punya lokasi PKL active & tanggal dalam periode praktik. Cek duplikat siswa+tanggal. Set `dikoreksi_oleh = auth()->id()`, `status_submit = 'success'`. Kirim notifikasi `absensi-corrected` ke siswa. `jam_masuk` opsional (default now jika hadir). `foto_masuk` tidak wajib (presensi manual).
+
+**GET /api/absensi/export** (admin/guru) - Query: `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `jurusan_id`, `gelombang_id`, `status`, `siswa_id`, `search`
+Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, filename `presensi-siswa-{YYYY-MM-DD}.xlsx`.
+
+Kolom Excel: No, Tanggal, NIS, Nama Siswa, Kelas, Jurusan, Perusahaan PKL, Status, Waktu Kirim (Jam Masuk), Jam Shift, Keterangan, Dikoreksi Oleh.
 
 ---
 
@@ -913,4 +934,4 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 1 ✅ + 2 Sprint 7 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~115** | **82 done, ~33 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16; Sprint 4: +9 — Presensi 9) |
+| **Total** | **~115** | **84 done, ~31 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16; Sprint 4: +11 — Presensi 11) |

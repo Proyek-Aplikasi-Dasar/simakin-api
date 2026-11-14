@@ -875,6 +875,29 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 - `GET /api/guru/{id}/siswa-bimbingan` mengisi `presensi_hari_ini` (`status`, `jam_masuk`) berdasarkan query `?tanggal=` (default hari ini).
 - `GET /api/dashboard/admin` mengisi `presensi_hari_ini` (`hadir`, `izin`, `sakit`, `tidak_absen`) nyata.
 
+### Tambah Presensi Manual & Export Excel (Admin/Guru)
+
+**POST /api/absensi/manual** (admin/guru) - Body:
+```json
+{
+  "siswa_id": 1,
+  "tanggal": "2026-10-15",
+  "status": "hadir",
+  "jam_masuk": "08:00",
+  "jam_shift_mulai": "07:00",
+  "jam_shift_selesai": "15:00",
+  "keterangan": "Keterangan (wajib jika status != hadir)"
+}
+```
+**Logic:** Validasi siswa punya lokasi PKL active & tanggal dalam periode praktik. Cek duplikat siswa+tanggal. Set `dikoreksi_oleh = auth()->id()`, `status_submit = 'success'`. Kirim notifikasi `absensi-corrected` ke siswa.
+
+**GET /api/absensi/export** (admin/guru) - Query: `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `jurusan_id`, `gelombang_id`, `status`, `siswa_id`, `search`
+Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, filename `presensi-siswa-{YYYY-MM-DD}.xlsx`.
+
+Kolom Excel: No, Tanggal, NIS, Nama Siswa, Kelas, Jurusan, Perusahaan PKL, Status, Waktu Kirim (Jam Masuk), Jam Shift, Keterangan, Dikoreksi Oleh.
+
+**Filter list:** `GET /api/absensi` mendukung `search` (nama/NIS siswa) dan `jurusan_id`. Response memuat `siswa.kelas`, `siswa.jurusan`, `siswa.perusahaan`.
+
 ---
 
 ## G. Onboarding Profil Siswa (Mobile)
