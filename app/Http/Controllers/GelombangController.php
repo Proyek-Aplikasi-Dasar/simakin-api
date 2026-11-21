@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\GelombangExport;
 use App\Http\Requests\Master\StoreGelombangRequest;
 use App\Http\Requests\Master\UpdateGelombangRequest;
 use App\Http\Resources\GelombangResource;
+use App\Imports\GelombangImport;
 use App\Models\Gelombang;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GelombangController extends Controller
 {
@@ -59,5 +62,33 @@ class GelombangController extends Controller
         return response()->json([
             'message' => 'Gelombang berhasil dihapus.',
         ]);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $result = (new GelombangImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
+
+        return response()->json($result->toArray());
+    }
+
+    public function export(Request $request)
+    {
+        $items = Gelombang::orderByDesc('tahun_ajaran')->orderBy('nama')->get();
+
+        $filename = 'gelombang-'.now()->format('Y-m-d').'.xlsx';
+
+        return Excel::download(
+            new GelombangExport($items),
+            $filename,
+            \Maatwebsite\Excel\Excel::XLSX,
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        );
     }
 }

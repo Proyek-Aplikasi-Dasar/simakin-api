@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\JurusanExport;
 use App\Http\Requests\Master\StoreJurusanRequest;
 use App\Http\Requests\Master\UpdateJurusanRequest;
 use App\Http\Resources\JurusanResource;
 use App\Http\Resources\KompetensiResource;
+use App\Imports\JurusanImport;
 use App\Models\Jurusan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class JurusanController extends Controller
 {
@@ -64,5 +67,33 @@ class JurusanController extends Controller
         return response()->json([
             'message' => 'Jurusan berhasil dihapus.',
         ]);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $result = (new JurusanImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
+
+        return response()->json($result->toArray());
+    }
+
+    public function export(Request $request)
+    {
+        $items = Jurusan::orderBy('nama')->get();
+
+        $filename = 'jurusan-'.now()->format('Y-m-d').'.xlsx';
+
+        return Excel::download(
+            new JurusanExport($items),
+            $filename,
+            \Maatwebsite\Excel\Excel::XLSX,
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+        );
     }
 }
