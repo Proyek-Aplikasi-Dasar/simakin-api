@@ -76,7 +76,10 @@ class UserController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
-        $result = (new UserImport)->import($request->file('file')->getRealPath());
+        $result = (new UserImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
 
         return response()->json($result->toArray());
     }

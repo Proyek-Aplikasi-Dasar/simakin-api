@@ -20,7 +20,7 @@ class KompetensiController extends Controller
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
-                $query->where(fn($w) => $w
+                $query->where(fn ($w) => $w
                     ->where('nama', 'like', "%{$search}%")
                     ->orWhere('kode', 'like', "%{$search}%"));
             })
@@ -72,7 +72,10 @@ class KompetensiController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
-        $result = (new KompetensiImport)->import($request->file('file')->getRealPath());
+        $result = (new KompetensiImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
 
         return response()->json($result->toArray());
     }
