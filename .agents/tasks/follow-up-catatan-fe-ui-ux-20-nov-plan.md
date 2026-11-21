@@ -21,6 +21,7 @@
 | UI/UX-1 | UI/UX | Fitur token untuk penilaian dihapus; cukup admin membuka akses penilaian pada tanggal 1–10 tiap bulan | Hapus field/token verifikasi di aktivasi penilaian (Sprint 6 nanti); pastikan `aktivasi_penilaian` hanya buka/tutup periode 1–10 | Rendah (Sprint 6) |
 | BE-1 | BE | Validasi **seluruh field** untuk input/edit data (bukan hanya email & nomor telepon) | Tambah validasi lengkap (required/nullable, tipe, panjang, format, range, unique/exists) untuk semua field di semua Form Request: `StoreSiswaRequest`/`UpdateSiswaRequest` (name, username, password, nis, email, jurusan_id, gelombang_id, jenis_kelamin, kelas, telp, alamat, nama_ortu, telp_ortu, alamat_ortu), `StoreGuruRequest`/`UpdateGuruRequest` (name, username, password, nip, email, telp, jurusan_id, kuota_bimbingan, alamat, is_active), `StorePerusahaanRequest`/`UpdatePerusahaanRequest` (nama, alamat, latitude, longitude, pimpinan, telp, email, deskripsi, kuota, is_active, radius_presensi, pembimbing_industri, bidang_usaha, jurusan_ids), `UpdateUserRequest` (name, username, email, role_id), `StoreManualAbsensiRequest` (siswa_id, tanggal, status, jam_masuk, jam_shift_mulai, jam_shift_selesai, keterangan, berkas_pendukung), serta Form Request master (jurusan, kompetensi, gelombang, sikap, waktu_absen) | Tinggi |
 | BE-2 | BE | Waktu kirim presensi masih berformat GMT, perlu WIB (GMT+7) | Pastikan `jam_masuk` & `created_at` dikirim dalam zona waktu `Asia/Jakarta` (config `app.timezone` atau konversi eksplisit di resource) | Tinggi |
+| FE-7 | Admin — Data Master | Export & Impor Excel untuk **`gelombang`** dan **`jurusan`** belum tersedia (FE butuh bulk upload + export seperti modul lain) | Tambah endpoint `POST /api/jurusan/bulk-upload`, `POST /api/gelombang/bulk-upload` (pakai `JurusanImport`/`GelombangImport`), `GET /api/jurusan/export`, `GET /api/gelombang/export` (export `.xlsx`), serta template download `jurusan` & `gelombang` di `/api/templates/{type}` | Sedang |
 
 ---
 
@@ -36,6 +37,7 @@
 - Validasi email & nomor telepon di seluruh Form Request input/edit.
 - Penyesuaian zona waktu presensi ke WIB (GMT+7).
 - Update `GuruResource` agar mengirim `email` dari relasi `user.email`.
+- Tambah export & impor Excel untuk `jurusan` & `gelombang` (endpoint `POST .../bulk-upload`, `GET .../export`, template download).
 - Update dokumentasi (`003-api-endpoints.md`, `API-Docs-fondasi.md`) + playbook Postman jika diperlukan.
 
 ### Tidak Termasuk / Ditunda
@@ -46,7 +48,7 @@
 
 ---
 
-## 3. Strategi Branching & Tahap Pengerjaan (B0–B4)
+## 3. Strategi Branching & Tahap Pengerjaan (B0–B7)
 
 Mengikuti pola Sprint 1–5 (branch dari `develop`, merge via PR ke `develop` setiap tahap):
 
@@ -107,12 +109,27 @@ Mengikuti pola Sprint 1–5 (branch dari `develop`, merge via PR ke `develop` se
 3. **Test:** update test yang terdampak validasi (email/telp) dan assert format waktu WIB.
 4. **Commit:** `[BE] feat: validasi field input/edit + zona waktu WIB pada presensi`.
 
-### **Tahap B6 — `docs/follow-up-catatan-fe-20nov` (Estimasi: 0.5 hari)**
-1. Update `.agents/tech-specs/2026/003-api-endpoints.md` (§2, §9, §10, §11, §12, §13: tambah field `last_login_at`, `status`, `email` guru, `sumber_pilihan`, `pembimbing_industri`, `latitude`, `longitude`, filter `search`/`jurusan_id`).
-2. Update `.agents/tasks/backend-roadmap.md` (centang item validasi & tambah task follow-up catatan FE 20 Nov).
-3. Update `docs/API-Docs-fondasi.md` (bagian Akun & Peran, Guru, Pengajuan PKL, Lokasi PKL, Presensi).
-4. Update `.agents/tasks/postman-sprint*-execution.md` jika diperlukan (tambah field baru di body/response).
-5. **Commit:** `[BE] docs: sinkronisasi catatan FE UI/UX & BE (20 Nov)`.
+### **Tahap B6 — `feature/export-import-gelombang-jurusan` (Estimasi: 1 hari)**
+1. **Import:**
+   - `JurusanImport` sudah ada; tambahkan `bulkUpload` di `JurusanController` (kolom: `nama`, `kode`, `bidang_keahlian`).
+   - Buat `GelombangImport` (kolom: `tahun_ajaran`, `nama`, `daftar_mulai`, `daftar_selesai`, `praktik_mulai`, `praktik_selesai`) + `bulkUpload` di `GelombangController`.
+2. **Export:**
+   - `JurusanExport` & `GelombangExport` di `app/Exports/` (kolom sesuai field tabel).
+   - `GET /api/jurusan/export` & `GET /api/gelombang/export` (role `admin,guru`) → unduhan `.xlsx`.
+3. **Template:** tambah `template-jurusan.xlsx` & `template-gelombang.xlsx` di `public/templates/` + daftarkan di `TemplateController::TEMPLATES`.
+4. **Route:** daftarkan endpoint bulk-upload & export (admin only) sebelum route `{id}` (gunakan `whereNumber` pada wildcard).
+5. **Test:** `tests/Feature/Import/BulkUploadGelombangJurusanTest.php` (upload `.xlsx` end-to-end + export 200 dengan content-type xlsx + 403 untuk siswa).
+6. **Commit:** `[BE] feat: export & impor Excel untuk gelombang dan jurusan`.
+
+### **Tahap B7 — `docs/follow-up-catatan-fe-20nov` (Estimasi: 0.5 hari)**
+1. Update `.agents/tech-specs/2026/003-api-endpoints.md`:
+   - §2, §9, §10, §11, §12, §13: tambah field `last_login_at`, `status`, `email` guru, `sumber_pilihan`, `pembimbing_industri`, `latitude`, `longitude`, filter `search`/`jurusan_id`.
+   - §3 Jurusan & §5 Gelombang: tambah endpoint `POST .../bulk-upload` dan `GET .../export` (role `admin,guru`).
+2. Update `.agents/tasks/backend-roadmap.md` (centang item validasi & tambah task follow-up catatan FE 20 Nov + B6 export/import gelombang-jurusan).
+3. Update `docs/API-Docs-fondasi.md` (bagian Akun & Peran, Guru, Pengajuan PKL, Lokasi PKL, Presensi, Data Master jurusan/gelombang).
+4. Update `.agents/tasks/postman-sprint*-execution.md` jika diperlukan (tambah field baru di body/response, endpoint bulk-upload/export gelombang & jurusan).
+5. Update `docs/postman/` (collection + environment JSON) jika diperlukan (folder 03 Jurusan, 05 Gelombang: tambah request bulk-upload & export).
+6. **Commit:** `[BE] docs: sinkronisasi catatan FE UI/UX & BE (20 Nov)`.
 
 ---
 
@@ -163,7 +180,8 @@ Mengikuti pola Sprint 1–5 (branch dari `develop`, merge via PR ke `develop` se
 - [ ] B3 Field "Dipilih Dari" & tanggal pengajuan (migration + model + request + resource + test)
 - [ ] B4 Bug impor Excel diperbaiki (cek ekstensi dari `getClientOriginalExtension()`; test upload `.xlsx` end-to-end)
 - [ ] B5 Validasi email/telp + zona waktu WIB (Form Request + resource + test)
-- [ ] B6 Dokumentasi + Postman sinkron
+- [x] B6 Export & impor Excel untuk `gelombang` & `jurusan` (import + export + template + test)
+- [ ] B7 Dokumentasi + Postman sinkron (termasuk endpoint bulk-upload/export gelombang & jurusan)
 - [ ] Semua test hijau, pint bersih, `migrate:fresh --seed` sukses, `git status` bersih
 
 ---
