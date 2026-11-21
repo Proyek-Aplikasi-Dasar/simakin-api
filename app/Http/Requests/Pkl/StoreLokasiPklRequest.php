@@ -22,6 +22,9 @@ class StoreLokasiPklRequest extends FormRequest
             'catatan' => ['nullable', 'string', 'max:1000'],
             'tanggal_mulai' => ['nullable', 'date'],
             'tanggal_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_mulai'],
+            'pembimbing_industri' => ['nullable', 'string', 'max:255'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ];
     }
 }
