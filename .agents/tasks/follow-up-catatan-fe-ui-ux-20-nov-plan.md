@@ -15,7 +15,7 @@
 | FE-1 | Admin — Akun & Peran | Kolom "Login terakhir" (`"Hari ini, 07:12"`) & "Status" (`"Aktif"`/`"Nonaktif"`) belum ada | `UserResource` + kolom `last_login_at` (nullable) di `users`; soft delete sudah merepresentasikan nonaktif | Tinggi |
 | FE-2 | Admin — Guru Pembimbing | Email di detail guru ada di UI tetapi tidak ada di BE | Tambah `email` ke `guru`? atau pakai `users.email` (sudah ada); pastikan `GuruResource` mengirim `email` dari relasi `user.email` | Sedang |
 | FE-3 | Admin — Pengajuan PKL | Field `"Dipilih Dari"` (`"Daftar perusahaan mitra"` / `"Daftar perusahaan siswa"`) & `"Tanggal Pengajuan"` belum tersedia | Tambah kolom `sumber_pilihan` (`enum('daftar_perusahaan_mitra','daftar_perusahaan_siswa')` nullable) & pastikan `created_at` (tanggal pengajuan) dikirim di `PengajuanPklResource` | Tinggi |
-| FE-4 | Admin — Lokasi & Penempatan | Pembimbing Industri & Koordinat belum ada di endpoint penempatan (hanya tampil dari data perusahaan). Dibutuhkan untuk form tambah penempatan | Tambah field `pembimbing_industri` (string nullable), `latitude` (decimal), `longitude` (decimal) ke `lokasi_pkl` (atau ambil dari `perusahaan`); update `StoreLokasiPklRequest`, `UpdateLokasiPklRequest`, `LokasiPklResource` | Sedang |
+| FE-4 | Admin — Lokasi & Penempatan | (a) Pembimbing Industri & Koordinat belum ada di endpoint penempatan (hanya tampil dari data perusahaan). Dibutuhkan untuk form tambah penempatan.<br>(b) Jika penempatan PKL diisi **manual oleh admin** (`POST /api/lokasi-pkl`), statusnya harus langsung **`active`** (saat ini BE memberi status `pending`). | Tambah field `pembimbing_industri` (string nullable), `latitude` (decimal), `longitude` (decimal) ke `lokasi_pkl` (atau ambil dari `perusahaan`); update `StoreLokasiPklRequest`, `UpdateLokasiPklRequest`, `LokasiPklResource`. **Ubah default status `POST /api/lokasi-pkl` (manual admin) dari `pending` menjadi `active`** (sesuai mockup admin penempatan). | Sedang |
 | FE-5 | Admin — Presensi Siswa | Kurang informasi waktu kirim presensi & jam shift | Pastikan `jam_masuk`, `jam_shift_mulai`, `jam_shift_selesai` (sudah ada sejak Sprint 4 update) terkirim di `AbsensiSiswaResource` (sudah) + dokumentasi | Rendah |
 | FE-6 | Admin — Impor Excel | Semua `bulk-upload` ditolak `422 INVALID_FILE_TYPE` karena cek ekstensi dari path sementara (`phpXXXX.tmp`) | Perbaiki `ImportsRows::readRows()` agar tidak cek ekstensi dari path sementara; gunakan `getClientOriginalExtension()` atau tentukan reader secara eksplisit (`\Maatwebsite\Excel\Excel::XLSX`) | **Kritis** |
 | UI/UX-1 | UI/UX | Fitur token untuk penilaian dihapus; cukup admin membuka akses penilaian pada tanggal 1–10 tiap bulan | Hapus field/token verifikasi di aktivasi penilaian (Sprint 6 nanti); pastikan `aktivasi_penilaian` hanya buka/tutup periode 1–10 | Rendah (Sprint 6) |
@@ -31,6 +31,7 @@
 - Penambahan kolom `last_login_at` pada `users` (nullable) + pencatatan saat login (mobile & web) + pengiriman di `UserResource`.
 - Penambahan kolom `sumber_pilihan` (`enum('daftar_perusahaan_mitra','daftar_perusahaan_siswa')` nullable) pada `pengajuan_pkl` + kirim di `PengajuanPklResource`.
 - Penambahan kolom `pembimbing_industri`, `latitude`, `longitude` (nullable) pada `lokasi_pkl` + validasi + resource.
+- Penyesuaian status default `POST /api/lokasi-pkl` (manual admin) menjadi `active` (sebelumnya `pending`).
 - Perbaikan bug impor Excel di `app/Imports/Concerns/ImportsRows.php` (cek ekstensi dari `getClientOriginalExtension()` / tentukan reader eksplisit).
 - Validasi email & nomor telepon di seluruh Form Request input/edit.
 - Penyesuaian zona waktu presensi ke WIB (GMT+7).
@@ -66,9 +67,10 @@ Mengikuti pola Sprint 1–5 (branch dari `develop`, merge via PR ke `develop` se
 2. **Migration:** `add_pembimbing_industri_koordinat_to_lokasi_pkl_table` (`pembimbing_industri` varchar(255) nullable, `latitude` decimal(10,8) nullable, `longitude` decimal(11,8) nullable). *Catatan:* jika nilai hanya tampil dari data perusahaan, field boleh nullable dan default mengambil dari `perusahaan` (fallback di resource).
 3. **Request:** `StoreLokasiPklRequest` & `UpdateLokasiPklRequest` → tambah `pembimbing_industri`, `latitude`, `longitude` (nullable, validasi lat/long numeric & range).
 4. **Resource:** `LokasiPklResource` → kirim `pembimbing_industri`, `latitude`, `longitude` (fallback ke `perusahaan.latitude/longitude` & `perusahaan.pimpinan` jika null).
-5. **GuruResource:** tambah `email` (dari `user.email`).
-6. **Test:** update `GuruTest`, `LokasiPklTest` (assert field baru terkirim & tersimpan).
-7. **Commit:** `[BE] feat: email guru & pembimbing industri + koordinat penempatan`.
+5. **Controller:** `LokasiPklController@store` → ubah default `status` dari `pending` menjadi **`active`** untuk penempatan yang diisi manual oleh admin (sesuai mockup `admin-presensi-siswa-form-tambah-koreksi.png` / catatan FE 20 Nov). Guard `SISWA_ALREADY_PLACED` tetap berlaku (siswa yang sudah punya lokasi `active` tidak boleh dibuat ulang).
+6. **GuruResource:** tambah `email` (dari `user.email`).
+7. **Test:** update `GuruTest`, `LokasiPklTest` (assert field baru terkirim & tersimpan; assert status `active` saat create manual).
+8. **Commit:** `[BE] feat: email guru & pembimbing industri + koordinat penempatan`.
 
 ### **Tahap B3 — `feature/pengajuan-sumber-pilihan` (Estimasi: 0.5 hari)**
 1. **Migration:** `add_sumber_pilihan_to_pengajuan_pkl_table` (`sumber_pilihan` enum `['daftar_perusahaan_mitra','daftar_perusahaan_siswa']` nullable, default `null`).
@@ -156,7 +158,7 @@ Mengikuti pola Sprint 1–5 (branch dari `develop`, merge via PR ke `develop` se
 
 - [ ] B0 Rencana follow-up dibuat (dokumen ini)
 - [ ] B1 Kolom login terakhir & status akun (migration + model + controller + resource + test)
-- [ ] B2 Email guru + pembimbing industri + koordinat (migration + request + resource + test)
+- [ ] B2 Email guru + pembimbing industri + koordinat + status default `active` untuk penempatan manual (migration + request + resource + controller + test)
 - [ ] B3 Field "Dipilih Dari" & tanggal pengajuan (migration + model + request + resource + test)
 - [ ] B4 Bug impor Excel diperbaiki (cek ekstensi dari `getClientOriginalExtension()`; test upload `.xlsx` end-to-end)
 - [ ] B5 Validasi email/telp + zona waktu WIB (Form Request + resource + test)
