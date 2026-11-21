@@ -10,6 +10,7 @@
    * Pada mockup `docs/mockups/web/admin/pkl/pengajuan-pkl/admin-pengajuan-pkl-verifikasi-new.png`, terdapat 2 field tambahan di UI, yaitu **"Tanggal Pengajuan"** (bernilai tanggal dan waktu dilakukannya pengajuan) dan **"Dipilih dari"** (bernilai `"Daftar perusahaan siswa"`).
 4. **Halaman Lokasi & Penempatan:** Pembimbing Industri dan Koordinat di form: endpoint penempatan belum memiliki field ini (nilainya hanya tampil dari data perusahaan).
    * Untuk **"form tambah penempatan"**, dibutuhkan endpoint untuk Pembimbing Industri dan Koordinat.
+   * Jika **penempatan PKL** diisi manual oleh admin, statusnya langsung `active` (kondisi sekarang BE memberi status `pending`). Konteks endpoint: `POST /api/lokasi-pkl`.
 5. **Halaman Presensi Siswa:** Kurang informasi waktu kirim presensi & jam shift.
 6. **Masalah Impor Excel:**
    * **Pesan dari FE:**
