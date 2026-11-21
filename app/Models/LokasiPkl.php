@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'catatan',
     'tanggal_mulai',
     'tanggal_selesai',
+    'pembimbing_industri',
+    'latitude',
+    'longitude',
 ])]
 class LokasiPkl extends Model
 {
@@ -39,6 +42,9 @@ class LokasiPkl extends Model
         'catatan',
         'tanggal_mulai',
         'tanggal_selesai',
+        'pembimbing_industri',
+        'latitude',
+        'longitude',
     ];
 
     /**
@@ -49,6 +55,8 @@ class LokasiPkl extends Model
     protected function casts(): array
     {
         return [
+            'latitude' => 'decimal:8',
+            'longitude' => 'decimal:8',
             'tanggal_mulai' => 'date',
             'tanggal_selesai' => 'date',
         ];

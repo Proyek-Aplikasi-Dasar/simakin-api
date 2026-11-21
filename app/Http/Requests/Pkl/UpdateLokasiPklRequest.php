@@ -22,6 +22,9 @@ class UpdateLokasiPklRequest extends FormRequest
             'catatan' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'tanggal_mulai' => ['sometimes', 'nullable', 'date'],
             'tanggal_selesai' => ['sometimes', 'nullable', 'date', 'after_or_equal:tanggal_mulai'],
+            'pembimbing_industri' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'latitude' => ['sometimes', 'nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['sometimes', 'nullable', 'numeric', 'between:-180,180'],
         ];
     }
 }
