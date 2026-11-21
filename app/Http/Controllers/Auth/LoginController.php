@@ -23,11 +23,14 @@ class LoginController extends Controller
             throw ValidationException::withMessages(['username' => ['Kredensial tidak valid.']]);
         }
 
+        // Catat waktu login terakhir (disimpan UTC, ditampilkan WIB di resource).
+        $user->forceFill(['last_login_at' => now()])->save();
+
         // Kalau request dari mobile (bukan SPA), kembalikan token
         if ($request->header('X-Client') === 'mobile') {
             $token = $user->createToken('android-app')->plainTextToken;
 
-            return response()->json(['user' => $user, 'token' => $token]);
+            return response()->json(['user' => $user->fresh()->load('role'), 'token' => $token]);
         }
 
         // Siswa memakai aplikasi mobile, bukan website
