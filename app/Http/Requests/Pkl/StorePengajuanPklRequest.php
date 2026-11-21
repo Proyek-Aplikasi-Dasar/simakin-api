@@ -17,6 +17,7 @@ class StorePengajuanPklRequest extends FormRequest
         return [
             'perusahaan_id' => ['required', 'integer', Rule::exists('perusahaan', 'id')],
             'gelombang_id' => ['required', 'integer', Rule::exists('gelombang', 'id')],
+            'sumber_pilihan' => ['nullable', 'string', Rule::in(['daftar_perusahaan_mitra', 'daftar_perusahaan_siswa'])],
         ];
     }
 
