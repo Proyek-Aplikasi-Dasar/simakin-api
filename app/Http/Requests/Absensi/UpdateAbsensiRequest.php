@@ -25,4 +25,24 @@ class UpdateAbsensiRequest extends FormRequest
             'status_submit' => ['sometimes', 'string', 'in:success,failed'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'status.in' => 'Status harus hadir, izin, sakit, atau libur.',
+            'latitude.numeric' => 'Latitude harus berupa angka.',
+            'latitude.between' => 'Latitude harus antara -90 dan 90.',
+            'longitude.numeric' => 'Longitude harus berupa angka.',
+            'longitude.between' => 'Longitude harus antara -180 dan 180.',
+            'foto_masuk.image' => 'File harus berupa gambar.',
+            'foto_masuk.mimes' => 'Foto harus berformat jpeg, jpg, atau png.',
+            'foto_masuk.max' => 'Ukuran foto maksimal 5MB.',
+            'jam_shift_mulai.date_format' => 'Format jam shift mulai harus HH:mm.',
+            'jam_shift_selesai.date_format' => 'Format jam shift selesai harus HH:mm.',
+            'keterangan.max' => 'Keterangan maksimal 1000 karakter.',
+            'berkas_pendukung.mimes' => 'Berkas harus berformat pdf, jpeg, jpg, atau png.',
+            'berkas_pendukung.max' => 'Ukuran berkas maksimal 5MB.',
+            'status_submit.in' => 'Status submit harus success atau failed.',
+        ];
+    }
 }

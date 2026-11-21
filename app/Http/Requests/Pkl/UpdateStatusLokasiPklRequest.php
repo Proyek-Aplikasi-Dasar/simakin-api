@@ -17,4 +17,12 @@ class UpdateStatusLokasiPklRequest extends FormRequest
             'status' => ['required', 'string', 'in:pending,active,completed,cancelled'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'status.required' => 'Status wajib diisi.',
+            'status.in' => 'Status harus pending, active, completed, atau cancelled.',
+        ];
+    }
 }

@@ -44,10 +44,10 @@ class StoreSiswaRequest extends FormRequest
             'gelombang_id' => ['nullable', 'integer', Rule::exists('gelombang', 'id')],
             'jenis_kelamin' => ['nullable', Rule::in(['L', 'P'])],
             'kelas' => ['nullable', 'string', 'max:20'],
-            'telp' => ['nullable', 'string', 'max:20'],
+            'telp' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\\-\\s()]+$/'],
             'alamat' => ['nullable', 'string', 'max:1000'],
             'nama_ortu' => ['nullable', 'string', 'max:255'],
-            'telp_ortu' => ['nullable', 'string', 'max:20'],
+            'telp_ortu' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\\-\\s()]+$/'],
             'alamat_ortu' => ['nullable', 'string', 'max:1000'],
             'is_active' => ['nullable', 'boolean'],
         ];
@@ -69,6 +69,8 @@ class StoreSiswaRequest extends FormRequest
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah terdaftar.',
             'jenis_kelamin.in' => 'Jenis kelamin harus L atau P.',
+            'telp.regex' => 'Format nomor telepon tidak valid.',
+            'telp_ortu.regex' => 'Format nomor telepon orang tua tidak valid.',
         ];
     }
 }

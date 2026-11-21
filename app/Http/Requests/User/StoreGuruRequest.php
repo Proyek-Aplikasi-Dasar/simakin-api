@@ -36,7 +36,8 @@ class StoreGuruRequest extends FormRequest
                 // NIP dipakai sebagai username login, jadi harus unik di users juga.
                 Rule::unique('users', 'username'),
             ],
-            'telp' => ['nullable', 'string', 'max:20'],
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')],
+            'telp' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\\-\\s()]+$/'],
             'jurusan_id' => ['nullable', 'exists:jurusan,id'],
             'kuota_bimbingan' => ['nullable', 'integer', 'min:0'],
             'alamat' => ['nullable', 'string'],
@@ -57,6 +58,9 @@ class StoreGuruRequest extends FormRequest
             'nip.required' => 'NIP wajib diisi.',
             'nip.unique' => 'NIP sudah terdaftar.',
             'username.same' => 'Username harus sama dengan NIP.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'telp.regex' => 'Format nomor telepon tidak valid.',
         ];
     }
 }

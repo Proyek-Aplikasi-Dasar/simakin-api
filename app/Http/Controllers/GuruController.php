@@ -40,7 +40,7 @@ class GuruController extends Controller
             $user = User::create([
                 'name' => $data['name'],
                 'username' => $data['nip'],
-                'email' => null,
+                'email' => $data['email'] ?? null,
                 'password' => $data['password'],
                 'role_id' => 2,
             ]);
@@ -77,6 +77,10 @@ class GuruController extends Controller
 
             if (array_key_exists('name', $data)) {
                 $userData['name'] = $data['name'];
+            }
+
+            if (array_key_exists('email', $data)) {
+                $userData['email'] = $data['email'];
             }
 
             // NIP adalah identitas login; username tidak boleh menyimpang dari NIP.

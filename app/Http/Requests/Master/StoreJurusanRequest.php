@@ -20,4 +20,16 @@ class StoreJurusanRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'nama.required' => 'Nama jurusan wajib diisi.',
+            'nama.max' => 'Nama jurusan maksimal 100 karakter.',
+            'kode.unique' => 'Kode jurusan sudah digunakan.',
+            'kode.max' => 'Kode jurusan maksimal 20 karakter.',
+            'bidang_keahlian.max' => 'Bidang keahlian maksimal 100 karakter.',
+            'is_active.boolean' => 'Status aktif harus berupa boolean.',
+        ];
+    }
 }

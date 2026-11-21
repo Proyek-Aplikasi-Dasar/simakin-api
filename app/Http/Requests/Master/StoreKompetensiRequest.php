@@ -21,4 +21,17 @@ class StoreKompetensiRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'jurusan_id.required' => 'Jurusan wajib dipilih.',
+            'jurusan_id.exists' => 'Jurusan tidak ditemukan.',
+            'nama.required' => 'Nama kompetensi wajib diisi.',
+            'nama.max' => 'Nama kompetensi maksimal 255 karakter.',
+            'kode.unique' => 'Kode kompetensi sudah digunakan.',
+            'kode.max' => 'Kode kompetensi maksimal 50 karakter.',
+            'is_active.boolean' => 'Status aktif harus berupa boolean.',
+        ];
+    }
 }
