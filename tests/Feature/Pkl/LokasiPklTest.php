@@ -144,7 +144,7 @@ class LokasiPklTest extends TestCase
                 'gelombang_id' => $gelombang->id,
             ])
             ->assertStatus(201)
-            ->assertJsonPath('data.status', 'pending');
+            ->assertJsonPath('data.status', 'active');
     }
 
     public function test_siswa_sudah_placed_ditolak(): void

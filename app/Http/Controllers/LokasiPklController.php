@@ -15,14 +15,14 @@ class LokasiPklController extends Controller
     {
         $lokasi = LokasiPkl::query()
             ->with(['siswa.user', 'guru.user', 'perusahaan', 'gelombang'])
-            ->when($request->filled('status'), fn($q) => $q->where('status', $request->string('status')->toString()))
-            ->when($request->filled('siswa_id'), fn($q) => $q->where('siswa_id', $request->integer('siswa_id')))
-            ->when($request->filled('guru_id'), fn($q) => $q->where('guru_id', $request->integer('guru_id')))
-            ->when($request->filled('perusahaan_id'), fn($q) => $q->where('perusahaan_id', $request->integer('perusahaan_id')))
-            ->when($request->filled('gelombang_id'), fn($q) => $q->where('gelombang_id', $request->integer('gelombang_id')))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')->toString()))
+            ->when($request->filled('siswa_id'), fn ($q) => $q->where('siswa_id', $request->integer('siswa_id')))
+            ->when($request->filled('guru_id'), fn ($q) => $q->where('guru_id', $request->integer('guru_id')))
+            ->when($request->filled('perusahaan_id'), fn ($q) => $q->where('perusahaan_id', $request->integer('perusahaan_id')))
+            ->when($request->filled('gelombang_id'), fn ($q) => $q->where('gelombang_id', $request->integer('gelombang_id')))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $search = $request->string('search')->toString();
-                $q->whereHas('siswa.user', fn($u) => $u->where('name', 'like', "%{$search}%"));
+                $q->whereHas('siswa.user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
             })
             ->orderByDesc('created_at')
             ->paginate(20);
@@ -52,7 +52,7 @@ class LokasiPklController extends Controller
             ], 422);
         }
 
-        $lokasi = LokasiPkl::create(array_merge(['status' => 'pending'], $data));
+        $lokasi = LokasiPkl::create(array_merge(['status' => 'active'], $data));
 
         return response()->json([
             'message' => 'Lokasi PKL berhasil dibuat.',
