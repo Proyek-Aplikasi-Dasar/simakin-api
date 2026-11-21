@@ -189,6 +189,8 @@ Reset password user oleh admin. **Request:** `{ "password": "...", "password_con
 
 Soft delete user. Response 200: `{ "message": "User berhasil dihapus." }`
 
+> `UserResource` mengirim `last_login_at` (format `Y-m-d H:i:s`, zona WIB) dan `status` (`'Aktif'`/`'Nonaktif'` berdasarkan `deleted_at`). `last_login_at` diisi saat login (mobile & web).
+
 ### 2.6 POST /api/users/bulk-upload
 
 | | |
@@ -206,7 +208,7 @@ Bulk upload akun (users) via Excel. **Multipart:** `file` (xlsx/csv).
 
 ---
 
-## 3. Data Master - Jurusan (6 endpoints) ✅ Done
+## 3. Data Master - Jurusan (8 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -216,10 +218,16 @@ Bulk upload akun (users) via Excel. **Multipart:** `file` (xlsx/csv).
 | PUT | /api/jurusan/{id} | Required | admin | Update jurusan |
 | DELETE | /api/jurusan/{id} | Required | admin | Delete jurusan |
 | GET | /api/jurusan/{id}/kompetensi | Required | any | List kompetensi per jurusan |
+| POST | /api/jurusan/bulk-upload | Required | admin | Import Excel |
+| GET | /api/jurusan/export | Required | admin, guru | Export Excel |
 
 **GET /api/jurusan** - Query: `search` (nama/kode)
 
 **POST /api/jurusan** - Body: `{ "nama": "...", "kode": "..." }`
+
+**POST /api/jurusan/bulk-upload** - Multipart: `file` (xlsx/csv). Kolom: `nama`, `kode`, `bidang_keahlian`.
+
+**GET /api/jurusan/export** - Response: file download (`.xlsx`).
 
 ---
 
@@ -254,7 +262,7 @@ Response 200:
 
 ---
 
-## 5. Data Master - Gelombang (5 endpoints) ✅ Done
+## 5. Data Master - Gelombang (7 endpoints) ✅ Done
 
 | Method | Endpoint | Auth | Role | Description |
 |---|---|---|---|---|
@@ -263,6 +271,12 @@ Response 200:
 | POST | /api/gelombang | Required | admin | Create gelombang |
 | PUT | /api/gelombang/{id} | Required | admin | Update gelombang |
 | DELETE | /api/gelombang/{id} | Required | admin | Delete gelombang |
+| POST | /api/gelombang/bulk-upload | Required | admin | Import Excel |
+| GET | /api/gelombang/export | Required | admin, guru | Export Excel |
+
+**POST /api/gelombang/bulk-upload** - Multipart: `file` (xlsx/csv). Kolom: `tahun_ajaran`, `nama`, `daftar_mulai`, `daftar_selesai`, `praktik_mulai`, `praktik_selesai`.
+
+**GET /api/gelombang/export** - Response: file download (`.xlsx`).
 
 **POST /api/gelombang** - Body:
 ```json
@@ -361,7 +375,7 @@ Contoh: `GET /api/jurusan?is_active=true` (hanya jurusan aktif), `GET /api/sikap
   "nip": "198701012010011001"
 }
 ```
-**Logic:** Create `users` (role_id=2, **username = NIP**) → Create `guru` (user_id).
+**Logic:** Create `users` (role_id=2, **username = NIP**) → Create `guru` (user_id). `email` guru disimpan di `users.email` (konsisten onboarding) dan dikirim via `GuruResource` dari relasi `user.email`.
 
 **GET /api/guru/{id}/siswa-bimbingan** - Query: `status` (active/completed), `tanggal` (filter presensi/jurnal hari ini)
 
@@ -918,9 +932,9 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 |---|---|---|
 | 1. Authentication | 5 | 5 ✅ |
 | 2. User Management | 5 | 5 ✅ |
-| 3. Jurusan | 6 | 6 ✅ |
+| 3. Jurusan | 8 | 8 ✅ (termasuk bulk-upload & export) |
 | 4. Kompetensi | 6 | 5 ✅ + 1 Sprint 2 (bulk upload) |
-| 5. Gelombang | 5 | 5 ✅ |
+| 5. Gelombang | 7 | 7 ✅ (termasuk bulk-upload & export) |
 | 6. Perusahaan | 8 | 7 ✅ + 1 Sprint 2 (bulk upload) |
 | 7. Sikap | 5 | 5 ✅ |
 | 8. Waktu Absen | 4 | 4 ✅ |
@@ -934,4 +948,4 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 | 16. Notifications | 4 | 📋 |
 | 17. Dashboard | 3 | 1 ✅ + 2 Sprint 7 |
 | 18. Rekap Excel | 3 | 📋 |
-| **Total** | **~115** | **84 done, ~31 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16; Sprint 4: +11 — Presensi 11) |
+| **Total** | **~115** | **88 done, ~27 planned** (Sprint 1: 37; Sprint 2: +20; Sprint 3: +16; Sprint 4: +11; Follow-up: +4 — Jurusan/Gelombang export & import) |

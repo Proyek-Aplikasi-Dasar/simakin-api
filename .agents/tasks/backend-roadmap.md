@@ -471,6 +471,57 @@
 
 ---
 
+## Follow-up: Tindak Lanjut Catatan FE UI/UX & BE (20 Nov)
+
+**Goal:** Menutup gap UI/UX FE (data yang belum tersedia di BE), memperbaiki bug impor Excel, serta menyesuaikan validasi & zona waktu sesuai catatan FE dan BE.
+
+### Task F-1: Kolom login terakhir & status akun
+- [x] Migration: `add_last_login_at_to_users_table`
+- [x] Model: `User` (fillable + casts)
+- [x] Controller: `LoginController::login` (set `last_login_at`)
+- [x] Resource: `UserResource` (`last_login_at` WIB + `status`)
+- [x] Test: `LoginTest`
+
+### Task F-2: Email guru + pembimbing industri + koordinat
+- [x] Migration: `add_pembimbing_industri_koordinat_to_lokasi_pkl_table`
+- [x] Request: `StoreLokasiPklRequest` / `UpdateLokasiPklRequest`
+- [x] Resource: `LokasiPklResource` (fallback ke perusahaan)
+- [x] Controller: `LokasiPklController@store` (status default `active`)
+- [x] `GuruResource`: kirim `email` dari `user.email`
+- [x] Test: `LokasiPklTest`
+
+### Task F-3: Field "Dipilih Dari" & tanggal pengajuan
+- [x] Migration: `add_sumber_pilihan_to_pengajuan_pkl_table`
+- [x] Model: `PengajuanPkl`
+- [x] Request: `StorePengajuanPklRequest`
+- [x] Resource: `PengajuanPklResource` (`sumber_pilihan` + `created_at` WIB)
+- [x] Test: `PengajuanPklTest`
+
+### Task F-4: Bug impor Excel
+- [x] `ImportsRows::readRows()` (cek ekstensi dari `getClientOriginalExtension()`, reader eksplisit)
+- [x] Controller `bulkUpload` (5 endpoint) kirim ekstensi asli
+- [x] Test: bulk upload end-to-end
+
+### Task F-5: Validasi field + zona waktu WIB
+- [x] Validasi seluruh field di semua Form Request + pesan ramah Indonesia
+- [x] Zona waktu `Asia/Jakarta` di config & resource
+- [x] Test: validasi & format WIB
+
+### Task F-6: Export & impor Excel `gelombang` & `jurusan`
+- [x] `GelombangImport` + `bulkUpload` di `GelombangController`
+- [x] `bulkUpload` di `JurusanController`
+- [x] `JurusanExport` & `GelombangExport`
+- [x] `GET /api/jurusan/export` & `GET /api/gelombang/export`
+- [x] Template `template-jurusan.xlsx` & `template-gelombang.xlsx` + registrasi di `TemplateController`
+- [x] Test: `BulkUploadGelombangJurusanTest`
+
+### Task F-7: Dokumentasi + Postman sinkron
+- [x] Update `003-api-endpoints.md` (§2, §3, §5, §9, §10, §11, §12, §13: field baru + endpoint bulk-upload/export)
+- [x] Update `API-Docs-fondasi.md` (Akun & Peran, Guru, Pengajuan PKL, Lokasi PKL, Presensi, Data Master jurusan/gelombang)
+- [ ] Update `postman-sprint*-execution.md` & `docs/postman/` (collection + environment JSON)
+
+---
+
 ## Sprint 5: Jurnal Harian (11-17 Nov)
 
 **Goal:** Siswa input jurnal, **TIDAK ADA approval guru**, admin bisa edit semua jurnal.
