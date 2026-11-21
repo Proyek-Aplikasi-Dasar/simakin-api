@@ -126,6 +126,7 @@ class PengajuanPklController extends Controller
             'siswa_id' => $siswa->id,
             'perusahaan_id' => $perusahaan->id,
             'gelombang_id' => $gelombang->id,
+            'sumber_pilihan' => $request->input('sumber_pilihan'),
             'status' => 'pending',
         ]);
 

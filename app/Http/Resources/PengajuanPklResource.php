@@ -37,12 +37,13 @@ class PengajuanPklResource extends JsonResource
                 ];
             }),
             'status' => $this->status,
+            'sumber_pilihan' => $this->sumber_pilihan,
             'alasan_penolakan' => $this->alasan_penolakan,
             'catatan' => $this->catatan,
             'verified_by' => $this->verified_by,
             'verified_at' => $this->verified_at,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }
