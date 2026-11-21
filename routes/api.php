@@ -32,10 +32,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/password', [PasswordController::class, 'update']);
 
     // Read: semua role login
-    Route::apiResource('jurusan', JurusanController::class)->only(['index', 'show']);
-    Route::get('jurusan/{jurusan}/kompetensi', [JurusanController::class, 'kompetensi']);
+    Route::apiResource('jurusan', JurusanController::class)->only(['index', 'show'])->whereNumber('jurusan');
+    Route::get('jurusan/{jurusan}/kompetensi', [JurusanController::class, 'kompetensi'])->whereNumber('jurusan');
     Route::apiResource('kompetensi', KompetensiController::class)->only(['index', 'show']);
-    Route::apiResource('gelombang', GelombangController::class)->only(['index', 'show']);
+    Route::apiResource('gelombang', GelombangController::class)->only(['index', 'show'])->whereNumber('gelombang');
     Route::apiResource('perusahaan', PerusahaanController::class)->only(['index', 'show']);
     Route::apiResource('sikap', SikapController::class)->only(['index', 'show']);
     // Detail guru boleh admin & guru; list hanya admin (003-api-endpoints.md §9)
@@ -120,10 +120,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('lokasi-pkl/{lokasi_pkl}', [LokasiPklController::class, 'destroy']);
     });
 
-    // Bulk upload (admin only) - carry-over Sprint 1/2
+    // Bulk upload (admin only) - carry-over Sprint 1/2 & follow-up FE 20 Nov
     Route::middleware('role:admin')->group(function () {
         Route::post('kompetensi/bulk-upload', [KompetensiController::class, 'bulkUpload']);
         Route::post('perusahaan/bulk-upload', [PerusahaanController::class, 'bulkUpload']);
+        Route::post('jurusan/bulk-upload', [JurusanController::class, 'bulkUpload']);
+        Route::post('gelombang/bulk-upload', [GelombangController::class, 'bulkUpload']);
+        Route::get('jurusan/export', [JurusanController::class, 'export']);
+        Route::get('gelombang/export', [GelombangController::class, 'export']);
     });
 
     // Dashboard (admin only)
