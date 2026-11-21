@@ -21,6 +21,12 @@ use Throwable;
 trait ImportsRows
 {
     /**
+     * Ekstensi file asli (tanpa titik), ditentukan dari nama file unggahan.
+     * Dipakai agar pembacaan tidak bergantung pada ekstensi path sementara (phpXXXX.tmp).
+     */
+    protected ?string $extension = null;
+
+    /**
      * Aturan validasi untuk satu baris.
      *
      * @return array<string, array<int, string>>
@@ -36,9 +42,16 @@ trait ImportsRows
 
     /**
      * Baca file, validasi tiap baris, lalu simpan baris yang valid.
+     *
+     * @param  string  $path  Path file (bisa path sementara PHP).
+     * @param  string|null  $extension  Ekstensi asli file (tanpa titik), mis. "xlsx"/"xls"/"csv".
      */
-    public function import(string $path): ImportResult
+    public function import(string $path, ?string $extension = null): ImportResult
     {
+        if ($extension !== null) {
+            $this->extension = strtolower(ltrim($extension, '.'));
+        }
+
         $rows = $this->readRows($path);
 
         $result = new ImportResult;
@@ -82,14 +95,24 @@ trait ImportsRows
      */
     protected function readRows(string $path): array
     {
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        // Gunakan ekstensi asli file unggahan (bukan ekstensi path sementara
+        // PHP "phpXXXX.tmp") agar tipe reader dapat ditentukan dengan benar.
+        $extension = $this->extension ?? strtolower(pathinfo($path, PATHINFO_EXTENSION));
 
         if (! in_array($extension, $this->allowedExtensions(), true)) {
             throw InvalidFileTypeException::forFile($path);
         }
 
+        // Tentukan tipe reader secara eksplisit agar tidak bergantung pada
+        // ekstensi path sementara.
+        $readerType = match ($extension) {
+            'csv' => \Maatwebsite\Excel\Excel::CSV,
+            'xls' => \Maatwebsite\Excel\Excel::XLS,
+            default => \Maatwebsite\Excel\Excel::XLSX,
+        };
+
         try {
-            return Excel::toArray($this, $path)[0] ?? [];
+            return Excel::toArray($this, $path, null, $readerType)[0] ?? [];
         } catch (Throwable $exception) {
             throw InvalidFileTypeException::forFile($path, $exception);
         }

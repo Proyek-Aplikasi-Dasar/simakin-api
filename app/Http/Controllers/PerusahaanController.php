@@ -17,7 +17,7 @@ class PerusahaanController extends Controller
     {
         $perusahaan = Perusahaan::query()
             ->when($request->filled('jurusan_id'), function ($query) use ($request) {
-                $query->whereHas('jurusan', fn($w) => $w->where('jurusan.id', $request->integer('jurusan_id')));
+                $query->whereHas('jurusan', fn ($w) => $w->where('jurusan.id', $request->integer('jurusan_id')));
             })
             ->when($request->boolean('kuota_tersedia'), function ($query) {
                 $query->where(function ($w) {
@@ -28,7 +28,7 @@ class PerusahaanController extends Controller
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
-                $query->where(fn($w) => $w
+                $query->where(fn ($w) => $w
                     ->where('nama', 'like', "%{$search}%")
                     ->orWhere('alamat', 'like', "%{$search}%"));
             })
@@ -126,7 +126,10 @@ class PerusahaanController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
-        $result = (new PerusahaanImport)->import($request->file('file')->getRealPath());
+        $result = (new PerusahaanImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
 
         return response()->json($result->toArray());
     }

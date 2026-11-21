@@ -44,12 +44,12 @@ class SiswaController extends Controller
                 $search = $request->string('search')->toString();
                 $query->where(function ($w) use ($search) {
                     $w->where('nis', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
+                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
                 });
             })
-            ->when($request->filled('jurusan_id'), fn($query) => $query->where('jurusan_id', $request->integer('jurusan_id')))
-            ->when($request->filled('gelombang_id'), fn($query) => $query->where('gelombang_id', $request->integer('gelombang_id')))
-            ->when($request->filled('kelas'), fn($query) => $query->where('kelas', $request->string('kelas')->toString()))
+            ->when($request->filled('jurusan_id'), fn ($query) => $query->where('jurusan_id', $request->integer('jurusan_id')))
+            ->when($request->filled('gelombang_id'), fn ($query) => $query->where('gelombang_id', $request->integer('gelombang_id')))
+            ->when($request->filled('kelas'), fn ($query) => $query->where('kelas', $request->string('kelas')->toString()))
             ->orderBy('nis')
             ->paginate(20);
 
@@ -269,7 +269,10 @@ class SiswaController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
-        $result = (new SiswaImport)->import($request->file('file')->getRealPath());
+        $result = (new SiswaImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
 
         return response()->json($result->toArray());
     }

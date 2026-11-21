@@ -22,7 +22,7 @@ class GuruController extends Controller
                 $search = $request->string('search')->toString();
                 $query->where(function ($w) use ($search) {
                     $w->where('nip', 'like', "%{$search}%")
-                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
+                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")->orWhere('username', 'like', "%{$search}%"));
                 });
             })
             ->orderBy('nip')
@@ -160,7 +160,10 @@ class GuruController extends Controller
             'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
-        $result = (new GuruImport)->import($request->file('file')->getRealPath());
+        $result = (new GuruImport)->import(
+            $request->file('file')->getRealPath(),
+            $request->file('file')->getClientOriginalExtension()
+        );
 
         return response()->json($result->toArray());
     }
