@@ -19,4 +19,13 @@ class StoreSikapRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'nama.required' => 'Nama sikap wajib diisi.',
+            'nama.max' => 'Nama sikap maksimal 100 karakter.',
+            'is_active.boolean' => 'Status aktif harus berupa boolean.',
+        ];
+    }
 }

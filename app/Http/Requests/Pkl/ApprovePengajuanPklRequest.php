@@ -19,4 +19,12 @@ class ApprovePengajuanPklRequest extends FormRequest
             'catatan' => ['nullable', 'string', 'max:1000'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'guru_pembimbing_id.exists' => 'Guru pembimbing tidak ditemukan.',
+            'catatan.max' => 'Catatan maksimal 1000 karakter.',
+        ];
+    }
 }

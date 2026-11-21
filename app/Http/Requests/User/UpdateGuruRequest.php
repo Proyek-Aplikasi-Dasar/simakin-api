@@ -40,7 +40,8 @@ class UpdateGuruRequest extends FormRequest
                 Rule::unique('guru', 'nip')->ignore($guruId),
                 Rule::unique('users', 'username')->ignore($userId),
             ],
-            'telp' => ['nullable', 'string', 'max:20'],
+            'email' => ['sometimes', 'nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
+            'telp' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\\-\\s()]+$/'],
             'jurusan_id' => ['nullable', 'exists:jurusan,id'],
             'kuota_bimbingan' => ['nullable', 'integer', 'min:0'],
             'alamat' => ['nullable', 'string'],
@@ -60,6 +61,9 @@ class UpdateGuruRequest extends FormRequest
             'nip.required' => 'NIP wajib diisi.',
             'nip.unique' => 'NIP sudah terdaftar.',
             'username.same' => 'Username harus sama dengan NIP.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
+            'telp.regex' => 'Format nomor telepon tidak valid.',
         ];
     }
 }
