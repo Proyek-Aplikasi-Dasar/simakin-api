@@ -25,7 +25,7 @@
 |---|---|---|---|
 | UAT-5 | Filter bidang usaha perusahaan: kalau mau ditambah, endpoint list perusahaan harus terima parameter `bidang_usaha` (dan kolom/relasinya harus ada di data). | `PerusahaanController::index()` → tambah filter `bidang_usaha` (query `where('bidang_usaha', 'like', "%...%")` atau exact). Kolom `bidang_usaha` sudah ada di `perusahaan` (migration `add_fields_to_master_tables`). | Opsional (tergantung kebutuhan FE) |
 | UAT-6 | ID pengajuan tidak ada: backend sebaiknya balikin `404` dengan pesan jelas, bukan error umum. Cek respons sekarang. | Route model binding `PengajuanPkl` sudah mengembalikan `404` default Laravel (JSON `{"message":"No query results for model [App\\Models\\PengajuanPkl] ..."}`) — pesan kurang jelas. Tambahkan handler di `bootstrap/app.php` (render `NotFoundHttpException`) atau override di controller (`find()` manual + `abort(404, 'Pengajuan tidak ditemukan.')`). | Sedang |
-| UAT-7 | Default verifikasi "Diterima": sumber masalah item Canceled. Kalau mau bisa dites, default-nya dihapus dan keputusan jadi wajib diisi (validasi required). | Cari field dengan default verifikasi "Diterima" (kemungkinan di `penilaian`/`aktivasi_penilaian` — Sprint 6, belum dibangun) atau di `pengajuan_pkl` (status default sudah `pending`). Karena modul penilaian (Sprint 6) belum dibangun, item ini **ditunda** ke Sprint 6 (Task 6.2 Aktivasi Periode). Jika merujuk ke status default pengajuan, ubah dari `pending`? **Tidak disarankan** — biarkan `pending` dan wajibkan keputusan approve/reject. | Rendah (Sprint 6) |
+| UAT-7 | Default verifikasi "Diterima": sumber masalah item Canceled. | **Bukan isu Back-End.** BE memiliki dua endpoint terpisah (`PUT /api/pengajuan-pkl/{id}/approve` dan `PUT /api/pengajuan-pkl/{id}/reject`), sehingga tidak ada field "keputusan" yang divalidasi di BE. Default `decision = ref('approve')` berada di FE (`PengajuanPklVerifikasiPage.vue`). **Tidak ada perubahan BE yang diperlukan** — perbaikan dilakukan di sisi FE (hapus default, jadikan keputusan wajib diisi sebelum submit). | Rendah (Frontend) |
 
 ---
 
@@ -42,7 +42,7 @@
 
 ### Tidak Termasuk / Ditunda
 
-- Item UAT-7 (default verifikasi "Diterima") → Sprint 6 (Task 6.2), karena modul penilaian belum dibangun.
+- Item UAT-7 (default verifikasi "Diterima") → **bukan isu BE**; perbaikan di FE (`PengajuanPklVerifikasiPage.vue`, hapus default `decision = ref('approve')`, jadikan keputusan wajib).
 - Dashboard guru & siswa → Sprint 7.
 - Rekap Excel → Sprint 7.
 
