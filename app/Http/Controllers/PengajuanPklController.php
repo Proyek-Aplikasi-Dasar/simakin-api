@@ -49,15 +49,21 @@ class PengajuanPklController extends Controller
         return PengajuanPklResource::collection($pengajuan);
     }
 
-    public function show(PengajuanPkl $pengajuanPkl)
+    public function show(int $pengajuan_pkl)
     {
+        $pengajuan = PengajuanPkl::find($pengajuan_pkl);
+
+        if (! $pengajuan) {
+            return response()->json(['message' => 'Pengajuan tidak ditemukan.'], 404);
+        }
+
         $user = request()->user();
 
-        if ($user?->isSiswa() && $pengajuanPkl->siswa_id !== $user->siswa?->id) {
+        if ($user?->isSiswa() && $pengajuan->siswa_id !== $user->siswa?->id) {
             return response()->json(['message' => 'Tidak diizinkan.'], 403);
         }
 
-        return new PengajuanPklResource($pengajuanPkl->load(['siswa.user', 'siswa.jurusan', 'perusahaan', 'gelombang', 'verifier']));
+        return new PengajuanPklResource($pengajuan->load(['siswa.user', 'siswa.jurusan', 'perusahaan', 'gelombang', 'verifier']));
     }
 
     public function store(StorePengajuanPklRequest $request)
@@ -142,6 +148,28 @@ class PengajuanPklController extends Controller
             return response()->json(['message' => 'Pengajuan sudah diproses.'], 422);
         }
 
+        // Guard: siswa sudah punya lokasi active.
+        if (LokasiPkl::where('siswa_id', $pengajuanPkl->siswa_id)->where('status', 'active')->exists()) {
+            return response()->json([
+                'message' => 'Siswa sudah memiliki penempatan PKL aktif.',
+                'code' => 'SISWA_ALREADY_PLACED',
+            ], 422);
+        }
+
+        // Guard: kuota perusahaan.
+        $terpakai = LokasiPkl::where('perusahaan_id', $pengajuanPkl->perusahaan_id)
+            ->where('gelombang_id', $pengajuanPkl->gelombang_id)
+            ->whereIn('status', ['pending', 'active'])
+            ->count();
+
+        $perusahaan = $pengajuanPkl->perusahaan;
+        if ($perusahaan && $perusahaan->kuota !== null && $terpakai >= $perusahaan->kuota) {
+            return response()->json([
+                'message' => 'Kuota perusahaan sudah penuh.',
+                'code' => 'PERUSAHAAN_KUOTA_PENUH',
+            ], 422);
+        }
+
         $pengajuan = DB::transaction(function () use ($request, $pengajuanPkl) {
             $pengajuanPkl->update([
                 'status' => 'approved',
@@ -149,11 +177,6 @@ class PengajuanPklController extends Controller
                 'verified_by' => $request->user()->id,
                 'verified_at' => now(),
             ]);
-
-            // Siswa sudah punya lokasi active? (guard).
-            if (LokasiPkl::where('siswa_id', $pengajuanPkl->siswa_id)->where('status', 'active')->exists()) {
-                throw new \RuntimeException('SISWA_ALREADY_PLACED');
-            }
 
             LokasiPkl::create([
                 'siswa_id' => $pengajuanPkl->siswa_id,
@@ -222,6 +245,19 @@ class PengajuanPklController extends Controller
                 // Guard: siswa sudah placed.
                 if (LokasiPkl::where('siswa_id', $pengajuan->siswa_id)->where('status', 'active')->exists()) {
                     $failed[] = ['id' => $id, 'error' => 'Siswa sudah memiliki penempatan aktif.'];
+
+                    continue;
+                }
+
+                // Guard: kuota perusahaan.
+                $terpakai = LokasiPkl::where('perusahaan_id', $pengajuan->perusahaan_id)
+                    ->where('gelombang_id', $pengajuan->gelombang_id)
+                    ->whereIn('status', ['pending', 'active'])
+                    ->count();
+
+                $perusahaan = $pengajuan->perusahaan;
+                if ($perusahaan && $perusahaan->kuota !== null && $terpakai >= $perusahaan->kuota) {
+                    $failed[] = ['id' => $id, 'error' => 'Kuota perusahaan sudah penuh.'];
 
                     continue;
                 }

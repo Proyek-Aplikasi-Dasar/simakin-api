@@ -125,13 +125,13 @@ Mengikuti pola Sprint 1–6 (branch dari `develop`, merge via PR ke `develop` se
 
 ## 7. Definisi Selesai (DoD)
 
-- [ ] B0 Rencana tindak lanjut UAT dibuat (dokumen ini)
-- [ ] B1 Password default import = NIP/NIS (import + test)
-- [ ] B2 Validasi kuota & placed saat approve (approve + bulkApprove + test)
-- [ ] B3 Filter presensi siswa berdasarkan relasi guru pembimbing (index + rekap + periode + test)
-- [ ] B4 Filter bidang usaha perusahaan + 404 jelas untuk pengajuan (opsional + test)
-- [ ] B5 Dokumentasi + Postman sinkron
-- [ ] Semua test hijau, pint bersih, `migrate:fresh --seed` sukses, `git status` bersih
+- [x] B0 Rencana tindak lanjut UAT dibuat (dokumen ini)
+- [x] B1 Password default import = NIP/NIS (import + test)
+- [x] B2 Validasi kuota & placed saat approve (approve + bulkApprove + test)
+- [x] B3 Filter presensi siswa berdasarkan relasi guru pembimbing (index + rekap + periode + test)
+- [x] B4 Filter bidang usaha perusahaan + 404 jelas untuk pengajuan (opsional + test)
+- [x] B5 Dokumentasi + Postman sinkron
+- [x] Semua test hijau, pint bersih, `migrate:fresh --seed` sukses, `git status` bersih
 
 ---
 

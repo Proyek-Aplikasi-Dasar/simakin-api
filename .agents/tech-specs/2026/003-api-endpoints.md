@@ -293,7 +293,7 @@ Response 200:
 
 > Bulk upload Excel ditunda ke Sprint 2. Fondasi import sudah tersedia di `app/Imports`.
 
-**GET /api/perusahaan** - Query: `jurusan_id` (filter jurusan), `search` (nama/alamat), `kuota_tersedia` (boolean, menyusul Sprint 3)
+**GET /api/perusahaan** - Query: `jurusan_id` (filter jurusan), `search` (nama/alamat), `kuota_tersedia` (boolean), `bidang_usaha` (filter bidang usaha)
 
 **POST /api/perusahaan** - Body:
 ```json
@@ -491,6 +491,8 @@ Response: siswa list + status hari ini:
 
 **PUT /approve** - Body (opsional): `{ "guru_pembimbing_id": 3 }` (assign guru saat approve)
 
+> **Validasi saat approve:** kuota perusahaan dicek (`PERUSAHAAN_KUOTA_PENUH` jika penuh); siswa yang sudah punya lokasi active ditolak (`SISWA_ALREADY_PLACED`). `GET /api/pengajuan-pkl/{id}` dengan ID tidak ada mengembalikan `404` dengan pesan `Pengajuan tidak ditemukan.`.
+
 **PUT /reject** - Body: `{ "alasan_penolakan": "Kuota sudah penuh" }`
 
 **Bulk Approve** (opsional, untuk admin):
@@ -581,6 +583,8 @@ Catatan: `catatan` opsional, untuk catatan saat approve (bukan hanya saat reject
 | GET | /api/absensi/export | Required | admin, guru | Export presensi ke `.xlsx` |
 
 **GET /api/absensi** - Query: `siswa_id`, `jurusan_id`, `search` (nama/NIS siswa), `tanggal`, `tanggal_mulai`, `tanggal_selesai`, `status` (hadir/izin/sakit/libur), `page`
+
+> Guru hanya dapat melihat presensi siswa bimbingannya (filter otomatis berdasarkan `lokasi_pkl` active dengan `guru_id` milik guru login).
 
 **POST /api/absensi** (check-in) - Multipart:
 ```

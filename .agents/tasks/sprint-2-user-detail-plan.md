@@ -113,7 +113,7 @@ Branch dari `develop`; merge lokal `--no-ff` ke `develop` (tanpa push/PR). Commi
 **Logic:**
 - Store/update dalam transaction: `users` (role_id=2) + `guru`; `users.name`/`username` mengikuti `name`/`nip`
 - Delete: soft delete user? Ikuti konvensi Sprint 1 — hapus `guru` + `users` (CASCADE) atau soft delete `users`; pilih soft delete `users` + `guru` (tanpa `deleted_at` di guru) → gunakan `User::delete()` dan biarkan FK; dokumentasikan.
-- Bulk upload: `GuruImport` (kolom: `nip`, `nama`; password default `password123`), per baris transaksi, error per baris `{row, error}`
+- Bulk upload: `GuruImport` (kolom: `nip`, `nama`; password default = NIP), per baris transaksi, error per baris `{row, error}`
 
 **Routes:** read `admin` (sesuai 003 §9), write `admin`; bulk upload `admin`.
 
@@ -158,7 +158,7 @@ $table->softDeletes();
 **Logic:**
 - Store: `users` (role_id=3, `username = nis`, `name`, `email`) + `siswa`; default field profil `null`
 - Update: update `users.name`, `users.username`, `users.email` + `siswa`; **tidak** reset `profil_confirmed_at`
-- Bulk upload `SiswaImport`: kolom `nis`, `nama` wajib; opsional `jenis_kelamin`, `kelas`, `jurusan` (nama/kode), `gelombang` (nama), `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu`; password default `password123`; error per baris
+- Bulk upload `SiswaImport`: kolom `nis`, `nama` wajib; opsional `jenis_kelamin`, `kelas`, `jurusan` (nama/kode), `gelombang` (nama), `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu`; password default = NIS; error per baris
 
 **Routes:** `GET /api/siswa`, `GET /api/siswa/{id}` admin+guru; write admin; bulk upload admin.
 
