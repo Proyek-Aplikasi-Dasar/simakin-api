@@ -417,7 +417,7 @@ class SiswaTest extends TestCase
 
         $this->assertDatabaseCount('siswa', 2);
         $this->assertDatabaseHas('users', ['username' => '0012350', 'role_id' => 3]);
-        $this->assertTrue(Hash::check('password123', User::where('username', '0012350')->first()->password));
+        $this->assertTrue(Hash::check('0012350', User::where('username', '0012350')->first()->password));
         $this->assertDatabaseHas('siswa', ['nis' => '0012351', 'jenis_kelamin' => 'P']);
     }
 

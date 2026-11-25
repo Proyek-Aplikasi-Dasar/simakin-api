@@ -558,7 +558,7 @@ Buat request **sesuai urutan di bawah**.
   `nip`, `nama` (wajib)
   
   ## Catatan
-  - Password default: `password123`
+  - Password default: NIP (guru) / NIS (siswa)
   - `nip` otomatis jadi `username`
   - Baris gagal akan dilaporkan beserta alasan
   ```
@@ -841,7 +841,7 @@ Buat request **sesuai urutan di bawah**. Penting untuk menjaga urutan `10.7–10
   `nis`, `nama` (wajib). Opsional: `jenis_kelamin`, `kelas`, `jurusan`, `gelombang`, `telp`, `email`, `alamat`, `nama_ortu`, `telp_ortu`, `alamat_ortu`
   
   ## Catatan
-  - Password default: `password123`
+  - Password default: NIS (siswa)
   - `nis` dinormalisasi (hindari notasi ilmiah)
   - `jenis_kelamin`: `L`/`P` atau `Laki-laki`/`Perempuan` (dipetakan otomatis)
   - `jurusan`: bisa kode atau nama (case-insensitive)

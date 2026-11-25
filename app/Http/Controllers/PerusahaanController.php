@@ -19,6 +19,9 @@ class PerusahaanController extends Controller
             ->when($request->filled('jurusan_id'), function ($query) use ($request) {
                 $query->whereHas('jurusan', fn ($w) => $w->where('jurusan.id', $request->integer('jurusan_id')));
             })
+            ->when($request->filled('bidang_usaha'), function ($query) use ($request) {
+                $query->where('bidang_usaha', 'like', '%'.$request->string('bidang_usaha')->toString().'%');
+            })
             ->when($request->boolean('kuota_tersedia'), function ($query) {
                 $query->where(function ($w) {
                     $w->whereNull('kuota')

@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Imports\Concerns\ImportsRows;
 use App\Models\Guru;
+use App\Models\Jurusan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -66,13 +67,13 @@ class GuruImport implements Import, WithHeadingRow
                 'name' => $nama,
                 'username' => $nip,
                 'email' => null,
-                'password' => 'password123',
+                'password' => $nip,
                 'role_id' => 2,
             ]);
 
             $jurusanId = null;
             if (isset($data['jurusan']) && $data['jurusan'] !== null && $data['jurusan'] !== '') {
-                $jurusan = \App\Models\Jurusan::query()
+                $jurusan = Jurusan::query()
                     ->whereRaw('LOWER(kode) = ?', [strtolower(trim($data['jurusan']))])
                     ->orWhereRaw('LOWER(nama) = ?', [strtolower(trim($data['jurusan']))])
                     ->first();

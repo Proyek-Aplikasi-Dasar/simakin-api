@@ -31,6 +31,12 @@ class AbsensiSiswaController extends Controller
 
         if ($user?->isSiswa()) {
             $query->where('siswa_id', $user->siswa?->id ?? 0);
+        } elseif ($user?->isGuru()) {
+            $guru = $user->guru;
+            $siswaIds = $guru
+                ? LokasiPkl::where('guru_id', $guru->id)->where('status', 'active')->pluck('siswa_id')->all()
+                : [];
+            $query->whereIn('siswa_id', $siswaIds ?: [0]);
         } elseif ($request->filled('siswa_id')) {
             $query->where('siswa_id', $request->integer('siswa_id'));
         }
@@ -67,7 +73,18 @@ class AbsensiSiswaController extends Controller
 
     public function rekap(Request $request)
     {
+        $user = $request->user();
         $query = AbsensiSiswa::query();
+
+        if ($user?->isGuru()) {
+            $guru = $user->guru;
+            $siswaIds = $guru
+                ? LokasiPkl::where('guru_id', $guru->id)->where('status', 'active')->pluck('siswa_id')->all()
+                : [];
+            $query->whereIn('siswa_id', $siswaIds ?: [0]);
+        } elseif ($request->filled('siswa_id')) {
+            $query->where('siswa_id', $request->integer('siswa_id'));
+        }
 
         if ($request->filled('gelombang_id')) {
             $query->whereHas('siswa.lokasiPkl', fn ($q) => $q->where('gelombang_id', $request->integer('gelombang_id')));
@@ -129,6 +146,18 @@ class AbsensiSiswaController extends Controller
 
         if ($user?->isSiswa() && $siswa->user_id !== $user->id) {
             return response()->json(['message' => 'Tidak diizinkan.'], 403);
+        }
+
+        if ($user?->isGuru()) {
+            $guru = $user->guru;
+            $isBimbingan = $guru && LokasiPkl::where('guru_id', $guru->id)
+                ->where('siswa_id', $siswa->id)
+                ->where('status', 'active')
+                ->exists();
+
+            if (! $isBimbingan) {
+                return response()->json(['message' => 'Tidak diizinkan.'], 403);
+            }
         }
 
         $bulan = (int) $request->input('bulan', now()->month);

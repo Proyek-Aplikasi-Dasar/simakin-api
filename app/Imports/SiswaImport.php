@@ -95,7 +95,7 @@ class SiswaImport implements Import, WithHeadingRow
                 'name' => $nama,
                 'username' => $nis,
                 'email' => $data['email'] ?? null,
-                'password' => 'password123',
+                'password' => $nis,
                 'role_id' => 3,
             ]);
 

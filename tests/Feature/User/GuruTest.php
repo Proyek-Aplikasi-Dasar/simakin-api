@@ -307,7 +307,7 @@ class GuruTest extends TestCase
 
         $this->assertDatabaseCount('guru', 2);
         $this->assertDatabaseHas('users', ['username' => '198801012020011001', 'role_id' => 2]);
-        $this->assertTrue(Hash::check('password123', User::where('username', '198801012020011001')->first()->password));
+        $this->assertTrue(Hash::check('198801012020011001', User::where('username', '198801012020011001')->first()->password));
     }
 
     public function test_bulk_upload_reports_invalid_rows(): void

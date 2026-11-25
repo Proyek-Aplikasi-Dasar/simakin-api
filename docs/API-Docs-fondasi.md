@@ -757,7 +757,7 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 | POST | `/guru` | admin | Create guru + user (`username` = NIP) |
 | PUT | `/guru/{id}` | admin | Update (NIP disinkronkan ke `users.username`) |
 | DELETE | `/guru/{id}` | admin | Hard delete guru + user (token dicabut) |
-| POST | `/guru/bulk-upload` | admin | Import Excel (`nip`, `nama`; password default `password123`) |
+| POST | `/guru/bulk-upload` | admin | Import Excel (`nip`, `nama`; password default = NIP) |
 
 **POST /guru** body:
 ```json
@@ -1044,7 +1044,7 @@ Admin dapat mengunduh template siap pakai untuk import data via `GET /api/templa
 | `perusahaan` | `template-perusahaan.xlsx` | `nama`, `alamat`, `latitude`, `longitude`, `pimpinan`, `telp`, `email`, `deskripsi`, `kuota`, `jurusan_kode` | Ikuti aturan import perusahaan. |
 | `kompetensi` | `template-kompetensi.xlsx` | `jurusan_kode`, `nama`, `kode` | `jurusan_kode` wajib merujuk jurusan valid. |
 
-> Password default hasil import: `password123` (guru & siswa).
+> Password default hasil import: NIP (guru) / NIS (siswa).
 
 ### 6. Alur Aplikasi Mobile
 
