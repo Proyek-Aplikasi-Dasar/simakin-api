@@ -532,6 +532,19 @@ Abaikan Authorization. **Body:** `{}`
 
 ---
 
+## E2. Akun & Peran (Follow-up 20 Nov)
+
+**GET /api/user** mengembalikan (selain data user biasa):
+
+| Field | Keterangan |
+|---|---|
+| `last_login_at` | Waktu login terakhir (`Y-m-d H:i:s`, WIB). `null` jika belum pernah login. |
+| `status` | `"Aktif"` (belum soft-delete) / `"Nonaktif"` (soft-deleted). |
+
+Login (mobile & web) mencatat `last_login_at` otomatis.
+
+---
+
 ## F. Data Master
 
 32 endpoint data master sudah tersedia. Semua endpoint memerlukan login (`auth:sanctum`):
@@ -753,9 +766,9 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 | Method | Endpoint | Role | Keterangan |
 |---|---|---|---|
 | GET | `/guru` | admin, guru | List guru (query: `search`) |
-| GET | `/guru/{id}` | admin, guru | Detail guru + user |
-| POST | `/guru` | admin | Create guru + user (`username` = NIP) |
-| PUT | `/guru/{id}` | admin | Update (NIP disinkronkan ke `users.username`) |
+| GET | `/guru/{id}` | admin, guru | Detail guru + user (termasuk `email` dari `users.email`) |
+| POST | `/guru` | admin | Create guru + user (`username` = NIP, `email` opsional) |
+| PUT | `/guru/{id}` | admin | Update (NIP disinkronkan ke `users.username`, `email` opsional) |
 | DELETE | `/guru/{id}` | admin | Hard delete guru + user (token dicabut) |
 | POST | `/guru/bulk-upload` | admin | Import Excel (`nip`, `nama`; password default = NIP) |
 
@@ -810,13 +823,15 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 |---|---|---|---|
 | GET | `/pengajuan-pkl` | admin, guru, siswa | List (query: `status`, `siswa_id`, `perusahaan_id`, `gelombang_id`, `page`). Siswa hanya miliknya. |
 | GET | `/pengajuan-pkl/{id}` | admin, guru, siswa | Detail. Siswa hanya miliknya. |
-| POST | `/pengajuan-pkl` | siswa (profil confirmed) | Ajukan PKL. Body: `{ "perusahaan_id", "gelombang_id" }`. |
+| POST | `/pengajuan-pkl` | siswa (profil confirmed) | Ajukan PKL. Body: `{ "perusahaan_id", "gelombang_id", "sumber_pilihan" (opsional) }`. |
 | PUT | `/pengajuan-pkl/{id}/approve` | admin, guru | Approve + opsional `guru_pembimbing_id`; auto-create `lokasi_pkl` (active). |
 | PUT | `/pengajuan-pkl/{id}/reject` | admin, guru | Reject + wajib `alasan_penolakan`. |
 | PUT | `/pengajuan-pkl/bulk-approve` | admin, guru | Bulk approve `{ "ids": [...], "guru_pembimbing_id" }`. |
 | DELETE | `/pengajuan-pkl/{id}` | siswa | Cancel (hanya jika status `pending` & miliknya). |
 
 **Validasi pengajuan:** gelombang aktif (`GELOMBANG_NOT_ACTIVE`), siswa belum placed (`SISWA_ALREADY_PLACED`), belum ada pengajuan pending (`PENGAJUAN_DUPLICATE`), jurusan sesuai, kuota perusahaan (`PERUSAHAAN_KUOTA_PENUH`).
+
+**Field tambahan (Follow-up 20 Nov):** `sumber_pilihan` (`daftar_perusahaan_mitra` / `daftar_perusahaan_siswa`, nullable) dan `created_at` (tanggal pengajuan, format `Y-m-d H:i:s`, WIB) dikirim di response.
 
 **Notifikasi:** approve/reject mengirim database notification ke siswa (`pengajuan-approved` / `pengajuan-rejected`).
 
@@ -840,6 +855,8 @@ Fondasi import Excel (`maatwebsite/excel` v4 + `app/Imports/Concerns/ImportsRows
 **GET /api/siswa/{id}/lokasi-pkl** — lokasi PKL milik siswa (admin/guru semua; siswa hanya miliknya).
 
 **Filter perusahaan:** `GET /api/perusahaan?kuota_tersedia=1` — perusahaan yang kuota belum penuh.
+
+**Field tambahan (Follow-up 20 Nov):** `pembimbing_industri` (string, fallback `perusahaan.pimpinan`), `latitude` & `longitude` (fallback `perusahaan.latitude/longitude`) pada `lokasi_pkl`. Status default `POST /api/lokasi-pkl` (manual admin) = `active`.
 
 ---
 
@@ -897,6 +914,21 @@ Response: File download (`.xlsx`), Content-Type: `application/vnd.openxmlformats
 Kolom Excel: No, Tanggal, NIS, Nama Siswa, Kelas, Jurusan, Perusahaan PKL, Status, Waktu Kirim (Jam Masuk), Jam Shift, Keterangan, Dikoreksi Oleh.
 
 **Filter list:** `GET /api/absensi` mendukung `search` (nama/NIS siswa) dan `jurusan_id`. Response memuat `siswa.kelas`, `siswa.jurusan`, `siswa.perusahaan`.
+
+---
+
+## F9. Export & Impor Excel Data Master (Follow-up 20 Nov)
+
+Admin dapat mengunduh template dan melakukan bulk import/export untuk `jurusan` & `gelombang` (selain modul lain yang sudah ada).
+
+| Method | Endpoint | Role | Keterangan |
+|---|---|---|---|
+| POST | `/jurusan/bulk-upload` | admin | Import Excel (`nama`, `kode`, `bidang_keahlian`) |
+| GET | `/jurusan/export` | admin, guru | Export `.xlsx` |
+| POST | `/gelombang/bulk-upload` | admin | Import Excel (`tahun_ajaran`, `nama`, `daftar_mulai`, `daftar_selesai`, `praktik_mulai`, `praktik_selesai`) |
+| GET | `/gelombang/export` | admin, guru | Export `.xlsx` |
+| GET | `/templates/jurusan` | admin | Download template `template-jurusan.xlsx` |
+| GET | `/templates/gelombang` | admin | Download template `template-gelombang.xlsx` |
 
 ---
 
